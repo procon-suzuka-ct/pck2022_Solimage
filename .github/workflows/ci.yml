@@ -1,3 +1,5 @@
+name: Continuous Integration
+
 on:
   pull_request_review:
     types: [ submitted ]
@@ -43,4 +45,3 @@ jobs:
       webhook: ${{ secrets.DISCORD_WEBHOOK }}
       status: ${{ job.status }}
       title: ${{ github.workflow }}
-      
