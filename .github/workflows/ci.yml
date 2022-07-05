@@ -1,12 +1,12 @@
 name: Continuous Integration
 
-on:
-  pull_request_review:
+on: 
+  pull_request_review: 
     types: [ submitted ]
     branches: [ dev ]
 
-jobs:
-  format:
+jobs: 
+  format: 
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
@@ -14,20 +14,20 @@ jobs:
       - uses: subosito/flutter-action@v1
       - run: cd App & flutter format -l 120 --set-exit-if-changed .
 
-  analyze:
+  analyze: 
     runs-on: ubuntu-20.04
     timeout-minutes: 5
-    steps:
+    steps: 
       - uses: actions/checkout@v2
       - uses: subosito/flutter-action@v1
       - name: install dependencies
         run: cd App & flutter pub get
       - run: cd App & flutter analyze --fatal-infos --fatal-warnings .
 
-  widget_test:
+  widget_test: 
     runs-on: ubuntu-20.04
     timeout-minutes: 10
-    steps:
+    steps: 
       - uses: actions/checkout@v2
       - uses: subosito/flutter-action@v1
       - name: doctor
@@ -40,7 +40,7 @@ jobs:
   - name: Actions Status Discord
     uses: sarisia/actions-status-discord@v1.8.6
     if: github.event.review.state == 'approved'
-    with:
+    with: 
       webhook: ${{ secrets.DISCORD_WEBHOOK }}
       status: ${{ job.status }}
       title: ${{ github.workflow }}
