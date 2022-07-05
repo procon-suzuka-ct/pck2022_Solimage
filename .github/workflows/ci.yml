@@ -1,32 +1,32 @@
-on:
-  pull_request_review:
-    types: [ submitted ]
+name: Continuous Integration
+
+on: 
+  pull_request: 
     branches: [ dev ]
 
-jobs:
-  format:
-    runs-on: ubuntu-20.04
-    timeout-minutes: 5
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - uses: subosito/flutter-action@v1
-      - run: cd App & flutter format -l 120 --set-exit-if-changed .
-  
-  analyze:
-    runs-on: ubuntu-20.04
+jobs: 
+  format: 
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v2
       - uses: subosito/flutter-action@v1
+      - run: cd App & flutter format -l 120 --set-exit-if-changed .
+
+  analyze: 
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps: 
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1
       - name: install dependencies
-        run: flutter pub get
+        run: cd App & flutter pub get
       - run: cd App & flutter analyze --fatal-infos --fatal-warnings .
-  
-  widget_test:
-    runs-on: ubuntu-20.04
+
+  widget_test: 
+    runs-on: ubuntu-latest
     timeout-minutes: 10
-    steps:
+    steps: 
       - uses: actions/checkout@v2
       - uses: subosito/flutter-action@v1
       - name: doctor
@@ -36,11 +36,10 @@ jobs:
       - name: run test
         run: cd App & flutter test --coverage --coverage-path=./coverage/lcov.info
   
-  - name: Actions Status Discord
-    uses: sarisia/actions-status-discord@v1.8.6
-    if: github.event.review.state == 'approved'
-    with:
-      webhook: ${{ secrets.DISCORD_WEBHOOK }}
-      status: ${{ job.status }}
-      title: ${{ github.workflow }}
-      
+      - name: Actions Status Discord
+        uses: sarisia/actions-status-discord@v1.8.6
+        if: github.event.review.state == 'approved'
+        with: 
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: ${{ job.status }}
+          title: ${{ github.workflow }}
