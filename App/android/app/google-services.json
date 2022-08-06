@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "44131312724",
+    "project_id": "solimage-d214c",
+    "storage_bucket": "solimage-d214c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:44131312724:android:96a479fe046ea281eab9c1",
+        "android_client_info": {
+          "package_name": "com.snctathome.solimage"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "44131312724-gooobgeud34do37iggcq78o6s2ra2hc6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqR4Pi2bmnBgUTxaurA35p8aY0QGol7FY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "44131312724-gooobgeud34do37iggcq78o6s2ra2hc6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
