@@ -18,4 +18,3 @@
 1. Fileの下に`<no device selected>`と表示されている場合、そこのOpen Android Emulator: Pixel 4 API 30からエミュレータを起動する
    - Pixel 4 API 30 (mobile)という表示に変わればOK
 2. 実行ボタンを押し、しばらくするとエミュレータ上にアプリが立ち上がっていることを確認する
-3. 
