@@ -5,14 +5,6 @@ on:
     branches: [ dev ]
 
 jobs: 
-  format: 
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v2
-      - uses: subosito/flutter-action@v1
-      - run: cd App && flutter format -l 120 --set-exit-if-changed .
-
   analyze: 
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -39,11 +31,3 @@ jobs:
       - name: run test
         continue-on-error: true
         run: cd App && flutter test --coverage --coverage-path=./coverage/lcov.info
-  
-      - name: Actions Status Discord
-        uses: sarisia/actions-status-discord@v1.8.6
-        if: github.event.review.state == 'approved'
-        with: 
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          status: ${{ job.status }}
-          title: ${{ github.workflow }}
