@@ -1,7 +1,7 @@
 # PCK2022_Solimage
 
 ## ブランチやcommitのルール
-- `main`と`dev`ブランチをベースとする
+- `main`と`dev`ブランチがベース
 
 - 開発は`dev`から新しく分岐させたブランチを作り、一つの作業毎(複数のcommitがあっても良い)に`dev`にPRしてください
   - 分岐させるブランチは`dev-<作業内容(アルファベット)>`で作ってください
@@ -27,18 +27,32 @@
 
 - Releaseできるのは`main`のみとします
 
+### コンフリクトを防ぐために
+
+- 他の人が作成したブランチには特別な事情がある場合を除いてpushしないようにお願いします、どうしても編集したい場合はそのブランチから新しく分岐させ、push→PRしてください
+
+- PRする際はブランチの親子関係に気をつけてください、孫以下からのPRは禁止します
+
 ## ディレクトリ構成
 
 ```
 /
+├.github/
+│ ├workflow/
+│ │ └<Actionsファイル(拡張子:yml)>
+│ └dependabot.yml
 ├App/
 │ └<Flutter Project>
-│
 ├Backend/
-│  └<Backend Project>
-│
+│ └<Backend Project>
 └README.md
 ```
+
+## github Actionsについて
+
+github Actionsを書くときは`main`からブランチを切り、[指定のディレクトリ](#ディレクトリ構成)にymlファイルを追加しpushした後`main`にPRしてください
+
+どのブランチでも`.github`内のファイルを変更するとActionsファイルの構文チェックがされます、チェックをパスしてからPRしてください(PR時にもActionsが動きます)
 
 ## 機械学習
 
