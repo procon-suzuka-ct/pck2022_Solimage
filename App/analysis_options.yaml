@@ -31,4 +31,4 @@ linter:
 
 analyzer:
   exclude:
-    - test/*.mocks.dart
+    - test/*.dart
