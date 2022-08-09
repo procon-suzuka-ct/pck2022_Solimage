@@ -3,8 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class Auth {
-  static final Auth _instance = Auth._internal();
   final _auth = FirebaseAuth.instance;
+
+  //singleton
+  static final Auth _instance = Auth._internal();
   Auth._internal();
   factory Auth() => _instance;
 
@@ -40,10 +42,11 @@ class Auth {
   }
 
   FutureOr<void> signOut() async {
-    return _auth.signOut();
+    await _auth.signOut();
+    return;
   }
 
-  FutureOr<User?> currentUser() async {
+  User? currentUser() {
     return _auth.currentUser;
   }
 }
