@@ -31,7 +31,7 @@ class SolimageApp extends StatelessWidget {
         GoRoute(
             path: '/',
             name: 'index',
-            builder: (context, state) => IndexScreen(title: 'Solimage')
+            builder: (context, state) => const IndexScreen(title: 'Solimage')
         )
       ]
   );
