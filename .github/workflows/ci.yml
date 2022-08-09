@@ -44,7 +44,7 @@ jobs:
         run: cd App && flutter pub get
       - name: generate mock files
         continue-on-error: true
-        run: flutter pub run build_runner build
+        run: cd App && flutter pub run build_runner build
       - name: run test
         continue-on-error: true
         run: cd App && flutter test --coverage --coverage-path=./coverage/lcov.info
