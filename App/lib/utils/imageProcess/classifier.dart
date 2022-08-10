@@ -1,8 +1,10 @@
+import 'package:camera/camera.dart';
 import 'package:image/image.dart';
 import 'dart:async';
 import 'dart:math';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
+import 'package:solimage/utils/imageProcess/imageUtil.dart';
 
 class Classifier {
   //singleton
@@ -59,9 +61,17 @@ class Classifier {
     }
   }
 
-  List<double> predict(Image image) {
+  /// Only [Image] or [CameraImage] arguments are allowed.
+  ///
+  /// If other types are passed, an exception will be thrown.
+  List<double> predict(Object image) {
+    if (image is CameraImage) {
+      image = ImageUtils.convertYUV420ToImage(image);
+    }
+    if (image is! Image) {
+      throw Exception("Invalid image type");
+    }
     TensorImage inputImage = TensorImage(_inputType);
-
     inputImage.loadImage(image);
     inputImage = preProcess(inputImage);
 
