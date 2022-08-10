@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:math';
+import 'package:solimage/utils/auth.dart';
 
 class ExpData {
   late final int _dataId;
@@ -23,6 +25,7 @@ class ExpData {
     _word = word;
     _meaning = meaning;
     rootId ??= 0;
+    generatId().then((value) => _dataId = value);
   }
 
   void setData(
@@ -35,6 +38,9 @@ class ExpData {
       String? who,
       String? how,
       String? imageUrl}) {
+    if (Auth().currentUser()!.uid != _userId) {
+      throw Exception('userId is not match');
+    }
     _word = word ?? _word;
     _meaning = meaning ?? _meaning;
     _why = why ?? _why;
@@ -47,8 +53,36 @@ class ExpData {
     return;
   }
 
+  Future<int> generatId() async {
+    final docs =
+        (await FirebaseFirestore.instance.collection('expData').get()).docs;
+    List<String> ids = [];
+    for (final doc in docs) {
+      ids.add(doc.id);
+    }
+    while (true) {
+      const max = 9999999999;
+      const min = 1000000000;
+      final num = Random().nextInt(max - min) + min;
+      final numString = num.toString();
+      bool isExist = false;
+      for (final id in ids) {
+        if (id == numString) {
+          isExist = true;
+          break;
+        }
+      }
+      if (!isExist) {
+        return num;
+      }
+    }
+  }
+
   //Firestoreに保存する
   Future<void> save() async {
+    if (Auth().currentUser()!.uid != _userId) {
+      throw Exception('userId is not match');
+    }
     await FirebaseFirestore.instance
         .collection('expData')
         .doc(_dataId.toString())
