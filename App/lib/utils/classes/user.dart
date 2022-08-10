@@ -19,23 +19,23 @@ class AppUser {
     });
   }
 
-  //ユーザー情報をFirestoreから取得する
-  Future<void> getUser(String uid) async {
-    final doc =
-        await FirebaseFirestore.instance.collection('users').doc(uid).get();
-    if (doc.exists) {
-      uid = doc["uid"];
-      name = doc["name"];
-      groups = doc["groups"];
-      histories = doc["histories"];
-    } else {
-      return;
-    }
-  }
-
   void setData(String uid, String name) {
     this.uid = uid;
     this.name = name;
     return;
+  }
+
+  //ユーザー情報をFirestoreから取得する
+  static Future<AppUser?> getUser(String uid) async {
+    final doc =
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    if (doc.exists) {
+      final appUser = AppUser(uid: doc['uid'], name: doc['name']);
+      appUser.groups = doc['groups'];
+      appUser.histories = doc['histories'];
+      return appUser;
+    } else {
+      return null;
+    }
   }
 }
