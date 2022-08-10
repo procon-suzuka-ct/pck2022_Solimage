@@ -47,22 +47,18 @@ class ImageUtils {
         (r & 0xff);
   }
 
-  static Image? imageResize({CameraImage? rawCameraImage, Image? rawImage, int? width, int? height}) {
+  static Image? imageResize(
+      {CameraImage? rawCameraImage, Image? rawImage, int? width, int? height}) {
     late final Image image;
-    if(rawCameraImage != null){
+    if (rawCameraImage != null) {
       image = convertYUV420ToImage(rawCameraImage);
-    }
-    else if(rawImage != null){
+    } else if (rawImage != null) {
       image = rawImage;
-    }
-    else{
+    } else {
       return null;
     }
-    final resizedImage = copyResize(
-      image, 
-      height: (height != null) ? height : 384, 
-      width: (width != null) ? width : 216
-    );
+    final resizedImage =
+        copyResize(image, height: height ?? 384, width: width ?? 216);
     return resizedImage;
   }
 }
