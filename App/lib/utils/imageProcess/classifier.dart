@@ -1,8 +1,15 @@
-//import 'package:image/image.dart';
+import 'package:image/image.dart';
+import 'dart:async';
+import 'dart:math';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
 
 class Classifier {
+  //singleton
+  static final Classifier _singleton = Classifier._internal();
+  static Classifier get instance => _singleton;
+  Classifier._internal();
+
   late Interpreter _interpreter;
   late InterpreterOptions _interpreterOptions;
 
@@ -24,6 +31,17 @@ class Classifier {
     loadModel();
   }
 
+  TensorImage preProcess(TensorImage inputImage) {
+    int cropSize = min(inputImage.height, inputImage.width);
+    return ImageProcessorBuilder()
+        .add(ResizeWithCropOrPadOp(cropSize, cropSize))
+        .add(ResizeOp(
+            _inputShape[1], _inputShape[2], ResizeMethod.NEAREST_NEIGHBOUR))
+        .add(_preProcessNormalizeOp)
+        .build()
+        .process(inputImage);
+  }
+
   Future<void> loadModel() async {
     try {
       _interpreter =
@@ -37,7 +55,17 @@ class Classifier {
       _outputBuffer = TensorBuffer.createFixedSize(_outputShape, _outputType);
       return;
     } catch (e) {
-      return;
+      throw Exception("Failed to load model");
     }
+  }
+
+  List<double> predict(Image image) {
+    TensorImage inputImage = TensorImage(_inputType);
+
+    inputImage.loadImage(image);
+    inputImage = preProcess(inputImage);
+
+    _interpreter.run(inputImage.buffer, _outputBuffer.getBuffer());
+    return _outputBuffer.getDoubleList();
   }
 }
