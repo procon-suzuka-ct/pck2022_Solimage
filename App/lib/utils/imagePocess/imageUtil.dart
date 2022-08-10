@@ -1,17 +1,17 @@
-import 'package:image/image.dart' as image_lib;
+import 'package:image/image.dart';
 import 'package:camera/camera.dart';
 
 class ImageUtils {
   /// Converts a [CameraImage] in YUV420 format to
-  /// [image_lib.Image] in RGB format
-  static image_lib.Image convertYUV420ToImage(CameraImage cameraImage) {
+  /// [Image] in RGB format
+  static Image convertYUV420ToImage(CameraImage cameraImage) {
     final width = cameraImage.width;
     final height = cameraImage.height;
 
     final uvRowStride = cameraImage.planes[1].bytesPerRow;
     final uvPixelStride = cameraImage.planes[1].bytesPerPixel;
 
-    final image = image_lib.Image(width, height);
+    final image = Image(width, height);
 
     for (var w = 0; w < width; w++) {
       for (var h = 0; h < height; h++) {
@@ -45,5 +45,24 @@ class ImageUtils {
         ((b << 16) & 0xff0000) |
         ((g << 8) & 0xff00) |
         (r & 0xff);
+  }
+
+  static Image? imageResize({CameraImage? rawCameraImage, Image? rawImage, int? width, int? height}) {
+    late final Image image;
+    if(rawCameraImage != null){
+      image = convertYUV420ToImage(rawCameraImage);
+    }
+    else if(rawImage != null){
+      image = rawImage;
+    }
+    else{
+      return null;
+    }
+    final resizedImage = copyResize(
+      image, 
+      height: (height != null) ? height : 384, 
+      width: (width != null) ? width : 216
+    );
+    return resizedImage;
   }
 }
