@@ -1,52 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:camera/camera.dart';
-import 'package:solimage/routes/login.dart';
-import 'package:solimage/routes/camera.dart';
-import 'package:solimage/utils/auth.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:solimage/router.dart';
 
-class SolimageApp extends StatelessWidget {
-	SolimageApp({Key? key}) : super(key: key);
-
-  Future<CameraDescription> initializeCamera() async {
-    return (await availableCameras()).first;
-  }
-
-	final auth = Auth();
-
-	late final router = GoRouter(
-    initialLocation: '/login',
-    routes: [
-			GoRoute(
-				path: '/login',
-				name: 'login',
-				builder: (context, state) => LoginScreen(auth: auth),
-			),
-      GoRoute(
-        path: '/camera',
-        name: 'camera',
-        builder: (context, state) => FutureBuilder(
-					future: initializeCamera(),
-					builder: (context, AsyncSnapshot<CameraDescription> snapshot) {
-						if (snapshot.connectionState == ConnectionState.done) {
-							return CameraScreen(camera: snapshot.data as CameraDescription);
-						} else {
-							return const Center(child: CircularProgressIndicator());
-						}
-					}
-        ),
-      )
-    ]
-	);
+class SolimageApp extends ConsumerWidget {
+	const SolimageApp({Key? key}) : super(key: key);
 
 	@override
-	Widget build(BuildContext context) => MaterialApp.router(
-		title: 'Solimage',
-		theme: ThemeData(
-			primarySwatch: Colors.blue,
-		),
-		routerDelegate: router.routerDelegate,
-		routeInformationParser: router.routeInformationParser,
-		routeInformationProvider: router.routeInformationProvider,
-	);
+	Widget build(BuildContext context, WidgetRef ref) {
+		final router = ref.watch(routerProvider);
+
+		return MaterialApp.router(
+			title: 'Solimage',
+			theme: ThemeData(
+				fontFamily: 'Noto Sans JP',
+				primarySwatch: Colors.blueGrey,
+				textTheme: Theme.of(context).textTheme.apply(
+					fontFamily: 'Noto Sans JP',
+					decoration: TextDecoration.none
+				)
+			),
+			routerDelegate: router.routerDelegate,
+			routeInformationParser: router.routeInformationParser,
+			routeInformationProvider: router.routeInformationProvider,
+		);
+	}
 }
