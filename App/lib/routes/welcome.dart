@@ -1,49 +1,44 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:solimage/utils/auth.dart';
+import 'package:solimage/states/auth.dart';
 
-class WelcomeScreen extends StatelessWidget {
-  const WelcomeScreen({Key? key, required this.auth}) : super(key: key);
-
-  final Auth auth;
+class WelcomeScreen extends ConsumerWidget {
+  const WelcomeScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final auth = ref.watch(authProvider);
+
     return Scaffold(
-      body: Center(
-        child: Wrap(
-          alignment: WrapAlignment.center,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          direction: Axis.vertical,
-          spacing: 20,
-          children: <Widget>[
-            Text(
-              "Solimageへ\nようこそ!",
+        body: Center(
+            child: Wrap(
+                alignment: WrapAlignment.center,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                direction: Axis.vertical,
+                spacing: 20,
+                children: <Widget>[
+          Text("Solimageへ\nようこそ!",
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontSize: 40,
-                fontWeight: FontWeight.bold
-              )
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                await auth.signIn();
-                if (auth.currentUser() != null) {
-                  showDialog<void>(
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontSize: 40, fontWeight: FontWeight.bold)),
+          ElevatedButton(
+            onPressed: () async {
+              final User? user = await auth.signIn();
+              if (user != null) {
+                showDialog<void>(
                     context: context,
                     builder: (_) {
-                      return UserDialog(user: auth.currentUser() as User);
-                    }
-                  );
-                }
-              },
-              child: const Text('ログイン'),
-            )
-          ]
-        )
-      )
-    );
+                      return UserDialog(user: user);
+                    });
+              }
+            },
+            child: const Text('ログイン'),
+          )
+        ])));
   }
 }
 
