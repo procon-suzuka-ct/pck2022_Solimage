@@ -1,47 +1,69 @@
-import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:solimage/routes/image.dart';
 
-class CameraScreen extends StatefulWidget {
-  const CameraScreen({Key? key, required this.camera}) : super(key: key);
+Future<CameraController> _initializeController() async {
+  final controller = CameraController((await availableCameras()).first, ResolutionPreset.max);
+  await controller.initialize();
 
-  final CameraDescription camera;
-
-  @override
-  State<CameraScreen> createState() => _CameraScreenState();
+  return controller;
 }
 
-class _CameraScreenState extends State<CameraScreen> {
-  late CameraController controller;
-  late Future<void> initializeControllerFuture;
+final _controllerProvider = FutureProvider((ref) => _initializeController());
+
+class CameraScreen extends ConsumerWidget {
+  const CameraScreen({Key? key}) : super(key: key);
 
   @override
-  void initState() {
-    super.initState();
-    controller = CameraController(
-      widget.camera,
-      ResolutionPreset.max,
-    );
+  Widget build(BuildContext context, WidgetRef ref) {
+    AsyncValue<CameraController> camera = ref.watch(_controllerProvider);
 
-    initializeControllerFuture = controller.initialize();
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<void>(
-      future: initializeControllerFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return CameraPreview(controller);
-        } else {
-          return const Center(child: CircularProgressIndicator());
-        }
-      }
+    return camera.when(
+      data: (controller) {
+        final height = MediaQuery.of(context).size.height;
+        final width = height / controller.value.aspectRatio;
+        return Scaffold(
+          body: Stack(
+            fit: StackFit.expand,
+            children: <Widget>[
+              AspectRatio(
+                aspectRatio: 9.0 / 16.0,
+                child: FittedBox(
+                    alignment: Alignment.center,
+                    fit: BoxFit.fitWidth,
+                    child: SizedBox(
+                        width: width,
+                        height: height,
+                        child: CameraPreview(controller)
+                    )
+                )
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  margin: const EdgeInsets.all(10),
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      final image = await controller.takePicture();
+                      ref.read(imageProvider.state).update((state) => image.path);
+                      context.push('/image');
+                    },
+                    icon: const Icon(Icons.camera),
+                    label: const Text('さつえい', style: TextStyle(fontSize: 30.0)),
+                    style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.all(10.0)
+                    )
+                  )
+                )
+              )
+            ]
+          )
+        );
+      },
+      error: (error, _) => Text('Error: $error'),
+      loading: () => const Center(child: CircularProgressIndicator()),
     );
   }
 }
