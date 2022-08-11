@@ -18,9 +18,10 @@ class ImageScreen extends ConsumerWidget {
         ),
       );
     } else {
-      return const Center(
+      return const Scaffold(
+          body: Center(
         child: CircularProgressIndicator(),
-      );
+      ));
     }
   }
 }
