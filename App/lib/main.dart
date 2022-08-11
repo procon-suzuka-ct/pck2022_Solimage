@@ -9,5 +9,5 @@ Future<void> main() async {
   await firebaseInit();
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
 
-  runApp(ProviderScope(child: SolimageApp()));
+  runApp(const ProviderScope(child: SolimageApp()));
 }
