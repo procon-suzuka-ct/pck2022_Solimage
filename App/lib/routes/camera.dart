@@ -20,7 +20,8 @@ class CameraScreen extends ConsumerWidget {
             final height = MediaQuery.of(context).size.height;
             final width = height / controller.value.aspectRatio;
             return Scaffold(
-                body: Stack(fit: StackFit.expand, children: <Widget>[
+                body: SafeArea(
+                    child: Stack(fit: StackFit.expand, children: <Widget>[
               AspectRatio(
                   aspectRatio: 9.0 / 16.0,
                   child: FittedBox(
@@ -30,6 +31,33 @@ class CameraScreen extends ConsumerWidget {
                           width: width,
                           height: height,
                           child: CameraPreview(controller)))),
+              FittedBox(
+                  alignment: Alignment.topCenter,
+                  fit: BoxFit.fitWidth,
+                  child: Container(
+                      margin: const EdgeInsets.all(10.0),
+                      child: Wrap(
+                        alignment: WrapAlignment.spaceBetween,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        direction: Axis.horizontal,
+                        spacing: 10,
+                        children: <Widget>[
+                          ElevatedButton(
+                              onPressed: () {
+                                context.push('/parent');
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.all(10.0)),
+                              child: const Text('大人用ホーム',
+                                  style: TextStyle(fontSize: 20.0))),
+                          ElevatedButton(
+                              onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.all(10.0)),
+                              child: const Text('りれき',
+                                  style: TextStyle(fontSize: 20.0)))
+                        ],
+                      ))),
               Align(
                   alignment: Alignment.bottomCenter,
                   child: Container(
@@ -47,7 +75,7 @@ class CameraScreen extends ConsumerWidget {
                               style: TextStyle(fontSize: 30.0)),
                           style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.all(10.0)))))
-            ]));
+            ])));
           },
           error: (error, _) => Text('Error: $error'),
           loading: () =>
