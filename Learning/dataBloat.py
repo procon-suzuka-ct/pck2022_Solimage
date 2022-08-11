@@ -21,6 +21,26 @@ def flip(images : list):
     flipped.append((image))
   return flipped
 
+def change_Value(images : list):
+  changed_images = []
+  for i in range(0, 3):
+    for image in images:
+      img_hsv = cv2.cvtColor(image,cv2.COLOR_BGR2HSV)
+      img_hsv[:,:,2] = img_hsv[:,:,2] * (1/(i + 1))
+      img = cv2.cvtColor(img_hsv,cv2.COLOR_HSV2BGR)
+      changed_images.append(img)
+  return changed_images
+
+def change_Saturatio(images : list):
+  changed_images = []
+  for i in range(0, 3):
+    for image in images:
+      img_hsv = cv2.cvtColor(image,cv2.COLOR_BGR2HSV)
+      img_hsv[:,:,1] = img_hsv[:,:,1] * (1/(i + 1))
+      img = cv2.cvtColor(img_hsv,cv2.COLOR_HSV2BGR)
+      changed_images.append(img)
+  return changed_images
+
 def main():
   with open(filename, 'r') as f:
     reader = csv.reader(f)
@@ -38,6 +58,8 @@ def main():
         image = cv2.imread(path)
         images = rotate(image)
         images = flip(images)
+        images = change_Value(images)
+        images = change_Saturatio(images)
         for i in range(0, len(images)):
           cv2.imwrite(writePath + str(i) + ".png", images[i])
   return
