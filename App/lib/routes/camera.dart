@@ -64,11 +64,11 @@ class CameraScreen extends ConsumerWidget {
                       margin: const EdgeInsets.all(10),
                       child: ElevatedButton.icon(
                           onPressed: () async {
+                            final imagePath = ref.read(imagePathProvider.state);
+                            imagePath.update((value) => null);
                             context.push('/image');
                             final image = await controller.takePicture();
-                            ref
-                                .read(imageProvider.state)
-                                .update((state) => image.path);
+                            imagePath.update((state) => image.path);
                           },
                           icon: const Icon(Icons.camera),
                           label: const Text('さつえい',

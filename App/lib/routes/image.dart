@@ -9,7 +9,7 @@ class ImageScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final image = ref.watch(imageProvider);
+    final image = ref.watch(imagePathProvider);
 
     if (image != null) {
       return Scaffold(

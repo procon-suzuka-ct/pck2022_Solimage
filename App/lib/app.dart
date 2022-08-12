@@ -12,10 +12,10 @@ class SolimageApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'Solimage',
       theme: ThemeData(
-          fontFamily: 'Noto Sans JP',
           primarySwatch: Colors.blueGrey,
-          textTheme: Theme.of(context).textTheme.apply(
-              fontFamily: 'Noto Sans JP', decoration: TextDecoration.none)),
+          textTheme: Theme.of(context)
+              .textTheme
+              .apply(decoration: TextDecoration.none)),
       routerDelegate: router.routerDelegate,
       routeInformationParser: router.routeInformationParser,
       routeInformationProvider: router.routeInformationProvider,
