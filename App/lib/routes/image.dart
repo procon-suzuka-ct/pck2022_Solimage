@@ -13,14 +13,14 @@ class ImageScreen extends ConsumerWidget {
 
     if (image != null) {
       return Scaffold(
-        body: Center(
-          child: Image.file(File(image)),
+        body: SafeArea(
+          child: Center(child: Image.file(File(image))),
         ),
       );
     } else {
       return const Scaffold(
-          body: Center(
-        child: CircularProgressIndicator(),
+          body: SafeArea(
+        child: Center(child: CircularProgressIndicator()),
       ));
     }
   }

@@ -21,47 +21,59 @@ class CameraScreen extends ConsumerWidget {
             final width = height / controller.value.aspectRatio;
             return Scaffold(
                 body: SafeArea(
-                    child: Stack(fit: StackFit.expand, children: <Widget>[
-              AspectRatio(
-                  aspectRatio: 9.0 / 16.0,
-                  child: FittedBox(
-                      alignment: Alignment.center,
-                      fit: BoxFit.fitWidth,
-                      child: SizedBox(
-                          width: width,
-                          height: height,
-                          child: CameraPreview(controller)))),
-              FittedBox(
+                    child: Stack(children: <Widget>[
+              Align(
+                  alignment: Alignment.center,
+                  child: AspectRatio(
+                      aspectRatio: 9.0 / 16.0,
+                      child: FittedBox(
+                          alignment: Alignment.center,
+                          fit: BoxFit.fitWidth,
+                          child: SizedBox(
+                              width: width,
+                              height: height,
+                              child: CameraPreview(controller))))),
+              Align(
                   alignment: Alignment.topCenter,
-                  fit: BoxFit.fitWidth,
                   child: Container(
-                      margin: const EdgeInsets.all(10.0),
-                      child: Wrap(
-                        alignment: WrapAlignment.spaceBetween,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        direction: Axis.horizontal,
-                        spacing: 10,
+                      height: 80.0,
+                      margin: const EdgeInsets.all(20.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: <Widget>[
-                          ElevatedButton(
-                              onPressed: () {
-                                context.push('/parent');
-                              },
-                              style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.all(10.0)),
-                              child: const Text('大人用ホーム',
-                                  style: TextStyle(fontSize: 20.0))),
-                          ElevatedButton(
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.all(10.0)),
-                              child: const Text('りれき',
-                                  style: TextStyle(fontSize: 20.0)))
+                          Expanded(
+                              child: ElevatedButton.icon(
+                                  icon: const Icon(Icons.apps, size: 30.0),
+                                  onPressed: () {
+                                    context.go('/parent');
+                                  },
+                                  label: const FittedBox(
+                                    child: Text('大人用\nメニュー',
+                                        style: TextStyle(fontSize: 30.0)),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                      fixedSize: const Size.fromHeight(100.0),
+                                      padding: const EdgeInsets.all(10.0)))),
+                          const SizedBox(width: 20.0),
+                          Expanded(
+                              child: ElevatedButton.icon(
+                                  icon: const Icon(Icons.star, size: 30.0),
+                                  onPressed: () {},
+                                  label: const FittedBox(
+                                    child: Text('おきにいり',
+                                        style: TextStyle(fontSize: 30.0)),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                      fixedSize: const Size.fromHeight(100.0),
+                                      padding: const EdgeInsets.all(10.0)))),
                         ],
                       ))),
               Align(
                   alignment: Alignment.bottomCenter,
                   child: Container(
-                      margin: const EdgeInsets.all(10),
+                      height: 80.0,
+                      margin: const EdgeInsets.all(20.0),
                       child: ElevatedButton.icon(
                           onPressed: () async {
                             final imagePath = ref.read(imagePathProvider.state);
@@ -70,11 +82,12 @@ class CameraScreen extends ConsumerWidget {
                             final image = await controller.takePicture();
                             imagePath.update((state) => image.path);
                           },
-                          icon: const Icon(Icons.camera),
+                          icon: const Icon(Icons.camera, size: 30.0),
                           label: const Text('さつえい',
                               style: TextStyle(fontSize: 30.0)),
                           style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.all(10.0)))))
+                              fixedSize: const Size.fromHeight(100.0),
+                              padding: const EdgeInsets.all(20.0)))))
             ])));
           },
           error: (error, _) => Text('Error: $error'),
