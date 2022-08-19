@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:solimage/routes/child/camera.dart';
 import 'package:solimage/routes/child/favorite.dart';
 import 'package:solimage/routes/child/result.dart';
+import 'package:solimage/routes/child/standby.dart';
 import 'package:solimage/routes/parent/parent.dart';
 import 'package:solimage/routes/parent/post.dart';
 import 'package:solimage/routes/welcome.dart';
@@ -17,6 +18,7 @@ final List<Map<String, dynamic>> routes = [
     'name': 'favorite',
     'child': const FavoriteScreen()
   },
+  {'path': '/child/standby', 'name': 'standby', 'child': const StandbyScreen()},
   {'path': '/child/result', 'name': 'result', 'child': const ResultScreen()},
   {'path': '/parent', 'name': 'parent', 'child': const ParentScreen()},
   {'path': '/parent/post', 'name': 'post', 'child': const PostScreen()}
