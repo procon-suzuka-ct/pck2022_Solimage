@@ -44,9 +44,7 @@ class CameraScreen extends ConsumerWidget {
                           Expanded(
                               child: ElevatedButton.icon(
                                   icon: const Icon(Icons.apps, size: 30.0),
-                                  onPressed: () {
-                                    context.go('/parent');
-                                  },
+                                  onPressed: () => context.go('/parent'),
                                   label: const FittedBox(
                                     child: Text('大人用メニュー',
                                         maxLines: 2,
@@ -60,7 +58,8 @@ class CameraScreen extends ConsumerWidget {
                           Expanded(
                               child: ElevatedButton.icon(
                                   icon: const Icon(Icons.star, size: 30.0),
-                                  onPressed: () {},
+                                  onPressed: () =>
+                                      context.push('/child/favorite'),
                                   label: const FittedBox(
                                     child: Text('おきにいり',
                                         style: TextStyle(fontSize: 30.0)),
