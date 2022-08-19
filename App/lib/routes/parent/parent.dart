@@ -25,10 +25,18 @@ class ParentScreen extends ConsumerWidget {
         ]
       },
       {
-        'selectedIcon': const Icon(Icons.groups),
-        'icon': const Icon(Icons.groups_outlined),
-        'label': 'グループ',
+        'selectedIcon': const Icon(Icons.settings),
+        'icon': const Icon(Icons.settings_outlined),
+        'label': '設定',
         'children': [
+          const ListTile(
+              title: Text('ユーザー情報',
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold))),
+          const Card(
+              child: ListTile(title: Text('名前'), trailing: Icon(Icons.edit))),
+          const ListTile(
+              title: Text('グループ',
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold))),
           const Card(
               child:
                   ListTile(title: Text('グループA'), trailing: Icon(Icons.info))),
@@ -37,15 +45,6 @@ class ParentScreen extends ConsumerWidget {
                   ListTile(title: Text('グループB'), trailing: Icon(Icons.info))),
           const Card(
               child: ListTile(title: Text('グループC'), trailing: Icon(Icons.info)))
-        ]
-      },
-      {
-        'selectedIcon': const Icon(Icons.person),
-        'icon': const Icon(Icons.person_outline),
-        'label': 'ユーザー情報',
-        'children': [
-          const Card(
-              child: ListTile(title: Text('名前'), trailing: Icon(Icons.edit))),
         ]
       }
     ];
