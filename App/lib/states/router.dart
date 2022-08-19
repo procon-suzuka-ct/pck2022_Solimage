@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:solimage/routes/camera.dart';
-import 'package:solimage/routes/favorite.dart';
-import 'package:solimage/routes/image.dart';
-import 'package:solimage/routes/parent.dart';
-import 'package:solimage/routes/post.dart';
+import 'package:solimage/routes/child/camera.dart';
+import 'package:solimage/routes/child/favorite.dart';
+import 'package:solimage/routes/child/image.dart';
+import 'package:solimage/routes/parent/parent.dart';
+import 'package:solimage/routes/parent/post.dart';
 import 'package:solimage/routes/welcome.dart';
 import 'package:solimage/states/auth.dart';
 
