@@ -20,8 +20,7 @@ class CameraScreen extends ConsumerWidget {
             final height = MediaQuery.of(context).size.height;
             final width = height / controller.value.aspectRatio;
             return Scaffold(
-                body: SafeArea(
-                    child: Stack(children: <Widget>[
+                body: Stack(children: <Widget>[
               Align(
                   alignment: Alignment.center,
                   child: AspectRatio(
@@ -45,9 +44,7 @@ class CameraScreen extends ConsumerWidget {
                           Expanded(
                               child: ElevatedButton.icon(
                                   icon: const Icon(Icons.apps, size: 30.0),
-                                  onPressed: () {
-                                    context.go('/parent');
-                                  },
+                                  onPressed: () => context.go('/parent'),
                                   label: const FittedBox(
                                     child: Text('大人用メニュー',
                                         maxLines: 2,
@@ -61,7 +58,8 @@ class CameraScreen extends ConsumerWidget {
                           Expanded(
                               child: ElevatedButton.icon(
                                   icon: const Icon(Icons.star, size: 30.0),
-                                  onPressed: () {},
+                                  onPressed: () =>
+                                      context.push('/child/favorite'),
                                   label: const FittedBox(
                                     child: Text('おきにいり',
                                         style: TextStyle(fontSize: 30.0)),
@@ -80,7 +78,7 @@ class CameraScreen extends ConsumerWidget {
                           onPressed: () async {
                             final imagePath = ref.read(imagePathProvider.state);
                             imagePath.update((value) => null);
-                            context.push('/image');
+                            context.push('/child/image');
                             final image = await controller.takePicture();
                             imagePath.update((state) => image.path);
                           },
@@ -90,7 +88,7 @@ class CameraScreen extends ConsumerWidget {
                           style: ElevatedButton.styleFrom(
                               fixedSize: const Size.fromHeight(100.0),
                               padding: const EdgeInsets.all(20.0)))))
-            ])));
+            ]));
           },
           error: (error, _) => Text('Error: $error'),
           loading: () =>

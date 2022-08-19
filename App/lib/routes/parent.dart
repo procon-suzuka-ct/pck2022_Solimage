@@ -3,28 +3,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solimage/states/parent.dart';
 
-class ParentScreenTab {
-  final Icon selectedIcon;
-  final Icon icon;
-  final String label;
-
-  ParentScreenTab(
-      {required this.selectedIcon, required this.icon, required this.label});
-}
-
-final List<ParentScreenTab> parentScreenTabs = [
-  ParentScreenTab(
-      selectedIcon: const Icon(Icons.history),
-      icon: const Icon(Icons.history_outlined),
-      label: '投稿履歴'),
-  ParentScreenTab(
-      selectedIcon: const Icon(Icons.groups),
-      icon: const Icon(Icons.groups_outlined),
-      label: 'グループ'),
-  ParentScreenTab(
-      selectedIcon: const Icon(Icons.person),
-      icon: const Icon(Icons.person_outline),
-      label: 'ユーザー情報')
+final List<Map<String, dynamic>> parentScreenTabs = [
+  {
+    'selectedIcon': const Icon(Icons.history),
+    'icon': const Icon(Icons.history_outlined),
+    'label': '投稿履歴'
+  },
+  {
+    'selectedIcon': const Icon(Icons.groups),
+    'icon': const Icon(Icons.groups_outlined),
+    'label': 'グループ'
+  },
+  {
+    'selectedIcon': const Icon(Icons.person),
+    'icon': const Icon(Icons.person_outline),
+    'label': 'ユーザー情報'
+  }
 ];
 
 class ParentScreen extends ConsumerWidget {
@@ -37,15 +31,15 @@ class ParentScreen extends ConsumerWidget {
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Text(parentScreenTabs[tabIndex].label),
+          title: Text(parentScreenTabs[tabIndex]['label']),
         ),
-        body: Center(child: Text(parentScreenTabs[tabIndex].label)),
+        body: Center(child: Text(parentScreenTabs[tabIndex]['label'])),
         bottomNavigationBar: NavigationBar(
             destinations: parentScreenTabs
                 .map((element) => NavigationDestination(
-                      selectedIcon: element.selectedIcon,
-                      icon: element.icon,
-                      label: element.label,
+                      selectedIcon: element['selectedIcon'],
+                      icon: element['icon'],
+                      label: element['label'],
                     ))
                 .toList(),
             selectedIndex: tabIndex,
@@ -55,12 +49,12 @@ class ParentScreen extends ConsumerWidget {
         floatingActionButton: tabIndex == 0
             ? Wrap(spacing: 10.0, children: [
                 FloatingActionButton.extended(
-                    onPressed: () => context.go('/camera'),
+                    onPressed: () => context.go('/child/camera'),
                     icon: const Icon(Icons.camera),
                     label: const Text('カメラ'),
                     heroTag: 'camera'),
                 FloatingActionButton.extended(
-                    onPressed: () => context.push('/post'),
+                    onPressed: () => context.push('/parent/post'),
                     icon: const Icon(Icons.add),
                     label: const Text('投稿'),
                     heroTag: 'post')

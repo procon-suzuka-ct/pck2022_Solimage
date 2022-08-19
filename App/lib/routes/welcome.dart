@@ -48,18 +48,14 @@ class UserDialog extends StatelessWidget {
   final User user;
 
   @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('サインインしました'),
-      content: Text('ユーザー名: ${user.displayName}'),
-      actions: <Widget>[
-        TextButton(
-          child: const Text('OK'),
-          onPressed: () {
-            context.replace('/camera');
-          },
-        ),
-      ],
-    );
-  }
+  Widget build(BuildContext context) => AlertDialog(
+        title: const Text('サインインしました'),
+        content: Text('ユーザー名: ${user.displayName}'),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('OK'),
+            onPressed: () => context.go('/child/camera'),
+          ),
+        ],
+      );
 }
