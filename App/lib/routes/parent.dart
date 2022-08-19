@@ -22,26 +22,50 @@ class ParentScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final int currentIndex = ParentScreens.values.byName(screen!).index;
+    final currentIndex = ParentScreens.values.byName(screen!).index;
+    final currentName = ParentScreens.values.elementAt(currentIndex).name;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(parentScreenTabs[currentIndex].label),
-      ),
-      body: Text(parentScreenTabs[currentIndex].label),
-      bottomNavigationBar: BottomNavigationBar(
-          items: parentScreenTabs
-              .map((element) => BottomNavigationBarItem(
-                    icon: element.icon,
-                    label: element.label,
-                  ))
-              .toList(),
-          currentIndex: currentIndex,
-          onTap: (index) {
-            ref
-                .read(routerProvider)
-                .go('/parent/${ParentScreens.values[index].name}');
-          }),
-    );
+        appBar: AppBar(
+          title: Text(parentScreenTabs[currentIndex].label),
+        ),
+        body: Center(child: Text(parentScreenTabs[currentIndex].label)),
+        bottomNavigationBar: BottomNavigationBar(
+            items: parentScreenTabs
+                .map((element) => BottomNavigationBarItem(
+                      icon: element.icon,
+                      label: element.label,
+                    ))
+                .toList(),
+            currentIndex: currentIndex,
+            onTap: (index) {
+              ref
+                  .read(routerProvider)
+                  .go('/parent/${ParentScreens.values[index].name}');
+            }),
+        floatingActionButton: currentName == 'history'
+            ? Wrap(spacing: 10.0, children: [
+                FloatingActionButton.extended(
+                    onPressed: () {
+                      ref.read(routerProvider).go('/camera');
+                    },
+                    icon: const Icon(Icons.camera),
+                    label: const Text('カメラ'),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    heroTag: 'camera'),
+                FloatingActionButton.extended(
+                    onPressed: () {
+                      ref.read(routerProvider).push('/parent/post');
+                    },
+                    icon: const Icon(Icons.add),
+                    label: const Text('投稿'),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    heroTag: 'post')
+              ])
+            : null);
   }
 }
