@@ -51,9 +51,6 @@ class ParentScreen extends ConsumerWidget {
                     },
                     icon: const Icon(Icons.camera),
                     label: const Text('カメラ'),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
                     heroTag: 'camera'),
                 FloatingActionButton.extended(
                     onPressed: () {
@@ -61,9 +58,6 @@ class ParentScreen extends ConsumerWidget {
                     },
                     icon: const Icon(Icons.add),
                     label: const Text('投稿'),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
                     heroTag: 'post')
               ])
             : null);
