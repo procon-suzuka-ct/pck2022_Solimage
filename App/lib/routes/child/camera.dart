@@ -35,59 +35,59 @@ class CameraScreen extends ConsumerWidget {
               Align(
                   alignment: Alignment.topCenter,
                   child: Container(
-                      height: 80.0,
+                      height: 100.0,
                       margin: const EdgeInsets.all(20.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: <Widget>[
-                          Expanded(
-                              child: ElevatedButton.icon(
-                                  icon: const Icon(Icons.apps, size: 30.0),
-                                  onPressed: () => context.go('/parent'),
-                                  label: const FittedBox(
-                                    child: Text('大人用メニュー',
-                                        maxLines: 2,
-                                        softWrap: true,
-                                        style: TextStyle(fontSize: 30.0)),
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                      fixedSize: const Size.fromHeight(100.0),
-                                      padding: const EdgeInsets.all(10.0)))),
-                          const SizedBox(width: 20.0),
-                          Expanded(
-                              child: ElevatedButton.icon(
-                                  icon: const Icon(Icons.star, size: 30.0),
-                                  onPressed: () =>
-                                      context.push('/child/favorite'),
-                                  label: const FittedBox(
-                                    child: Text('おきにいり',
-                                        style: TextStyle(fontSize: 30.0)),
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                      fixedSize: const Size.fromHeight(100.0),
-                                      padding: const EdgeInsets.all(10.0)))),
-                        ],
-                      ))),
+                      child: ElevatedButton.icon(
+                          icon: const Icon(Icons.apps, size: 30.0),
+                          onPressed: () => context.go('/parent'),
+                          label: const FittedBox(
+                            child: Text('大人用メニューに\n切り替える',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 30.0)),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                              fixedSize: const Size.fromHeight(100.0),
+                              padding: const EdgeInsets.all(20.0))))),
               Align(
                   alignment: Alignment.bottomCenter,
                   child: Container(
-                      height: 80.0,
+                      height: 100.0,
                       margin: const EdgeInsets.all(20.0),
-                      child: ElevatedButton.icon(
-                          onPressed: () async {
-                            final imagePath = ref.read(imagePathProvider.state);
-                            imagePath.update((value) => null);
-                            context.push('/child/image');
-                            final image = await controller.takePicture();
-                            imagePath.update((state) => image.path);
-                          },
-                          icon: const Icon(Icons.camera, size: 30.0),
-                          label: const Text('さつえい',
-                              style: TextStyle(fontSize: 30.0)),
-                          style: ElevatedButton.styleFrom(
-                              fixedSize: const Size.fromHeight(100.0),
-                              padding: const EdgeInsets.all(20.0)))))
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: <Widget>[
+                            Expanded(
+                                child: ElevatedButton.icon(
+                                    onPressed: () async {
+                                      final imagePath =
+                                          ref.read(imagePathProvider.state);
+                                      imagePath.update((value) => null);
+                                      context.push('/child/image');
+                                      final image =
+                                          await controller.takePicture();
+                                      imagePath.update((state) => image.path);
+                                    },
+                                    icon: const Icon(Icons.camera, size: 30.0),
+                                    label: const Text('さつえい',
+                                        style: TextStyle(fontSize: 30.0)),
+                                    style: ElevatedButton.styleFrom(
+                                        fixedSize: const Size.fromHeight(100.0),
+                                        padding: const EdgeInsets.all(20.0)))),
+                            const SizedBox(width: 20.0),
+                            Expanded(
+                                child: ElevatedButton.icon(
+                                    icon: const Icon(Icons.star, size: 30.0),
+                                    onPressed: () =>
+                                        context.push('/child/favorite'),
+                                    label: const FittedBox(
+                                      child: Text('おきにいり',
+                                          style: TextStyle(fontSize: 30.0)),
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                        fixedSize: const Size.fromHeight(100.0),
+                                        padding: const EdgeInsets.all(20.0)))),
+                          ])))
             ]));
           },
           error: (error, _) => Text('Error: $error'),
