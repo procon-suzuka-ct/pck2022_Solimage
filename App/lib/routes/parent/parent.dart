@@ -3,24 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solimage/states/parent.dart';
 
-final List<Map<String, dynamic>> parentScreenTabs = [
-  {
-    'selectedIcon': const Icon(Icons.history),
-    'icon': const Icon(Icons.history_outlined),
-    'label': '投稿履歴'
-  },
-  {
-    'selectedIcon': const Icon(Icons.groups),
-    'icon': const Icon(Icons.groups_outlined),
-    'label': 'グループ'
-  },
-  {
-    'selectedIcon': const Icon(Icons.person),
-    'icon': const Icon(Icons.person_outline),
-    'label': 'ユーザー情報'
-  }
-];
-
 class ParentScreen extends ConsumerWidget {
   const ParentScreen({Key? key}) : super(key: key);
 
@@ -28,12 +10,54 @@ class ParentScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final tabIndex = ref.watch(tabIndexProvider);
 
+    final List<Map<String, dynamic>> parentScreenTabs = [
+      {
+        'selectedIcon': const Icon(Icons.history),
+        'icon': const Icon(Icons.history_outlined),
+        'label': '投稿履歴',
+        'children': [
+          Card(
+              child: ListTile(
+                  title: const Text('投稿したワード'),
+                  trailing: IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: () => context.push('/parent/post'))))
+        ]
+      },
+      {
+        'selectedIcon': const Icon(Icons.groups),
+        'icon': const Icon(Icons.groups_outlined),
+        'label': 'グループ',
+        'children': [
+          const Card(
+              child:
+                  ListTile(title: Text('グループA'), trailing: Icon(Icons.info))),
+          const Card(
+              child:
+                  ListTile(title: Text('グループB'), trailing: Icon(Icons.info))),
+          const Card(
+              child: ListTile(title: Text('グループC'), trailing: Icon(Icons.info)))
+        ]
+      },
+      {
+        'selectedIcon': const Icon(Icons.person),
+        'icon': const Icon(Icons.person_outline),
+        'label': 'ユーザー情報',
+        'children': [
+          const Card(
+              child: ListTile(title: Text('名前'), trailing: Icon(Icons.edit))),
+        ]
+      }
+    ];
+
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
           title: Text(parentScreenTabs[tabIndex]['label']),
         ),
-        body: Center(child: Text(parentScreenTabs[tabIndex]['label'])),
+        body: Container(
+            margin: const EdgeInsets.all(10.0),
+            child: ListView(children: parentScreenTabs[tabIndex]['children'])),
         bottomNavigationBar: NavigationBar(
             destinations: parentScreenTabs
                 .map((element) => NavigationDestination(
