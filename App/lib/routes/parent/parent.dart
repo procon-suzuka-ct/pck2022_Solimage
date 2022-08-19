@@ -73,7 +73,7 @@ class ParentScreen extends ConsumerWidget {
             ? Wrap(spacing: 10.0, children: [
                 FloatingActionButton.extended(
                     onPressed: () => context.go('/child/camera'),
-                    icon: const Icon(Icons.camera),
+                    icon: const Icon(Icons.photo_camera),
                     label: const Text('カメラ'),
                     heroTag: 'camera'),
                 FloatingActionButton.extended(

@@ -41,7 +41,7 @@ class CameraScreen extends ConsumerWidget {
                           icon: const Icon(Icons.apps, size: 30.0),
                           onPressed: () => context.go('/parent'),
                           label: const FittedBox(
-                            child: Text('大人用メニューに\n切り替える',
+                            child: Text('大人用メニューに\n切り替え',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(fontSize: 30.0)),
                           ),
