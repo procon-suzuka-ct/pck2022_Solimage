@@ -24,17 +24,15 @@ final List<Map<String, dynamic>> routes = [
 
 final routerProvider = Provider((ref) => GoRouter(
     initialLocation: '/child/camera',
-    routes: routes.map((route) {
-      return GoRoute(
-        path: route['path'],
-        name: route['name'],
-        builder: (context, state) => SafeArea(child: route['child']),
-      );
-    }).toList(),
+    routes: routes
+        .map((route) => GoRoute(
+              path: route['path'],
+              name: route['name'],
+              builder: (context, state) => SafeArea(child: route['child']),
+            ))
+        .toList(),
     redirect: (state) {
-      final isLoggedIn = ref.watch(authProvider).currentUser() != null;
-
-      if (!isLoggedIn) {
+      if (!(ref.watch(authProvider).currentUser() != null)) {
         return state.subloc == '/' ? null : '/';
       }
 
