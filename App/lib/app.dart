@@ -11,19 +11,11 @@ class SolimageApp extends ConsumerWidget {
 
     return MaterialApp.router(
       title: 'Solimage',
-      theme: ThemeData(
-          useMaterial3: true,
-          colorSchemeSeed: Colors.blue,
-          textTheme: Theme.of(context)
-              .textTheme
-              .apply(decoration: TextDecoration.none)),
+      theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.blue),
       darkTheme: ThemeData(
           useMaterial3: true,
           brightness: Brightness.dark,
-          colorSchemeSeed: Colors.blue,
-          textTheme: Theme.of(context)
-              .textTheme
-              .apply(decoration: TextDecoration.none)),
+          colorSchemeSeed: Colors.blue),
       themeMode: ThemeMode.system,
       routerDelegate: router.routerDelegate,
       routeInformationParser: router.routeInformationParser,
