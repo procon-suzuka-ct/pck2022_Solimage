@@ -46,10 +46,12 @@ class CameraScreen extends ConsumerWidget {
                               child: ElevatedButton.icon(
                                   icon: const Icon(Icons.apps, size: 30.0),
                                   onPressed: () {
-                                    context.go('/parent/history');
+                                    context.go('/parent');
                                   },
                                   label: const FittedBox(
-                                    child: Text('大人用\nメニュー',
+                                    child: Text('大人用メニュー',
+                                        maxLines: 2,
+                                        softWrap: true,
                                         style: TextStyle(fontSize: 30.0)),
                                   ),
                                   style: ElevatedButton.styleFrom(
