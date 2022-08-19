@@ -26,12 +26,11 @@ final routerProvider = Provider((ref) => GoRouter(
           name: 'image',
           builder: (context, state) => const ImageScreen()),
       GoRoute(
-          path: '/parent/:screen(history|user|group)',
+          path: '/parent',
           name: 'parent',
-          builder: (context, state) =>
-              ParentScreen(screen: state.params['screen'])),
+          builder: (context, state) => const ParentScreen()),
       GoRoute(
-        path: '/parent/post',
+        path: '/post',
         name: 'post',
         builder: (context, state) => const PostScreen(),
       )

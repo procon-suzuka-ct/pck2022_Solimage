@@ -1,61 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:solimage/states/router.dart';
+import 'package:go_router/go_router.dart';
+import 'package:solimage/states/parent.dart';
 
 class ParentScreenTab {
+  final Icon selectedIcon;
   final Icon icon;
   final String label;
 
-  ParentScreenTab({required this.icon, required this.label});
+  ParentScreenTab(
+      {required this.selectedIcon, required this.icon, required this.label});
 }
 
 final List<ParentScreenTab> parentScreenTabs = [
-  ParentScreenTab(icon: const Icon(Icons.history), label: '投稿履歴'),
-  ParentScreenTab(icon: const Icon(Icons.person), label: 'ユーザー情報'),
-  ParentScreenTab(icon: const Icon(Icons.group), label: 'グループ')
+  ParentScreenTab(
+      selectedIcon: const Icon(Icons.history),
+      icon: const Icon(Icons.history_outlined),
+      label: '投稿履歴'),
+  ParentScreenTab(
+      selectedIcon: const Icon(Icons.groups),
+      icon: const Icon(Icons.groups_outlined),
+      label: 'グループ'),
+  ParentScreenTab(
+      selectedIcon: const Icon(Icons.person),
+      icon: const Icon(Icons.person_outline),
+      label: 'ユーザー情報')
 ];
 
 class ParentScreen extends ConsumerWidget {
-  const ParentScreen({Key? key, this.screen}) : super(key: key);
-
-  final String? screen;
+  const ParentScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentIndex = ParentScreens.values.byName(screen!).index;
-    final currentName = ParentScreens.values.elementAt(currentIndex).name;
+    final tabIndex = ref.watch(tabIndexProvider);
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(parentScreenTabs[currentIndex].label),
+          centerTitle: true,
+          title: Text(parentScreenTabs[tabIndex].label),
         ),
-        body: Center(child: Text(parentScreenTabs[currentIndex].label)),
-        bottomNavigationBar: BottomNavigationBar(
-            items: parentScreenTabs
-                .map((element) => BottomNavigationBarItem(
+        body: Center(child: Text(parentScreenTabs[tabIndex].label)),
+        bottomNavigationBar: NavigationBar(
+            destinations: parentScreenTabs
+                .map((element) => NavigationDestination(
+                      selectedIcon: element.selectedIcon,
                       icon: element.icon,
                       label: element.label,
                     ))
                 .toList(),
-            currentIndex: currentIndex,
-            onTap: (index) {
-              ref
-                  .read(routerProvider)
-                  .go('/parent/${ParentScreens.values[index].name}');
+            selectedIndex: tabIndex,
+            onDestinationSelected: (index) {
+              ref.read(tabIndexProvider.notifier).state = index;
             }),
-        floatingActionButton: currentName == 'history'
+        floatingActionButton: tabIndex == 0
             ? Wrap(spacing: 10.0, children: [
                 FloatingActionButton.extended(
-                    onPressed: () {
-                      ref.read(routerProvider).go('/camera');
-                    },
+                    onPressed: () => context.go('/camera'),
                     icon: const Icon(Icons.camera),
                     label: const Text('カメラ'),
                     heroTag: 'camera'),
                 FloatingActionButton.extended(
-                    onPressed: () {
-                      ref.read(routerProvider).push('/parent/post');
-                    },
+                    onPressed: () => context.push('/post'),
                     icon: const Icon(Icons.add),
                     label: const Text('投稿'),
                     heroTag: 'post')
