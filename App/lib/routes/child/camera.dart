@@ -35,18 +35,14 @@ class CameraScreen extends ConsumerWidget {
               Align(
                   alignment: Alignment.topCenter,
                   child: Container(
-                      height: 100.0,
                       margin: const EdgeInsets.all(20.0),
                       child: ElevatedButton.icon(
-                          icon: const Icon(Icons.apps, size: 30.0),
+                          icon: const Icon(Icons.apps),
                           onPressed: () => context.go('/parent'),
                           label: const FittedBox(
-                            child: Text('大人用メニューに\n切り替え',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 30.0)),
+                            child: Text('大人用メニューに切り替え'),
                           ),
                           style: ElevatedButton.styleFrom(
-                              fixedSize: const Size.fromHeight(100.0),
                               padding: const EdgeInsets.all(20.0))))),
               Align(
                   alignment: Alignment.bottomCenter,
