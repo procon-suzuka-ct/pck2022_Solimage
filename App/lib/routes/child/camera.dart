@@ -63,7 +63,7 @@ class CameraScreen extends ConsumerWidget {
                                       final imagePath =
                                           ref.read(imagePathProvider.state);
                                       imagePath.update((value) => null);
-                                      context.push('/child/image');
+                                      context.push('/child/result');
                                       final image =
                                           await controller.takePicture();
                                       imagePath.update((state) => image.path);
