@@ -2,9 +2,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solimage/routes/camera.dart';
 import 'package:solimage/routes/image.dart';
-import 'package:solimage/routes/parent_home.dart';
+import 'package:solimage/routes/parent.dart';
+import 'package:solimage/routes/post.dart';
 import 'package:solimage/routes/welcome.dart';
 import 'package:solimage/states/auth.dart';
+
+enum ParentScreens { history, user, group }
 
 final routerProvider = Provider((ref) => GoRouter(
     initialLocation: '/camera',
@@ -23,9 +26,15 @@ final routerProvider = Provider((ref) => GoRouter(
           name: 'image',
           builder: (context, state) => const ImageScreen()),
       GoRoute(
-          path: '/parent',
-          name: 'parent home',
-          builder: (context, state) => const ParentHomeScreen())
+          path: '/parent/:screen(history|user|group)',
+          name: 'parent',
+          builder: (context, state) =>
+              ParentScreen(screen: state.params['screen'])),
+      GoRoute(
+        path: '/parent/post',
+        name: 'post',
+        builder: (context, state) => const PostScreen(),
+      )
     ],
     redirect: (state) {
       final isLoggedIn = ref.read(authProvider).currentUser() != null;
