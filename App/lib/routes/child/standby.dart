@@ -26,8 +26,9 @@ class StandbyScreen extends ConsumerWidget {
                               style: ElevatedButton.styleFrom(
                                   fixedSize: const Size.fromHeight(100.0),
                                   padding: const EdgeInsets.all(30.0)),
-                              child: const Text('もどる',
-                                  style: TextStyle(fontSize: 30.0)))),
+                              child: const FittedBox(
+                                  child: Text('もどる',
+                                      style: TextStyle(fontSize: 30.0))))),
                       const SizedBox(width: 20.0),
                       Expanded(
                           child: ElevatedButton(
@@ -35,8 +36,9 @@ class StandbyScreen extends ConsumerWidget {
                               style: ElevatedButton.styleFrom(
                                   fixedSize: const Size.fromHeight(100.0),
                                   padding: const EdgeInsets.all(30.0)),
-                              child: const Text('けっかをみる',
-                                  style: TextStyle(fontSize: 30.0))))
+                              child: const FittedBox(
+                                  child: Text('けっか',
+                                      style: TextStyle(fontSize: 30.0)))))
                     ],
                   )
                 ])));

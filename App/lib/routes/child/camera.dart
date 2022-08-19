@@ -69,8 +69,9 @@ class CameraScreen extends ConsumerWidget {
                                       imagePath.update((state) => image.path);
                                     },
                                     icon: const Icon(Icons.camera, size: 30.0),
-                                    label: const Text('さつえい',
-                                        style: TextStyle(fontSize: 30.0)),
+                                    label: const FittedBox(
+                                        child: Text('さつえい',
+                                            style: TextStyle(fontSize: 30.0))),
                                     style: ElevatedButton.styleFrom(
                                         fixedSize: const Size.fromHeight(100.0),
                                         padding: const EdgeInsets.all(20.0)))),
