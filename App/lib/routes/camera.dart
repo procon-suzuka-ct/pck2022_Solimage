@@ -20,8 +20,7 @@ class CameraScreen extends ConsumerWidget {
             final height = MediaQuery.of(context).size.height;
             final width = height / controller.value.aspectRatio;
             return Scaffold(
-                body: SafeArea(
-                    child: Stack(children: <Widget>[
+                body: Stack(children: <Widget>[
               Align(
                   alignment: Alignment.center,
                   child: AspectRatio(
@@ -90,7 +89,7 @@ class CameraScreen extends ConsumerWidget {
                           style: ElevatedButton.styleFrom(
                               fixedSize: const Size.fromHeight(100.0),
                               padding: const EdgeInsets.all(20.0)))))
-            ])));
+            ]));
           },
           error: (error, _) => Text('Error: $error'),
           loading: () =>
