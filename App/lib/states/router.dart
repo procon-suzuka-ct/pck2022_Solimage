@@ -8,32 +8,23 @@ import 'package:solimage/routes/post.dart';
 import 'package:solimage/routes/welcome.dart';
 import 'package:solimage/states/auth.dart';
 
+final List<Map<String, dynamic>> routes = [
+  {'path': '/', 'name': 'welcome', 'child': const WelcomeScreen()},
+  {'path': '/camera', 'name': 'camera', 'child': const CameraScreen()},
+  {'path': '/image', 'name': 'image', 'child': const ImageScreen()},
+  {'path': '/parent', 'name': 'parent', 'child': const ParentScreen()},
+  {'path': '/post', 'name': 'post', 'child': const PostScreen()}
+];
+
 final routerProvider = Provider((ref) => GoRouter(
     initialLocation: '/camera',
-    routes: [
-      GoRoute(
-        path: '/',
-        name: 'welcome',
-        builder: (context, state) => const SafeArea(child: WelcomeScreen()),
-      ),
-      GoRoute(
-          path: '/camera',
-          name: 'camera',
-          builder: (context, state) => const SafeArea(child: CameraScreen())),
-      GoRoute(
-          path: '/image',
-          name: 'image',
-          builder: (context, state) => const SafeArea(child: ImageScreen())),
-      GoRoute(
-          path: '/parent',
-          name: 'parent',
-          builder: (context, state) => const SafeArea(child: ParentScreen())),
-      GoRoute(
-        path: '/post',
-        name: 'post',
-        builder: (context, state) => const SafeArea(child: PostScreen()),
-      )
-    ],
+    routes: routes.map((route) {
+      return GoRoute(
+        path: route['path'],
+        name: route['name'],
+        builder: (context, state) => SafeArea(child: route['child']),
+      );
+    }).toList(),
     redirect: (state) {
       final isLoggedIn = ref.watch(authProvider).currentUser() != null;
       if (!isLoggedIn) {
