@@ -11,15 +11,19 @@ import 'package:solimage/states/auth.dart';
 
 final List<Map<String, dynamic>> routes = [
   {'path': '/', 'name': 'welcome', 'child': const WelcomeScreen()},
-  {'path': '/camera', 'name': 'camera', 'child': const CameraScreen()},
-  {'path': '/favorite', 'name': 'camera', 'child': const FavoriteScreen()},
-  {'path': '/image', 'name': 'image', 'child': const ImageScreen()},
+  {'path': '/child/camera', 'name': 'camera', 'child': const CameraScreen()},
+  {
+    'path': '/child/favorite',
+    'name': 'favorite',
+    'child': const FavoriteScreen()
+  },
+  {'path': '/child/image', 'name': 'image', 'child': const ImageScreen()},
   {'path': '/parent', 'name': 'parent', 'child': const ParentScreen()},
-  {'path': '/post', 'name': 'post', 'child': const PostScreen()}
+  {'path': '/parent/post', 'name': 'post', 'child': const PostScreen()}
 ];
 
 final routerProvider = Provider((ref) => GoRouter(
-    initialLocation: '/camera',
+    initialLocation: '/child/camera',
     routes: routes.map((route) {
       return GoRoute(
         path: route['path'],
@@ -29,6 +33,7 @@ final routerProvider = Provider((ref) => GoRouter(
     }).toList(),
     redirect: (state) {
       final isLoggedIn = ref.watch(authProvider).currentUser() != null;
+
       if (!isLoggedIn) {
         return state.subloc == '/' ? null : '/';
       }

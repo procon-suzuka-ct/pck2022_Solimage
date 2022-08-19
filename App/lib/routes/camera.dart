@@ -79,7 +79,7 @@ class CameraScreen extends ConsumerWidget {
                           onPressed: () async {
                             final imagePath = ref.read(imagePathProvider.state);
                             imagePath.update((value) => null);
-                            context.push('/image');
+                            context.push('/child/image');
                             final image = await controller.takePicture();
                             imagePath.update((state) => image.path);
                           },
