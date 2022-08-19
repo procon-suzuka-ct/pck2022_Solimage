@@ -14,6 +14,7 @@ final controllerProvider = FutureProvider((ref) async {
     if (lifecycle == AppLifecycleState.paused) controller.dispose();
   } else {
     if (lifecycle == AppLifecycleState.resumed) await controller.initialize();
+    controller.setFlashMode(FlashMode.off);
   }
 
   return controller;
