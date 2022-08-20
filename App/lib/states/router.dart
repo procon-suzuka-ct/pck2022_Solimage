@@ -25,7 +25,7 @@ final List<Map<String, dynamic>> routes = [
 ];
 
 final routerProvider = Provider((ref) => GoRouter(
-    initialLocation: '/child/camera',
+    initialLocation: '/',
     routes: routes
         .map((route) => GoRoute(
               path: route['path'],
@@ -34,9 +34,15 @@ final routerProvider = Provider((ref) => GoRouter(
             ))
         .toList(),
     redirect: (state) {
-      if (!(ref.watch(authProvider).currentUser() != null)) {
-        return state.subloc == '/' ? null : '/';
+      final user = ref.read(userProvider);
+
+      if (user == null && state.subloc != '/') {
+        return '/';
+      } else if (user != null && state.subloc == '/') {
+        return '/child/camera';
       }
 
       return null;
-    }));
+    },
+    refreshListenable:
+        Listenable.merge([ValueNotifier(ref.watch(userProvider) != null)])));
