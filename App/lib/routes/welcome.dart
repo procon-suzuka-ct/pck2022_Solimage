@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -27,35 +26,11 @@ class WelcomeScreen extends ConsumerWidget {
                   ?.copyWith(fontSize: 40, fontWeight: FontWeight.bold)),
           ElevatedButton(
             onPressed: () async {
-              final User? user = await auth.signIn();
-              if (user != null) {
-                showDialog<void>(
-                    context: context,
-                    builder: (_) {
-                      return UserDialog(user: user);
-                    });
-              }
+              auth.signIn();
+              if (auth.currentUser() != null) context.go('/child/camera');
             },
             child: const Text('ログイン'),
           )
         ])));
   }
-}
-
-class UserDialog extends StatelessWidget {
-  const UserDialog({Key? key, required this.user}) : super(key: key);
-
-  final User user;
-
-  @override
-  Widget build(BuildContext context) => AlertDialog(
-        title: const Text('サインインしました'),
-        content: Text('ユーザー名: ${user.displayName}'),
-        actions: <Widget>[
-          TextButton(
-            child: const Text('OK'),
-            onPressed: () => context.go('/child/camera'),
-          ),
-        ],
-      );
 }
