@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -10,7 +9,7 @@ class Auth {
   Auth._internal();
   factory Auth() => _instance;
 
-  FutureOr<User?> signIn() async {
+  Future<User?> signIn() async {
     final googleSignin = GoogleSignIn(scopes: [
       'email',
       'https://www.googleapis.com/auth/contacts.readonly',
@@ -41,7 +40,7 @@ class Auth {
     return null;
   }
 
-  FutureOr<void> signOut() async {
+  Future<void> signOut() async {
     await _auth.signOut();
     return;
   }
