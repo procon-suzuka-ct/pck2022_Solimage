@@ -26,13 +26,10 @@ class CameraScreen extends ConsumerWidget {
                   alignment: Alignment.center,
                   child: AspectRatio(
                       aspectRatio: 9.0 / 16.0,
-                      child: FittedBox(
-                          alignment: Alignment.center,
-                          fit: BoxFit.fitWidth,
-                          child: SizedBox(
-                              width: width,
-                              height: height,
-                              child: CameraPreview(controller))))),
+                      child: SizedBox(
+                          width: width,
+                          height: height,
+                          child: CameraPreview(controller)))),
               Align(
                   alignment: Alignment.topCenter,
                   child: Container(
@@ -61,14 +58,9 @@ class CameraScreen extends ConsumerWidget {
                           children: <Widget>[
                             Expanded(
                                 child: ElevatedButton.icon(
-                                    onPressed: () async {
-                                      final imagePath =
-                                          ref.read(imagePathProvider.state);
-                                      imagePath.update((value) => null);
+                                    onPressed: () {
+                                      ref.refresh(imageProvider);
                                       context.push('/child/standby');
-                                      final image =
-                                          await controller.takePicture();
-                                      imagePath.update((state) => image.path);
                                     },
                                     icon: const Icon(Icons.camera, size: 30.0),
                                     label: const FittedBox(

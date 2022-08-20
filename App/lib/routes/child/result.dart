@@ -9,19 +9,19 @@ class ResultScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final image = ref.watch(imagePathProvider);
+    final image = ref.watch(imageProvider);
+    final height = MediaQuery.of(context).size.height;
 
-    if (image != null) {
-      return Scaffold(
+    return Scaffold(
         body: Center(
-          child: Image.file(File(image)),
-        ),
-      );
-    } else {
-      return const Scaffold(
-          body: Center(
-        child: CircularProgressIndicator(),
-      ));
-    }
+      child: image.when(
+          data: (data) => AspectRatio(
+              aspectRatio: 9.0 / 16.0,
+              child: SizedBox(
+                  height: height,
+                  child: Image.file(File(data.path), fit: BoxFit.fitHeight))),
+          loading: () => const CircularProgressIndicator(),
+          error: (error, _) => Text('エラーが発生しました: $error')),
+    ));
   }
 }
