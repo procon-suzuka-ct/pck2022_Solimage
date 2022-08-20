@@ -41,7 +41,6 @@ class CameraScreen extends ConsumerWidget {
                           icon: const Icon(Icons.supervisor_account),
                           onPressed: () => showAnimatedDialog(
                               context: context,
-                              alignment: Alignment.center,
                               animationType: DialogTransitionType.fadeScale,
                               barrierDismissible: true,
                               builder: (context) =>
