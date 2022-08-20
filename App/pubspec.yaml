@@ -51,6 +51,7 @@ dependencies:
   image: ^3.2.0
   flutter_riverpod: ^1.0.4
   fl_chart: ^0.55.1
+  flutter_animated_dialog: ^2.0.1
 
 dev_dependencies:
   flutter_test:

@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -35,18 +36,19 @@ class CameraScreen extends ConsumerWidget {
               Align(
                   alignment: Alignment.topCenter,
                   child: Container(
-                      height: 100.0,
                       margin: const EdgeInsets.all(20.0),
                       child: ElevatedButton.icon(
-                          icon: const Icon(Icons.apps, size: 30.0),
-                          onPressed: () => context.go('/parent'),
+                          icon: const Icon(Icons.supervisor_account),
+                          onPressed: () => showAnimatedDialog(
+                              context: context,
+                              animationType: DialogTransitionType.fadeScale,
+                              barrierDismissible: true,
+                              builder: (context) =>
+                                  const SwitchToParentDialog()),
                           label: const FittedBox(
-                            child: Text('大人用メニューに\n切り替え',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 30.0)),
+                            child: Text('大人用メニュー'),
                           ),
                           style: ElevatedButton.styleFrom(
-                              fixedSize: const Size.fromHeight(100.0),
                               padding: const EdgeInsets.all(20.0))))),
               Align(
                   alignment: Alignment.bottomCenter,
@@ -101,4 +103,21 @@ class CameraScreen extends ConsumerWidget {
       ));
     }
   }
+}
+
+class SwitchToParentDialog extends StatelessWidget {
+  const SwitchToParentDialog({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+        title: const Text('確認'),
+        content: const Text('大人用メニューに切り替えてもよろしいですか？'),
+        actions: <Widget>[
+          TextButton(
+              child: const Text('はい'), onPressed: () => context.go('/parent')),
+          TextButton(
+              child: const Text('いいえ'),
+              onPressed: () => Navigator.of(context).pop()),
+        ],
+      );
 }
