@@ -12,30 +12,48 @@ import 'package:solimage/routes/welcome.dart';
 import 'package:solimage/states/auth.dart';
 import 'package:solimage/states/preferences.dart';
 
-final List<Map<String, dynamic>> routes = [
-  {'path': '/', 'name': 'welcome', 'child': const WelcomeScreen()},
-  {'path': '/child/camera', 'name': 'camera', 'child': const CameraScreen()},
-  {
-    'path': '/child/favorite',
-    'name': 'favorite',
-    'child': const FavoriteScreen()
-  },
-  {'path': '/child/standby', 'name': 'standby', 'child': const StandbyScreen()},
-  {'path': '/child/result', 'name': 'result', 'child': const ResultScreen()},
-  {'path': '/parent', 'name': 'parent', 'child': const ParentScreen()},
-  {'path': '/parent/post', 'name': 'post', 'child': const PostScreen()}
-];
-
 final routerProvider = Provider((ref) {
   return GoRouter(
-      initialLocation: '/',
-      routes: routes
-          .map((route) => GoRoute(
-                path: route['path'],
-                name: route['name'],
-                builder: (context, state) => SafeArea(child: route['child']),
-              ))
-          .toList(),
+      initialLocation: '/parent/settings',
+      routes: [
+        GoRoute(
+            path: '/',
+            name: 'welcome',
+            builder: (context, state) =>
+                const SafeArea(child: WelcomeScreen())),
+        GoRoute(
+            path: '/child/camera',
+            name: 'camera',
+            builder: (context, state) => const SafeArea(child: CameraScreen())),
+        GoRoute(
+            path: '/child/favorite',
+            name: 'favorite',
+            builder: (context, state) =>
+                const SafeArea(child: FavoriteScreen())),
+        GoRoute(
+            path: '/child/standby',
+            name: 'standby',
+            builder: (context, state) =>
+                const SafeArea(child: StandbyScreen())),
+        GoRoute(
+            path: '/child/result',
+            name: 'result',
+            builder: (context, state) => const SafeArea(child: ResultScreen())),
+        GoRoute(
+            path: '/parent/history',
+            name: 'history',
+            builder: (context, state) =>
+                const SafeArea(child: ParentScreen(tab: 'history'))),
+        GoRoute(
+            path: '/parent/settings',
+            name: 'settings',
+            builder: (context, state) =>
+                const SafeArea(child: ParentScreen(tab: 'settings'))),
+        GoRoute(
+            path: '/parent/post',
+            name: 'post',
+            builder: (context, state) => const SafeArea(child: PostScreen())),
+      ],
       redirect: (state) {
         final user = ref.read(userProvider);
         final prefs = ref.read(prefsProvider);
@@ -46,7 +64,7 @@ final routerProvider = Provider((ref) {
           return prefs.maybeWhen(data: (data) {
             final mode = data.getInt('mode');
             if (mode == 0) {
-              return '/parent';
+              return '/parent/history';
             } else if (mode == 1) {
               return '/child/camera';
             }
