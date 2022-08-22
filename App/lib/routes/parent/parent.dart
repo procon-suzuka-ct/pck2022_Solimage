@@ -48,7 +48,7 @@ class ParentScreen extends ConsumerWidget {
                 .toList(),
             selectedIndex: tabIndex,
             onDestinationSelected: (index) =>
-                context.go('/parent/${ParentScreens.values[index].name}')),
+                context.replace('/parent/${ParentScreens.values[index].name}')),
         floatingActionButton: tabIndex == 0
             ? Wrap(spacing: 10.0, children: [
                 FloatingActionButton.extended(
