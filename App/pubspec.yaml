@@ -66,6 +66,7 @@ dev_dependencies:
   mockito: ^5.3.0
   build_runner: ^2.2.0
   dependency_validator: any
+  camera_platform_interface: ^2.2.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
