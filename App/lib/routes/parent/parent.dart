@@ -4,29 +4,31 @@ import 'package:go_router/go_router.dart';
 import 'package:solimage/routes/parent/history.dart';
 import 'package:solimage/routes/parent/settings.dart';
 
-final tabIndexProvider = StateProvider.autoDispose((ref) => 0);
+enum ParentScreens { history, settings }
+
+final List<Map<String, dynamic>> parentScreenTabs = [
+  {
+    'selectedIcon': const Icon(Icons.history),
+    'icon': const Icon(Icons.history_outlined),
+    'label': '投稿履歴',
+    'child': const HistoryScreen()
+  },
+  {
+    'selectedIcon': const Icon(Icons.settings),
+    'icon': const Icon(Icons.settings_outlined),
+    'label': '設定',
+    'child': const SettingsScreen()
+  }
+];
 
 class ParentScreen extends ConsumerWidget {
-  const ParentScreen({Key? key}) : super(key: key);
+  const ParentScreen({Key? key, required this.tab}) : super(key: key);
+
+  final String? tab;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tabIndex = ref.watch(tabIndexProvider);
-
-    final List<Map<String, dynamic>> parentScreenTabs = [
-      {
-        'selectedIcon': const Icon(Icons.history),
-        'icon': const Icon(Icons.history_outlined),
-        'label': '投稿履歴',
-        'child': const HistoryScreen()
-      },
-      {
-        'selectedIcon': const Icon(Icons.settings),
-        'icon': const Icon(Icons.settings_outlined),
-        'label': '設定',
-        'child': const SettingsScreen()
-      }
-    ];
+    final int tabIndex = ParentScreens.values.byName(tab!).index;
 
     return Scaffold(
         appBar: AppBar(
@@ -35,7 +37,7 @@ class ParentScreen extends ConsumerWidget {
         ),
         body: Container(
             margin: const EdgeInsets.all(10.0),
-            child: ListView(children: parentScreenTabs[tabIndex]['children'])),
+            child: parentScreenTabs[tabIndex]['child']),
         bottomNavigationBar: NavigationBar(
             destinations: parentScreenTabs
                 .map((element) => NavigationDestination(
@@ -45,9 +47,8 @@ class ParentScreen extends ConsumerWidget {
                     ))
                 .toList(),
             selectedIndex: tabIndex,
-            onDestinationSelected: (index) {
-              ref.read(tabIndexProvider.notifier).state = index;
-            }),
+            onDestinationSelected: (index) =>
+                context.go('/parent/${ParentScreens.values[index].name}')),
         floatingActionButton: tabIndex == 0
             ? Wrap(spacing: 10.0, children: [
                 FloatingActionButton.extended(
