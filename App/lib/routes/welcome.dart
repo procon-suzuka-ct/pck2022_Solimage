@@ -59,7 +59,7 @@ class ModeSelectionDialog extends StatelessWidget {
             child: const ListTile(
               leading: Icon(Icons.face),
               title: Text('大人'),
-              subtitle: Text('アプリを開くと、大人用メニューが開かれます'),
+              subtitle: Text('アプリを開いた時に大人用メニューが開かれます'),
             )),
         SimpleDialogOption(
             onPressed: () async {
@@ -70,7 +70,7 @@ class ModeSelectionDialog extends StatelessWidget {
             child: const ListTile(
               leading: Icon(Icons.child_care),
               title: Text('子ども'),
-              subtitle: Text('アプリを開くと、カメラが開かれます'),
+              subtitle: Text('アプリを開いた時にカメラが開かれます'),
             )),
       ]);
 }
