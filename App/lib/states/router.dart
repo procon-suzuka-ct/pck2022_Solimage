@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solimage/routes/child/camera.dart';
@@ -54,6 +55,12 @@ final routerProvider = Provider((ref) {
             ref.refresh(prefsProvider);
             return null;
           });
+        }
+
+        if (state.subloc.contains('/child')) {
+          SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+        } else {
+          SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
         }
 
         return null;
