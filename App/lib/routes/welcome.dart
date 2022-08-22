@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:solimage/states/auth.dart';
@@ -26,12 +27,11 @@ class WelcomeScreen extends ConsumerWidget {
                 onPressed: () async {
                   final user = await Auth().signIn();
                   if (user != null) {
-                    await showDialog(
-                        builder: (BuildContext context) =>
-                            const ModeSelectionDialog(),
+                    await showAnimatedDialog(
                         context: context,
-                        useSafeArea: true,
-                        barrierDismissible: true);
+                        animationType: DialogTransitionType.fadeScale,
+                        barrierDismissible: true,
+                        builder: (context) => const ModeSelectionDialog());
                     ref.read(userProvider.notifier).state = user;
                   }
                 },
@@ -59,7 +59,7 @@ class ModeSelectionDialog extends StatelessWidget {
             child: const ListTile(
               leading: Icon(Icons.face),
               title: Text('大人'),
-              subtitle: Text('アプリを開くと、大人用メニューが開かれます'),
+              subtitle: Text('アプリを開いた時に大人用メニューが開かれます'),
             )),
         SimpleDialogOption(
             onPressed: () async {
@@ -70,7 +70,7 @@ class ModeSelectionDialog extends StatelessWidget {
             child: const ListTile(
               leading: Icon(Icons.child_care),
               title: Text('子ども'),
-              subtitle: Text('アプリを開くと、カメラが開かれます'),
+              subtitle: Text('アプリを開いた時にカメラが開かれます'),
             )),
       ]);
 }

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:solimage/states/parent.dart';
+
+final tabIndexProvider = StateProvider.autoDispose((ref) => 0);
 
 class ParentScreen extends ConsumerWidget {
   const ParentScreen({Key? key}) : super(key: key);
