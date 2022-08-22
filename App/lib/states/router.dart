@@ -14,7 +14,7 @@ import 'package:solimage/states/preferences.dart';
 
 final routerProvider = Provider((ref) {
   return GoRouter(
-      initialLocation: '/parent/settings',
+      initialLocation: '/',
       routes: [
         GoRoute(
             path: '/',
