@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solimage/routes/parent/history.dart';
-import 'package:solimage/routes/parent/settings.dart';
+import 'package:solimage/routes/parent/profile.dart';
 
 final tabIndexProvider = StateProvider((ref) => 0);
 
@@ -21,10 +21,10 @@ class ParentScreen extends ConsumerWidget {
         'child': const HistoryScreen()
       },
       {
-        'selectedIcon': const Icon(Icons.settings),
-        'icon': const Icon(Icons.settings_outlined),
-        'label': '設定',
-        'child': const SettingsScreen()
+        'selectedIcon': const Icon(Icons.person),
+        'icon': const Icon(Icons.person_outline),
+        'label': 'プロフィール',
+        'child': const ProfileScreen()
       }
     ];
 
