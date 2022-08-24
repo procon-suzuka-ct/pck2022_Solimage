@@ -102,10 +102,18 @@ class GroupDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) => AlertDialog(
         title: Text(groupName),
+        content: Column(mainAxisSize: MainAxisSize.min, children: const [
+          Card(child: ListTile(title: Text('所属ユーザー数'))),
+          Card(child: ListTile(title: Text('招待コード'))),
+        ]),
+        actionsAlignment: MainAxisAlignment.spaceBetween,
         actions: <Widget>[
           TextButton(
-              child: const Text('閉じる'),
+              child: const Text('グループから抜ける'),
               onPressed: () => Navigator.of(context).pop()),
+          TextButton(
+              child: const Text('閉じる'),
+              onPressed: () => Navigator.of(context).pop())
         ],
       );
 }
