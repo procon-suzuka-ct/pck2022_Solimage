@@ -88,6 +88,9 @@ class ExpData {
     if (Auth().currentUser()!.uid != _userId) {
       throw Exception('userId is not match');
     }
+    if (_dataId == 0) {
+      throw Exception("dataId is not set");
+    }
     await FirebaseFirestore.instance
         .collection('expData')
         .doc(_dataId.toString())
