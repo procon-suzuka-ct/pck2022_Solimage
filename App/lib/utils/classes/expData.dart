@@ -25,7 +25,12 @@ class ExpData {
     _word = word;
     _meaning = meaning;
     rootId ??= 0;
-    generatId().then((value) => _dataId = value);
+    _dataId = 0;
+  }
+
+  void init() async {
+    await generatId().then((value) => _dataId = value);
+    return;
   }
 
   void setData(
