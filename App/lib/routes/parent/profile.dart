@@ -15,12 +15,20 @@ class ProfileScreen extends ConsumerWidget {
       const ListTile(
           title: Text('ユーザー情報',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold))),
-      Center(
-          child: Container(
-              margin: const EdgeInsets.all(10.0),
-              child: CircleAvatar(
-                  radius: 50.0,
-                  backgroundImage: NetworkImage('${user?.photoURL}')))),
+      Container(
+          margin: const EdgeInsets.all(20.0),
+          child: Column(
+              verticalDirection: VerticalDirection.down,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                    margin: const EdgeInsets.all(10.0),
+                    child: CircleAvatar(
+                        radius: 64.0,
+                        backgroundImage: NetworkImage('${user?.photoURL}'))),
+                Text('${user?.displayName}さん',
+                    style: const TextStyle(fontSize: 20.0))
+              ])),
       Card(
           child: ListTile(
               title: const Text('名前'),
@@ -84,10 +92,9 @@ class UserNameDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-        title: const Text('ユーザー名'),
+        title: const Text('名前'),
         content: const TextField(
-            decoration:
-                InputDecoration(hintText: '名前を入力してください', labelText: '名前')),
+            decoration: InputDecoration(hintText: '名前を入力してください')),
         actions: <Widget>[
           TextButton(
               child: const Text('はい'),
