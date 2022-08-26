@@ -52,10 +52,10 @@ def main():
     for cat in categories:
       for file in fileNames:
         root = "image"
-        path = os.path.join(base, root, cat)
-        os.makedirs(path, exist_ok=True)
         path = os.path.join(base, root, cat, file)
         writeRootPath = "Bloated"
+        writePath = os.path.join(base, writeRootPath, cat)
+        os.makedirs(writePath, exist_ok=True)
         writePath = os.path.join(base, writeRootPath, cat, file)
         image = cv2.imread(path)
         images = rotate(image)
