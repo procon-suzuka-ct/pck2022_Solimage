@@ -52,6 +52,8 @@ def main():
     for cat in categories:
       for file in fileNames:
         root = "image"
+        path = os.path.join(root, cat, file)
+        os.makedirs(path, exist_ok=True)
         path = os.path.join(base, root, cat, file)
         writeRootPath = "Bloated"
         writePath = os.path.join(base, writeRootPath, cat, file)
