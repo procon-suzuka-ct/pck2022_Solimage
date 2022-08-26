@@ -54,14 +54,12 @@ class PostScreen extends ConsumerWidget {
                 child: ListTile(
                     title: Text(tile['title']),
                     subtitle: Text(tile['subtitle']),
-                    trailing: IconButton(
-                        onPressed: () => showAnimatedDialog(
-                            context: context,
-                            animationType: DialogTransitionType.fadeScale,
-                            builder: (context) => TextEditDialog(
-                                title: tile['title'],
-                                provider: tile['provider'])),
-                        icon: const Icon(Icons.edit)),
+                    trailing: const Icon(Icons.edit),
+                    onTap: () => showAnimatedDialog(
+                        context: context,
+                        animationType: DialogTransitionType.fadeScale,
+                        builder: (context) => TextEditDialog(
+                            title: tile['title'], provider: tile['provider'])),
                     isThreeLine: true)))
             .toList(),
       ),
@@ -100,7 +98,10 @@ class TextEditDialog extends ConsumerWidget {
             onPressed: () {
               ref.read(provider.notifier).update((_) => controller.text);
               Navigator.of(context).pop();
-            })
+            }),
+        TextButton(
+            child: const Text('キャンセル'),
+            onPressed: () => Navigator.of(context).pop())
       ],
     );
   }
@@ -111,7 +112,8 @@ class ConfirmDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-        title: const Text('投稿してもよろしいでしょうか?'),
+        title: const Text('確認'),
+        content: const Text('投稿してもよろしいでしょうか?'),
         actions: <Widget>[
           TextButton(
               child: const Text('はい'), onPressed: () => context.go('/parent')),
