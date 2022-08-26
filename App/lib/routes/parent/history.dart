@@ -10,8 +10,7 @@ class HistoryScreen extends ConsumerWidget {
         Card(
             child: ListTile(
                 title: const Text('投稿したワード'),
-                trailing: IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () => context.push('/parent/post'))))
+                trailing: const Icon(Icons.edit),
+                onTap: () => context.push('/parent/post')))
       ]);
 }

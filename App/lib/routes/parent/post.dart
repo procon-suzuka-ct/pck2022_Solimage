@@ -54,14 +54,12 @@ class PostScreen extends ConsumerWidget {
                 child: ListTile(
                     title: Text(tile['title']),
                     subtitle: Text(tile['subtitle']),
-                    trailing: IconButton(
-                        onPressed: () => showAnimatedDialog(
-                            context: context,
-                            animationType: DialogTransitionType.fadeScale,
-                            builder: (context) => TextEditDialog(
-                                title: tile['title'],
-                                provider: tile['provider'])),
-                        icon: const Icon(Icons.edit)),
+                    trailing: const Icon(Icons.edit),
+                    onTap: () => showAnimatedDialog(
+                        context: context,
+                        animationType: DialogTransitionType.fadeScale,
+                        builder: (context) => TextEditDialog(
+                            title: tile['title'], provider: tile['provider'])),
                     isThreeLine: true)))
             .toList(),
       ),
