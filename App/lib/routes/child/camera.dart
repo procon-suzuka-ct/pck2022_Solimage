@@ -16,20 +16,19 @@ class CameraScreen extends ConsumerWidget {
 
     if (cameraPermission.value == PermissionStatus.granted) {
       final controller = ref.watch(controllerProvider);
+
       return controller.when(
           data: (controller) {
-            final height = MediaQuery.of(context).size.height;
-            final width = height / controller.value.aspectRatio;
+            final size = MediaQuery.of(context).size;
+            var scale = size.aspectRatio * controller.value.aspectRatio;
+            if (scale < 1) scale = 1 / scale;
+
             return Scaffold(
                 body: Stack(children: <Widget>[
-              Align(
+              Transform.scale(
+                  scale: scale,
                   alignment: Alignment.center,
-                  child: AspectRatio(
-                      aspectRatio: 9.0 / 16.0,
-                      child: SizedBox(
-                          width: width,
-                          height: height,
-                          child: CameraPreview(controller)))),
+                  child: Center(child: CameraPreview(controller))),
               Align(
                   alignment: Alignment.topCenter,
                   child: Container(

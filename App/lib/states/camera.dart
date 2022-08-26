@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:camera/camera.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:solimage/states/app.dart';
 
@@ -15,6 +16,7 @@ final controllerProvider = FutureProvider((ref) async {
   } else {
     if (lifecycle == AppLifecycleState.resumed) await controller.initialize();
     controller.setFlashMode(FlashMode.off);
+    controller.lockCaptureOrientation(DeviceOrientation.portraitUp);
   }
 
   return controller;
