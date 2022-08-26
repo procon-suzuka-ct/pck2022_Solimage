@@ -97,10 +97,10 @@ class UserNameDialog extends StatelessWidget {
             decoration: InputDecoration(hintText: '名前を入力してください')),
         actions: <Widget>[
           TextButton(
-              child: const Text('はい'),
+              child: const Text('OK'),
               onPressed: () => Navigator.of(context).pop()),
           TextButton(
-              child: const Text('いいえ'),
+              child: const Text('キャンセル'),
               onPressed: () => Navigator.of(context).pop()),
         ],
       );

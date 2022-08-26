@@ -98,7 +98,10 @@ class TextEditDialog extends ConsumerWidget {
             onPressed: () {
               ref.read(provider.notifier).update((_) => controller.text);
               Navigator.of(context).pop();
-            })
+            }),
+        TextButton(
+            child: const Text('キャンセル'),
+            onPressed: () => Navigator.of(context).pop())
       ],
     );
   }
