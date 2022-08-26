@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:solimage/observers/system_ui.dart';
 import 'package:solimage/routes/child/camera.dart';
 import 'package:solimage/routes/child/favorite.dart';
 import 'package:solimage/routes/child/result.dart';
@@ -13,17 +13,13 @@ import 'package:solimage/states/auth.dart';
 import 'package:solimage/states/preferences.dart';
 
 final List<Map<String, dynamic>> routes = [
-  {'path': '/', 'name': 'welcome', 'child': const WelcomeScreen()},
-  {'path': '/child/camera', 'name': 'camera', 'child': const CameraScreen()},
-  {
-    'path': '/child/favorite',
-    'name': 'favorite',
-    'child': const FavoriteScreen()
-  },
-  {'path': '/child/standby', 'name': 'standby', 'child': const StandbyScreen()},
-  {'path': '/child/result', 'name': 'result', 'child': const ResultScreen()},
-  {'path': '/parent', 'name': 'parent', 'child': const ParentScreen()},
-  {'path': '/parent/post', 'name': 'post', 'child': const PostScreen()}
+  {'path': '/', 'child': const WelcomeScreen()},
+  {'path': '/child/camera', 'child': const CameraScreen()},
+  {'path': '/child/favorite', 'child': const FavoriteScreen()},
+  {'path': '/child/standby', 'child': const StandbyScreen()},
+  {'path': '/child/result', 'child': const ResultScreen()},
+  {'path': '/parent', 'child': const ParentScreen()},
+  {'path': '/parent/post', 'child': const PostScreen()}
 ];
 
 final routerProvider = Provider((ref) {
@@ -32,10 +28,11 @@ final routerProvider = Provider((ref) {
       routes: routes
           .map((route) => GoRoute(
                 path: route['path'],
-                name: route['name'],
+                name: route['path'],
                 builder: (context, state) => SafeArea(child: route['child']),
               ))
           .toList(),
+      observers: [SystemUiObserver()],
       redirect: (state) {
         final user = ref.read(userProvider);
         final prefs = ref.read(prefsProvider);
@@ -55,12 +52,6 @@ final routerProvider = Provider((ref) {
             ref.refresh(prefsProvider);
             return null;
           });
-        }
-
-        if (state.subloc.contains('/child')) {
-          SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-        } else {
-          SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
         }
 
         return null;
