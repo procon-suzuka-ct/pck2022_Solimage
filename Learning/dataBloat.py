@@ -8,8 +8,8 @@ filename = os.path.join(base, filename)
 
 def rotate(image):
   images = []
-  for i in range(0, 4):
-    images.append(np.rot90(image, i))
+  images.append(np.rot90(image, 0))
+  images.append(np.rot90(image, 2))
   
   return images
 
@@ -23,20 +23,20 @@ def flip(images : list):
 
 def change_Value(images : list):
   changed_images = []
-  for i in range(0, 3):
+  for i in range(0, 4):
     for image in images:
       img_hsv = cv2.cvtColor(image,cv2.COLOR_BGR2HSV)
-      img_hsv[:,:,2] = img_hsv[:,:,2] * (1/(i + 1))
+      img_hsv[:,:,2] = img_hsv[:,:,2] * ((i + 1) / 4)
       img = cv2.cvtColor(img_hsv,cv2.COLOR_HSV2BGR)
       changed_images.append(img)
   return changed_images
 
 def change_Saturatio(images : list):
   changed_images = []
-  for i in range(0, 3):
+  for i in range(0, 4):
     for image in images:
       img_hsv = cv2.cvtColor(image,cv2.COLOR_BGR2HSV)
-      img_hsv[:,:,1] = img_hsv[:,:,1] * (1/(i + 1))
+      img_hsv[:,:,1] = img_hsv[:,:,1] * ((i + 1) / 4)
       img = cv2.cvtColor(img_hsv,cv2.COLOR_HSV2BGR)
       changed_images.append(img)
   return changed_images
