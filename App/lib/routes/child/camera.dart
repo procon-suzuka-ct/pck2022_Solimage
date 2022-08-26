@@ -45,42 +45,41 @@ class CameraScreen extends ConsumerWidget {
                             child: Text('大人用メニュー'),
                           ),
                           style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.all(20.0))))),
+                              padding: const EdgeInsets.all(15.0))))),
               Align(
                   alignment: Alignment.bottomCenter,
                   child: Container(
                       height: 100.0,
-                      margin: const EdgeInsets.all(20.0),
+                      margin: const EdgeInsets.all(10.0),
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: <Widget>[
                             Expanded(
-                                child: ElevatedButton.icon(
+                                child: ElevatedButton(
                                     onPressed: () {
                                       ref.refresh(imageProvider);
                                       context.push('/child/standby');
                                     },
-                                    icon: const Icon(Icons.camera, size: 30.0),
-                                    label: const FittedBox(
-                                        child: Text('さつえい',
-                                            style: TextStyle(fontSize: 30.0))),
                                     style: ElevatedButton.styleFrom(
                                         fixedSize: const Size.fromHeight(100.0),
-                                        padding: const EdgeInsets.all(20.0)))),
-                            const SizedBox(width: 20.0),
+                                        padding: const EdgeInsets.all(10.0)),
+                                    child: const FittedBox(
+                                        child: Text('さつえい',
+                                            style:
+                                                TextStyle(fontSize: 30.0))))),
+                            const SizedBox(width: 10.0),
                             Expanded(
-                                child: ElevatedButton.icon(
-                                    icon: const Icon(Icons.star, size: 30.0),
+                                child: ElevatedButton(
                                     onPressed: () =>
                                         context.push('/child/favorite'),
-                                    label: const FittedBox(
-                                      child: Text('おきにいり',
-                                          style: TextStyle(fontSize: 30.0)),
-                                    ),
                                     style: ElevatedButton.styleFrom(
                                         fixedSize: const Size.fromHeight(100.0),
-                                        padding: const EdgeInsets.all(20.0)))),
+                                        padding: const EdgeInsets.all(10.0)),
+                                    child: const FittedBox(
+                                      child: Text('おきにいり',
+                                          style: TextStyle(fontSize: 30.0)),
+                                    ))),
                           ])))
             ]));
           },
