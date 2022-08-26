@@ -25,7 +25,12 @@ class ExpData {
     _word = word;
     _meaning = meaning;
     rootId ??= 0;
-    generatId().then((value) => _dataId = value);
+    _dataId = 0;
+  }
+
+  void init() async {
+    await generatId().then((value) => _dataId = value);
+    return;
   }
 
   void setData(
@@ -82,6 +87,9 @@ class ExpData {
   Future<void> save() async {
     if (Auth().currentUser()!.uid != _userId) {
       throw Exception('userId is not match');
+    }
+    if (_dataId == 0) {
+      throw Exception("dataId is not set");
     }
     await FirebaseFirestore.instance
         .collection('expData')

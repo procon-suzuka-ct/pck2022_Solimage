@@ -3,6 +3,7 @@ import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+final wordProvider = StateProvider.autoDispose((ref) => '');
 final descriptionProvider = StateProvider.autoDispose((ref) => '');
 final whyProvider = StateProvider.autoDispose((ref) => '');
 final whereProvider = StateProvider.autoDispose((ref) => '');
@@ -15,6 +16,7 @@ class PostScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final word = ref.watch(wordProvider);
     final description = ref.watch(descriptionProvider);
     final why = ref.watch(whyProvider);
     final where = ref.watch(whereProvider);
@@ -23,6 +25,11 @@ class PostScreen extends ConsumerWidget {
     final how = ref.watch(howProvider);
 
     final List<Map<String, dynamic>> tiles = [
+      {
+        "title": "ワード",
+        "subtitle": word,
+        "provider": wordProvider,
+      },
       {
         'title': '簡単な説明',
         'subtitle': description,
