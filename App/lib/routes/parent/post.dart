@@ -111,7 +111,8 @@ class ConfirmDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-        title: const Text('投稿してもよろしいでしょうか?'),
+        title: const Text('確認'),
+        content: const Text('投稿してもよろしいでしょうか?'),
         actions: <Widget>[
           TextButton(
               child: const Text('はい'), onPressed: () => context.go('/parent')),
