@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:solimage/states/auth.dart';
+import 'package:solimage/utils/auth.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -23,50 +24,54 @@ class ProfileScreen extends ConsumerWidget {
       Card(
           child: ListTile(
               title: const Text('名前'),
-              trailing: IconButton(
-                icon: const Icon(Icons.edit),
-                onPressed: () => showAnimatedDialog(
-                    context: context,
-                    animationType: DialogTransitionType.fadeScale,
-                    barrierDismissible: true,
-                    builder: (context) => const UserNameDialog()),
-              ))),
+              trailing: const Icon(Icons.edit),
+              onTap: () => showAnimatedDialog(
+                  context: context,
+                  animationType: DialogTransitionType.fadeScale,
+                  barrierDismissible: true,
+                  builder: (context) => const UserNameDialog()))),
+      Card(
+          child: ListTile(
+              title: const Text('ログアウト'),
+              trailing: const Icon(Icons.logout),
+              onTap: () => showAnimatedDialog(
+                  context: context,
+                  animationType: DialogTransitionType.fadeScale,
+                  barrierDismissible: true,
+                  builder: (context) => const LogoutDialog()))),
       const ListTile(
           title: Text('グループ',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold))),
       Card(
           child: ListTile(
               title: const Text('グループA'),
-              trailing: IconButton(
-                  icon: const Icon(Icons.info),
-                  onPressed: () => showAnimatedDialog(
-                      context: context,
-                      animationType: DialogTransitionType.fadeScale,
-                      barrierDismissible: true,
-                      builder: (context) =>
-                          const GroupDialog(groupName: 'グループA'))))),
+              trailing: const Icon(Icons.info),
+              onTap: () => showAnimatedDialog(
+                  context: context,
+                  animationType: DialogTransitionType.fadeScale,
+                  barrierDismissible: true,
+                  builder: (context) =>
+                      const GroupDialog(groupName: 'グループA')))),
       Card(
           child: ListTile(
               title: const Text('グループB'),
-              trailing: IconButton(
-                  icon: const Icon(Icons.info),
-                  onPressed: () => showAnimatedDialog(
-                      context: context,
-                      animationType: DialogTransitionType.fadeScale,
-                      barrierDismissible: true,
-                      builder: (context) =>
-                          const GroupDialog(groupName: 'グループB'))))),
+              trailing: const Icon(Icons.info),
+              onTap: () => showAnimatedDialog(
+                  context: context,
+                  animationType: DialogTransitionType.fadeScale,
+                  barrierDismissible: true,
+                  builder: (context) =>
+                      const GroupDialog(groupName: 'グループB')))),
       Card(
           child: ListTile(
               title: const Text('グループC'),
-              trailing: IconButton(
-                  icon: const Icon(Icons.info),
-                  onPressed: () => showAnimatedDialog(
-                      context: context,
-                      animationType: DialogTransitionType.fadeScale,
-                      barrierDismissible: true,
-                      builder: (context) =>
-                          const GroupDialog(groupName: 'グループC'))))),
+              trailing: const Icon(Icons.info),
+              onTap: () => showAnimatedDialog(
+                  context: context,
+                  animationType: DialogTransitionType.fadeScale,
+                  barrierDismissible: true,
+                  builder: (context) =>
+                      const GroupDialog(groupName: 'グループC')))),
       const ListTile(
           title: Text('アクセス履歴',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)))
@@ -87,6 +92,27 @@ class UserNameDialog extends StatelessWidget {
           TextButton(
               child: const Text('はい'),
               onPressed: () => Navigator.of(context).pop()),
+          TextButton(
+              child: const Text('いいえ'),
+              onPressed: () => Navigator.of(context).pop()),
+        ],
+      );
+}
+
+class LogoutDialog extends ConsumerWidget {
+  const LogoutDialog({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => AlertDialog(
+        title: const Text('確認'),
+        content: const Text('ログアウトしてもよろしいでしょうか?'),
+        actions: <Widget>[
+          TextButton(
+              child: const Text('はい'),
+              onPressed: () async {
+                await Auth().signOut();
+                ref.refresh(userProvider);
+              }),
           TextButton(
               child: const Text('いいえ'),
               onPressed: () => Navigator.of(context).pop()),
