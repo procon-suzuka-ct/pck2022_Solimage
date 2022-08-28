@@ -67,7 +67,6 @@ class PostScreen extends ConsumerWidget {
           onPressed: () => showAnimatedDialog(
               context: context,
               animationType: DialogTransitionType.fadeScale,
-              barrierDismissible: true,
               builder: (context) => const ConfirmDialog()),
           icon: const Icon(Icons.check),
           label: const Text('投稿')),
