@@ -53,6 +53,7 @@ dependencies:
   fl_chart: ^0.55.1
   flutter_animated_dialog: ^2.0.1
   shared_preferences: ^2.0.15
+  flutter_simple_treeview: ^3.0.1
 
 dev_dependencies:
   flutter_test:
