@@ -32,7 +32,7 @@ class CameraScreen extends ConsumerWidget {
               Align(
                   alignment: Alignment.topCenter,
                   child: Container(
-                      margin: const EdgeInsets.all(20.0),
+                      margin: const EdgeInsets.all(10.0),
                       child: ElevatedButton.icon(
                           icon: const Icon(Icons.supervisor_account),
                           onPressed: () => showAnimatedDialog(

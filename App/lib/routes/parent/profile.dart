@@ -36,7 +36,6 @@ class ProfileScreen extends ConsumerWidget {
               onTap: () => showAnimatedDialog(
                   context: context,
                   animationType: DialogTransitionType.fadeScale,
-                  barrierDismissible: true,
                   builder: (context) => const UserNameDialog()))),
       Card(
           child: ListTile(
@@ -45,7 +44,6 @@ class ProfileScreen extends ConsumerWidget {
               onTap: () => showAnimatedDialog(
                   context: context,
                   animationType: DialogTransitionType.fadeScale,
-                  barrierDismissible: true,
                   builder: (context) => const LogoutDialog()))),
       const ListTile(
           title: Text('グループ',
@@ -57,7 +55,6 @@ class ProfileScreen extends ConsumerWidget {
               onTap: () => showAnimatedDialog(
                   context: context,
                   animationType: DialogTransitionType.fadeScale,
-                  barrierDismissible: true,
                   builder: (context) =>
                       const GroupDialog(groupName: 'グループA')))),
       Card(
@@ -67,7 +64,6 @@ class ProfileScreen extends ConsumerWidget {
               onTap: () => showAnimatedDialog(
                   context: context,
                   animationType: DialogTransitionType.fadeScale,
-                  barrierDismissible: true,
                   builder: (context) =>
                       const GroupDialog(groupName: 'グループB')))),
       Card(
@@ -77,7 +73,6 @@ class ProfileScreen extends ConsumerWidget {
               onTap: () => showAnimatedDialog(
                   context: context,
                   animationType: DialogTransitionType.fadeScale,
-                  barrierDismissible: true,
                   builder: (context) =>
                       const GroupDialog(groupName: 'グループC')))),
       const ListTile(

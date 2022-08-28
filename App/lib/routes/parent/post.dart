@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_simple_treeview/flutter_simple_treeview.dart';
 import 'package:go_router/go_router.dart';
 
 final wordProvider = StateProvider.autoDispose((ref) => '');
@@ -10,6 +11,8 @@ final whereProvider = StateProvider.autoDispose((ref) => '');
 final whatProvider = StateProvider.autoDispose((ref) => '');
 final whenProvider = StateProvider.autoDispose((ref) => '');
 final howProvider = StateProvider.autoDispose((ref) => '');
+final controllerProvider =
+    Provider.autoDispose((ref) => TreeController(allNodesExpanded: false));
 
 class PostScreen extends ConsumerWidget {
   const PostScreen({Key? key}) : super(key: key);
@@ -24,12 +27,7 @@ class PostScreen extends ConsumerWidget {
     final when = ref.watch(whenProvider);
     final how = ref.watch(howProvider);
 
-    final List<Map<String, dynamic>> tiles = [
-      {
-        "title": "ワード",
-        "subtitle": word,
-        "provider": wordProvider,
-      },
+    final List<Map<String, dynamic>> textEditTiles = [
       {
         'title': '簡単な説明',
         'subtitle': description,
@@ -49,29 +47,86 @@ class PostScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.all(10.0),
         scrollDirection: Axis.vertical,
-        children: tiles
-            .map((tile) => Card(
-                child: ListTile(
-                    title: Text(tile['title']),
-                    subtitle: Text(tile['subtitle']),
-                    trailing: const Icon(Icons.edit),
-                    onTap: () => showAnimatedDialog(
-                        context: context,
-                        animationType: DialogTransitionType.fadeScale,
-                        builder: (context) => TextEditDialog(
-                            title: tile['title'], provider: tile['provider'])),
-                    isThreeLine: true)))
-            .toList(),
+        children: [
+          Card(
+              child: ListTile(
+                  title: const Text('ワード'),
+                  subtitle: Text(word),
+                  trailing: const Icon(Icons.edit),
+                  onTap: () => showAnimatedDialog(
+                      context: context,
+                      animationType: DialogTransitionType.fadeScale,
+                      builder: (context) => const WordSelectDialog()),
+                  isThreeLine: true)),
+          ...textEditTiles
+              .map((tile) => Card(
+                  child: ListTile(
+                      title: Text(tile['title']),
+                      subtitle: Text(tile['subtitle']),
+                      trailing: const Icon(Icons.edit),
+                      onTap: () => showAnimatedDialog(
+                          context: context,
+                          animationType: DialogTransitionType.fadeScale,
+                          builder: (context) => TextEditDialog(
+                              title: tile['title'],
+                              provider: tile['provider'])),
+                      isThreeLine: true)))
+              .toList()
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
           onPressed: () => showAnimatedDialog(
               context: context,
               animationType: DialogTransitionType.fadeScale,
-              barrierDismissible: true,
               builder: (context) => const ConfirmDialog()),
           icon: const Icon(Icons.check),
           label: const Text('投稿')),
     );
+  }
+}
+
+class WordButton extends ConsumerWidget {
+  const WordButton({Key? key, required this.word}) : super(key: key);
+
+  final String word;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => TextButton(
+      onPressed: () {
+        ref.read(wordProvider.notifier).state = word;
+        Navigator.of(context).pop(context);
+      },
+      child: Text(word));
+}
+
+class WordSelectDialog extends ConsumerWidget {
+  const WordSelectDialog({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final controller = ref.watch(controllerProvider);
+
+    return AlertDialog(
+        scrollable: true,
+        title: const Text('ワード'),
+        content:
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Text('以下からワードを選択してください', style: TextStyle(color: Colors.grey)),
+          TreeView(
+              treeController: controller,
+              nodes: [
+                TreeNode(content: const WordButton(word: '生物'), children: [
+                  TreeNode(content: const WordButton(word: '虫'), children: [
+                    TreeNode(
+                        content: const WordButton(word: 'かまきり'),
+                        children: [
+                          TreeNode(content: const WordButton(word: '触角'))
+                        ])
+                  ])
+                ]),
+              ],
+              indent: 20.0)
+        ]));
   }
 }
 
