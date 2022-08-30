@@ -9,7 +9,7 @@ class StandbyScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
         body: Container(
-            margin: const EdgeInsets.all(30.0),
+            margin: const EdgeInsets.all(10.0),
             child: Column(
                 verticalDirection: VerticalDirection.down,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -25,17 +25,17 @@ class StandbyScreen extends ConsumerWidget {
                               onPressed: () => context.go('/child/camera'),
                               style: ElevatedButton.styleFrom(
                                   fixedSize: const Size.fromHeight(100.0),
-                                  padding: const EdgeInsets.all(30.0)),
+                                  padding: const EdgeInsets.all(10.0)),
                               child: const FittedBox(
                                   child: Text('もどる',
                                       style: TextStyle(fontSize: 30.0))))),
-                      const SizedBox(width: 20.0),
+                      const SizedBox(width: 10.0),
                       Expanded(
                           child: ElevatedButton(
                               onPressed: () => context.replace('/child/result'),
                               style: ElevatedButton.styleFrom(
                                   fixedSize: const Size.fromHeight(100.0),
-                                  padding: const EdgeInsets.all(30.0)),
+                                  padding: const EdgeInsets.all(10.0)),
                               child: const FittedBox(
                                   child: Text('けっか',
                                       style: TextStyle(fontSize: 30.0)))))
