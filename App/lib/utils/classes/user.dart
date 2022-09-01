@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class AppUser {
   String uid; //userID
   String name; //userName
-  List<String> groups = []; //所属しているグループ
+  List<int> groups = []; //所属しているグループ
   List<String> histories = []; //検索履歴
   List<int> favorites = []; //お気に入り
   List<int> _expDatas = []; //作成したデータ
@@ -22,6 +22,15 @@ class AppUser {
       'favorites': favorites,
       'expDatas': _expDatas,
     });
+  }
+
+  void addExpData(int expDataID) {
+    if (_expDatas.contains(expDataID)) {
+      return;
+    } else {
+      _expDatas.add(expDataID);
+    }
+    return;
   }
 
   void setData(String uid, String name) {
