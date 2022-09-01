@@ -21,6 +21,9 @@ class ExpData {
 
   String? _imageUrl;
 
+  int get dataId => _dataId;
+  String get userId => _userId;
+
   ExpData({required String word, required String meaning, this.rootId}) {
     _word = word;
     _meaning = meaning;
