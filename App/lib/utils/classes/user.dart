@@ -5,7 +5,10 @@ class AppUser {
   String name; //userName
   List<String> groups = []; //所属しているグループ
   List<String> histories = []; //検索履歴
-  List<String> favorites = []; //お気に入り
+  List<int> favorites = []; //お気に入り
+  List<int> _expDatas = []; //作成したデータ
+
+  List<int> get expDatas => _expDatas;
 
   AppUser({required this.uid, required this.name});
 
@@ -16,6 +19,8 @@ class AppUser {
       'name': name,
       'groups': groups,
       'histories': histories,
+      'favorites': favorites,
+      'expDatas': _expDatas,
     });
   }
 
@@ -33,6 +38,8 @@ class AppUser {
       final appUser = AppUser(uid: doc['uid'], name: doc['name']);
       appUser.groups = doc['groups'];
       appUser.histories = doc['histories'];
+      appUser.favorites = doc['favorites'];
+      appUser._expDatas = doc['expDatas'];
       return appUser;
     } else {
       return null;
