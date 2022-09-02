@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -26,52 +27,69 @@ class ResultScreen extends ConsumerWidget {
                               image: FileImage(File(imagePath)),
                               fit: BoxFit.cover)))
                   : const CircularProgressIndicator()),
-          PageView(
-              controller: controller,
-              physics: const NeverScrollableScrollPhysics(),
-              children: [
-                Center(
-                    child: Opacity(
-                        opacity: 0.9,
-                        child: Card(
-                            child: Container(
-                                margin: const EdgeInsets.all(20.0),
-                                child: DefaultTextStyle(
-                                    style: const TextStyle(
-                                        fontSize: 30.0,
-                                        fontWeight: FontWeight.bold),
-                                    child: Wrap(
-                                        direction: Axis.vertical,
-                                        crossAxisAlignment:
-                                            WrapCrossAlignment.center,
-                                        spacing: 10.0,
-                                        children: const [
-                                          Text('これは'),
-                                          Text('かまきり',
-                                              style: TextStyle(
-                                                  fontSize: 36.0,
-                                                  fontWeight: FontWeight.bold)),
-                                          Text('です')
-                                        ])))))),
-                const Center(child: Text('かまきり')),
-              ]),
-          ChildActions(actions: [
-            ChildActionButton(
-                onPressed: () {
-                  if (controller.page == 0) {
-                    context.pop();
-                  } else {
-                    controller.previousPage(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut);
-                  }
-                },
-                child: const Text('もどる')),
-            ChildActionButton(
-                onPressed: () => controller.nextPage(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut),
-                child: const Text('つぎへ'))
+          Column(children: [
+            Expanded(
+                child: PageView(
+                    controller: controller,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: [
+                  Container(
+                      margin: const EdgeInsets.all(10.0),
+                      child: Card(
+                          color: Colors.transparent,
+                          child: FlipCard(
+                              fill: Fill.fillBack,
+                              front: Container(
+                                  decoration: BoxDecoration(
+                                      color: Theme.of(context).backgroundColor,
+                                      borderRadius:
+                                          BorderRadius.circular(10.0)),
+                                  child: const Text('まえ')),
+                              back: Container(
+                                  decoration: BoxDecoration(
+                                      color: Theme.of(context).backgroundColor,
+                                      borderRadius:
+                                          BorderRadius.circular(10.0)),
+                                  child: const Text('うしろ')),
+                              alignment: Alignment.center))),
+                  Container(
+                      margin: const EdgeInsets.all(10.0),
+                      child: Card(
+                          color: Colors.transparent,
+                          child: FlipCard(
+                              fill: Fill.fillBack,
+                              front: Container(
+                                  decoration: BoxDecoration(
+                                      color: Theme.of(context).backgroundColor,
+                                      borderRadius:
+                                          BorderRadius.circular(10.0)),
+                                  child: const Text('まえ')),
+                              back: Container(
+                                  decoration: BoxDecoration(
+                                      color: Theme.of(context).backgroundColor,
+                                      borderRadius:
+                                          BorderRadius.circular(10.0)),
+                                  child: const Text('うしろ')),
+                              alignment: Alignment.center)))
+                ])),
+            ChildActions(actions: [
+              ChildActionButton(
+                  onPressed: () {
+                    if (controller.page == 0) {
+                      context.pop();
+                    } else {
+                      controller.previousPage(
+                          duration: const Duration(milliseconds: 200),
+                          curve: Curves.easeInOut);
+                    }
+                  },
+                  child: const Text('もどる')),
+              ChildActionButton(
+                  onPressed: () => controller.nextPage(
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeInOut),
+                  child: const Text('つぎへ'))
+            ])
           ])
         ]));
   }
