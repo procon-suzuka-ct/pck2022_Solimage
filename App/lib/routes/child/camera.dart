@@ -50,17 +50,13 @@ class CameraScreen extends ConsumerWidget {
               ChildActions(actions: [
                 ChildActionButton(
                     onPressed: () async {
-                      ref.refresh(imageProvider);
-                      controller.pausePreview();
                       showDialog(
                           context: context,
                           barrierColor: Colors.black.withOpacity(0.8),
-                          builder: (context) => WillPopScope(
-                              onWillPop: () async {
-                                await controller.resumePreview();
-                                return true;
-                              },
-                              child: StandbyDialog(controller: controller)));
+                          builder: (context) =>
+                              StandbyDialog(controller: controller));
+                      ref.read(imagePathProvider.notifier).state =
+                          (await controller.takePicture()).path;
                     },
                     child:
                         const Text('さつえい', style: TextStyle(fontSize: 30.0))),
@@ -113,10 +109,7 @@ class StandbyDialog extends StatelessWidget {
         ChildActions(actions: [
           ChildActionButton(
               child: const Text('もどる', style: TextStyle(fontSize: 30.0)),
-              onPressed: () {
-                Navigator.of(context).pop();
-                context.go('/child/camera');
-              }),
+              onPressed: () => Navigator.of(context).pop()),
           ChildActionButton(
               child: const Text('けっかを みる',
                   style: TextStyle(fontSize: 30.0),
