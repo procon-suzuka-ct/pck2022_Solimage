@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flip_card/flip_card.dart';
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -47,23 +47,34 @@ class ResultScreen extends ConsumerWidget {
                           6,
                           (index) => Card(
                               color: Colors.transparent,
-                              child: FlipCard(
-                                  fill: Fill.fillBack,
-                                  front: Container(
+                              child: OpenContainer(
+                                  closedColor: Colors.transparent,
+                                  openColor: Colors.transparent,
+                                  openBuilder: (context, action) => Container(
                                       decoration: BoxDecoration(
                                           color:
                                               Theme.of(context).backgroundColor,
                                           borderRadius:
                                               BorderRadius.circular(10.0)),
-                                      child: const Center(child: Text('まえ'))),
-                                  back: Container(
+                                      child: Stack(
+                                          alignment: Alignment.center,
+                                          children: [
+                                            const Center(child: Text('B')),
+                                            ChildActions(actions: [
+                                              ChildActionButton(
+                                                  child: const Text('もどる'),
+                                                  onPressed: () =>
+                                                      Navigator.of(context)
+                                                          .pop())
+                                            ])
+                                          ])),
+                                  closedBuilder: (context, action) => Container(
                                       decoration: BoxDecoration(
                                           color:
                                               Theme.of(context).backgroundColor,
                                           borderRadius:
                                               BorderRadius.circular(10.0)),
-                                      child: const Center(child: Text('うしろ'))),
-                                  alignment: Alignment.center))))
+                                      child: const Center(child: Text('A')))))))
                 ])),
             ChildActions(actions: [
               ChildActionButton(
