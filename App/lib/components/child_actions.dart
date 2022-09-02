@@ -36,6 +36,9 @@ class ChildActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ElevatedButton(
       onPressed: onPressed,
-      style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(10.0)),
+      style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.all(10.0),
+          textStyle:
+              const TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold)),
       child: child);
 }

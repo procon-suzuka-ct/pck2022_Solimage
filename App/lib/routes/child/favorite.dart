@@ -16,8 +16,7 @@ class FavoriteScreen extends ConsumerWidget {
         ),
         body: ChildActions(actions: [
           ChildActionButton(
-              onPressed: () => context.pop(),
-              child: const Text('もどる', style: TextStyle(fontSize: 30.0)))
+              onPressed: () => context.pop(), child: const Text('もどる'))
         ]));
   }
 }

@@ -59,12 +59,10 @@ class CameraScreen extends ConsumerWidget {
                       ref.read(imagePathProvider.notifier).state =
                           (await controller.takePicture()).path;
                     },
-                    child:
-                        const Text('さつえい', style: TextStyle(fontSize: 30.0))),
+                    child: const Text('さつえい')),
                 ChildActionButton(
                     onPressed: () => context.push('/child/favorite'),
-                    child:
-                        const Text('おきにいり', style: TextStyle(fontSize: 30.0)))
+                    child: const Text('おきにいり'))
               ])
             ]));
           },
@@ -109,12 +107,10 @@ class StandbyDialog extends StatelessWidget {
             content: Center(heightFactor: 1.0, child: Text('簡単な説明'))),
         ChildActions(actions: [
           ChildActionButton(
-              child: const Text('もどる', style: TextStyle(fontSize: 30.0)),
+              child: const Text('もどる'),
               onPressed: () => Navigator.of(context).pop()),
           ChildActionButton(
-              child: const Text('けっかを みる',
-                  style: TextStyle(fontSize: 30.0),
-                  textAlign: TextAlign.center),
+              child: const Text('けっかを みる', textAlign: TextAlign.center),
               onPressed: () {
                 Navigator.of(context).pop();
                 context.push('/child/result');

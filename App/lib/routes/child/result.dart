@@ -51,8 +51,7 @@ class ResultScreen extends ConsumerWidget {
                                       Text('です',
                                           style: TextStyle(fontSize: 30.0))
                                     ]))))),
-                const Center(
-                    child: Text('かまきり', style: TextStyle(fontSize: 30))),
+                const Center(child: Text('かまきり')),
               ]),
           ChildActions(actions: [
             ChildActionButton(
@@ -65,12 +64,12 @@ class ResultScreen extends ConsumerWidget {
                         curve: Curves.easeInOut);
                   }
                 },
-                child: const Text('もどる', style: TextStyle(fontSize: 30.0))),
+                child: const Text('もどる')),
             ChildActionButton(
                 onPressed: () => controller.nextPage(
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeInOut),
-                child: const Text('つぎへ', style: TextStyle(fontSize: 30.0)))
+                child: const Text('つぎへ'))
           ])
         ]));
   }
