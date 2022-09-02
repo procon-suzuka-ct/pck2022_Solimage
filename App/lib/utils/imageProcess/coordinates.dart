@@ -1,11 +1,12 @@
 class Coordinates {
   int _objNum = 0;
-  List<List<int>> _objCoordinates = [];
+  List<List<double>> _objCoordinates = [];
 
   int get objNum => _objNum;
-  List<List<int>> get objCoordinates => _objCoordinates;
+  List<List<double>> get objCoordinates => _objCoordinates;
 
-  Coordinates({required int objNum, required List<List<int>> objCoordinates}) {
+  Coordinates(
+      {required int objNum, required List<List<double>> objCoordinates}) {
     _objNum = objNum;
     _objCoordinates = objCoordinates;
   }
