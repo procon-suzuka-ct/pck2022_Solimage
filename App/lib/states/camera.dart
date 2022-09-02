@@ -22,4 +22,4 @@ final controllerProvider = FutureProvider((ref) async {
   return controller;
 });
 
-final imagePathProvider = StateProvider((ref) => '');
+final imagePathProvider = StateProvider<String?>((ref) => null);

@@ -19,11 +19,13 @@ class ResultScreen extends ConsumerWidget {
         body:
             Stack(alignment: Alignment.center, fit: StackFit.expand, children: [
           Center(
-              child: Container(
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                          image: FileImage(File(imagePath)),
-                          fit: BoxFit.cover)))),
+              child: imagePath != null
+                  ? Container(
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                              image: FileImage(File(imagePath)),
+                              fit: BoxFit.cover)))
+                  : const CircularProgressIndicator()),
           PageView(
               controller: controller,
               physics: const NeverScrollableScrollPhysics(),
