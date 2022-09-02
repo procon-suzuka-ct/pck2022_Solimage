@@ -49,9 +49,18 @@ class CameraScreen extends ConsumerWidget {
                               padding: const EdgeInsets.all(15.0))))),
               ChildActions(actions: [
                 ChildActionButton(
-                    onPressed: () {
+                    onPressed: () async {
                       ref.refresh(imageProvider);
-                      context.push('/child/standby');
+                      controller.pausePreview();
+                      showDialog(
+                          context: context,
+                          barrierColor: Colors.black.withOpacity(0.8),
+                          builder: (context) => WillPopScope(
+                              onWillPop: () async {
+                                await controller.resumePreview();
+                                return true;
+                              },
+                              child: StandbyDialog(controller: controller)));
                     },
                     child:
                         const Text('さつえい', style: TextStyle(fontSize: 30.0))),
@@ -89,4 +98,33 @@ class SwitchToParentDialog extends StatelessWidget {
               onPressed: () => Navigator.of(context).pop()),
         ],
       );
+}
+
+class StandbyDialog extends StatelessWidget {
+  const StandbyDialog({Key? key, required this.controller}) : super(key: key);
+
+  final CameraController controller;
+
+  @override
+  Widget build(BuildContext context) => Stack(children: [
+        const AlertDialog(
+            title: Text('大人が伝えたいワード'),
+            content: Center(heightFactor: 1.0, child: Text('簡単な説明'))),
+        ChildActions(actions: [
+          ChildActionButton(
+              child: const Text('もどる', style: TextStyle(fontSize: 30.0)),
+              onPressed: () {
+                Navigator.of(context).pop();
+                context.go('/child/camera');
+              }),
+          ChildActionButton(
+              child: const Text('けっかを みる',
+                  style: TextStyle(fontSize: 30.0),
+                  textAlign: TextAlign.center),
+              onPressed: () {
+                Navigator.of(context).pop();
+                context.push('/child/result');
+              })
+        ])
+      ]);
 }
