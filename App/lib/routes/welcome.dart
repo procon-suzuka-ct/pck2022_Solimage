@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:solimage/states/auth.dart';
@@ -27,9 +26,8 @@ class WelcomeScreen extends ConsumerWidget {
                 onPressed: () async {
                   final user = await Auth().signIn();
                   if (user != null) {
-                    await showAnimatedDialog(
+                    await showDialog(
                         context: context,
-                        animationType: DialogTransitionType.fadeScale,
                         barrierDismissible: true,
                         builder: (context) => const ModeSelectionDialog());
                     ref.read(userProvider.notifier).state = user;

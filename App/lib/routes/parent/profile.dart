@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:solimage/states/auth.dart';
 import 'package:solimage/utils/auth.dart';
@@ -33,17 +32,15 @@ class ProfileScreen extends ConsumerWidget {
           child: ListTile(
               title: const Text('名前'),
               trailing: const Icon(Icons.edit),
-              onTap: () => showAnimatedDialog(
+              onTap: () => showDialog(
                   context: context,
-                  animationType: DialogTransitionType.fadeScale,
                   builder: (context) => const UserNameDialog()))),
       Card(
           child: ListTile(
               title: const Text('ログアウト'),
               trailing: const Icon(Icons.logout),
-              onTap: () => showAnimatedDialog(
+              onTap: () => showDialog(
                   context: context,
-                  animationType: DialogTransitionType.fadeScale,
                   builder: (context) => const LogoutDialog()))),
       const ListTile(
           title: Text('グループ',
@@ -52,27 +49,24 @@ class ProfileScreen extends ConsumerWidget {
           child: ListTile(
               title: const Text('グループA'),
               trailing: const Icon(Icons.info),
-              onTap: () => showAnimatedDialog(
+              onTap: () => showDialog(
                   context: context,
-                  animationType: DialogTransitionType.fadeScale,
                   builder: (context) =>
                       const GroupDialog(groupName: 'グループA')))),
       Card(
           child: ListTile(
               title: const Text('グループB'),
               trailing: const Icon(Icons.info),
-              onTap: () => showAnimatedDialog(
+              onTap: () => showDialog(
                   context: context,
-                  animationType: DialogTransitionType.fadeScale,
                   builder: (context) =>
                       const GroupDialog(groupName: 'グループB')))),
       Card(
           child: ListTile(
               title: const Text('グループC'),
               trailing: const Icon(Icons.info),
-              onTap: () => showAnimatedDialog(
+              onTap: () => showDialog(
                   context: context,
-                  animationType: DialogTransitionType.fadeScale,
                   builder: (context) =>
                       const GroupDialog(groupName: 'グループC')))),
       const ListTile(

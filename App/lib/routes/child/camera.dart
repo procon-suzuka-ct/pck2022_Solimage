@@ -1,6 +1,5 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -36,9 +35,8 @@ class CameraScreen extends ConsumerWidget {
                       margin: const EdgeInsets.all(10.0),
                       child: ElevatedButton.icon(
                           icon: const Icon(Icons.supervisor_account),
-                          onPressed: () => showAnimatedDialog(
+                          onPressed: () => showDialog(
                               context: context,
-                              animationType: DialogTransitionType.fadeScale,
                               barrierDismissible: true,
                               builder: (context) =>
                                   const SwitchToParentDialog()),
