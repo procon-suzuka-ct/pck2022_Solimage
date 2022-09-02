@@ -5,7 +5,6 @@ import 'package:solimage/observers/system_ui.dart';
 import 'package:solimage/routes/child/camera.dart';
 import 'package:solimage/routes/child/favorite.dart';
 import 'package:solimage/routes/child/result.dart';
-import 'package:solimage/routes/child/standby.dart';
 import 'package:solimage/routes/parent/parent.dart';
 import 'package:solimage/routes/parent/post.dart';
 import 'package:solimage/routes/welcome.dart';
@@ -16,7 +15,6 @@ final List<Map<String, dynamic>> routes = [
   {'path': '/', 'child': const WelcomeScreen()},
   {'path': '/child/camera', 'child': const CameraScreen()},
   {'path': '/child/favorite', 'child': const FavoriteScreen()},
-  {'path': '/child/standby', 'child': const StandbyScreen()},
   {'path': '/child/result', 'child': const ResultScreen()},
   {'path': '/parent', 'child': const ParentScreen()},
   {'path': '/parent/post', 'child': const PostScreen()}
