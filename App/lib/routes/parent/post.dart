@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_simple_treeview/flutter_simple_treeview.dart';
 import 'package:go_router/go_router.dart';
@@ -53,9 +52,8 @@ class PostScreen extends ConsumerWidget {
                   title: const Text('ワード'),
                   subtitle: Text(word),
                   trailing: const Icon(Icons.edit),
-                  onTap: () => showAnimatedDialog(
+                  onTap: () => showDialog(
                       context: context,
-                      animationType: DialogTransitionType.fadeScale,
                       builder: (context) => const WordSelectDialog()),
                   isThreeLine: true)),
           ...textEditTiles
@@ -64,9 +62,8 @@ class PostScreen extends ConsumerWidget {
                       title: Text(tile['title']),
                       subtitle: Text(tile['subtitle']),
                       trailing: const Icon(Icons.edit),
-                      onTap: () => showAnimatedDialog(
+                      onTap: () => showDialog(
                           context: context,
-                          animationType: DialogTransitionType.fadeScale,
                           builder: (context) => TextEditDialog(
                               title: tile['title'],
                               provider: tile['provider'])),
@@ -75,10 +72,8 @@ class PostScreen extends ConsumerWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-          onPressed: () => showAnimatedDialog(
-              context: context,
-              animationType: DialogTransitionType.fadeScale,
-              builder: (context) => const ConfirmDialog()),
+          onPressed: () => showDialog(
+              context: context, builder: (context) => const ConfirmDialog()),
           icon: const Icon(Icons.check),
           label: const Text('投稿')),
     );
