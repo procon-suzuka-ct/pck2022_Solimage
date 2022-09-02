@@ -50,6 +50,7 @@ class CameraScreen extends ConsumerWidget {
               ChildActions(actions: [
                 ChildActionButton(
                     onPressed: () async {
+                      ref.read(imagePathProvider.notifier).state = null;
                       showDialog(
                           context: context,
                           barrierColor: Colors.black.withOpacity(0.8),
