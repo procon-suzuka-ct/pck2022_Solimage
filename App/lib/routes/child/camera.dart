@@ -4,6 +4,7 @@ import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:solimage/components/child_actions.dart';
 import 'package:solimage/states/camera.dart';
 import 'package:solimage/states/permission.dart';
 
@@ -24,7 +25,7 @@ class CameraScreen extends ConsumerWidget {
             if (scale < 1) scale = 1 / scale;
 
             return Scaffold(
-                body: Stack(children: <Widget>[
+                body: Stack(fit: StackFit.expand, children: <Widget>[
               Transform.scale(
                   scale: scale,
                   alignment: Alignment.center,
@@ -46,41 +47,23 @@ class CameraScreen extends ConsumerWidget {
                           ),
                           style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.all(15.0))))),
-              Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                      height: 100.0,
-                      margin: const EdgeInsets.all(10.0),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: <Widget>[
-                            Expanded(
-                                child: ElevatedButton(
-                                    onPressed: () {
-                                      ref.refresh(imageProvider);
-                                      context.push('/child/standby');
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                        fixedSize: const Size.fromHeight(100.0),
-                                        padding: const EdgeInsets.all(10.0)),
-                                    child: const FittedBox(
-                                        child: Text('さつえい',
-                                            style:
-                                                TextStyle(fontSize: 30.0))))),
-                            const SizedBox(width: 10.0),
-                            Expanded(
-                                child: ElevatedButton(
-                                    onPressed: () =>
-                                        context.push('/child/favorite'),
-                                    style: ElevatedButton.styleFrom(
-                                        fixedSize: const Size.fromHeight(100.0),
-                                        padding: const EdgeInsets.all(10.0)),
-                                    child: const FittedBox(
-                                      child: Text('おきにいり',
-                                          style: TextStyle(fontSize: 30.0)),
-                                    ))),
-                          ])))
+              ChildActions(actions: [
+                ChildActionButton(
+                    onPressed: () async {
+                      ref.read(imagePathProvider.notifier).state = null;
+                      showDialog(
+                          context: context,
+                          barrierColor: Colors.black.withOpacity(0.8),
+                          builder: (context) =>
+                              StandbyDialog(controller: controller));
+                      ref.read(imagePathProvider.notifier).state =
+                          (await controller.takePicture()).path;
+                    },
+                    child: const Text('さつえい')),
+                ChildActionButton(
+                    onPressed: () => context.push('/child/favorite'),
+                    child: const Text('おきにいり'))
+              ])
             ]));
           },
           error: (error, _) => Text('Error: $error'),
@@ -110,4 +93,28 @@ class SwitchToParentDialog extends StatelessWidget {
               onPressed: () => Navigator.of(context).pop()),
         ],
       );
+}
+
+class StandbyDialog extends StatelessWidget {
+  const StandbyDialog({Key? key, required this.controller}) : super(key: key);
+
+  final CameraController controller;
+
+  @override
+  Widget build(BuildContext context) => Stack(children: [
+        const AlertDialog(
+            title: Text('大人が伝えたいワード'),
+            content: Center(heightFactor: 1.0, child: Text('簡単な説明'))),
+        ChildActions(actions: [
+          ChildActionButton(
+              child: const Text('もどる'),
+              onPressed: () => Navigator.of(context).pop()),
+          ChildActionButton(
+              child: const Text('けっかをみる', textAlign: TextAlign.center),
+              onPressed: () {
+                Navigator.of(context).pop();
+                context.push('/child/result');
+              })
+        ])
+      ]);
 }
