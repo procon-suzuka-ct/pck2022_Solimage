@@ -36,21 +36,23 @@ class ResultScreen extends ConsumerWidget {
                         child: Card(
                             child: Container(
                                 margin: const EdgeInsets.all(20.0),
-                                child: Wrap(
-                                    direction: Axis.vertical,
-                                    crossAxisAlignment:
-                                        WrapCrossAlignment.center,
-                                    spacing: 10.0,
-                                    children: const [
-                                      Text('これは',
-                                          style: TextStyle(fontSize: 30.0)),
-                                      Text('かまきり',
-                                          style: TextStyle(
-                                              fontSize: 36.0,
-                                              fontWeight: FontWeight.bold)),
-                                      Text('です',
-                                          style: TextStyle(fontSize: 30.0))
-                                    ]))))),
+                                child: DefaultTextStyle(
+                                    style: const TextStyle(
+                                        fontSize: 30.0,
+                                        fontWeight: FontWeight.bold),
+                                    child: Wrap(
+                                        direction: Axis.vertical,
+                                        crossAxisAlignment:
+                                            WrapCrossAlignment.center,
+                                        spacing: 10.0,
+                                        children: const [
+                                          Text('これは'),
+                                          Text('かまきり',
+                                              style: TextStyle(
+                                                  fontSize: 36.0,
+                                                  fontWeight: FontWeight.bold)),
+                                          Text('です')
+                                        ])))))),
                 const Center(child: Text('かまきり')),
               ]),
           ChildActions(actions: [
