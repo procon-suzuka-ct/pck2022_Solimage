@@ -40,5 +40,5 @@ class ChildActionButton extends StatelessWidget {
           padding: const EdgeInsets.all(10.0),
           textStyle:
               const TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold)),
-      child: child);
+      child: FittedBox(fit: BoxFit.contain, child: child));
 }

@@ -110,7 +110,7 @@ class StandbyDialog extends StatelessWidget {
               child: const Text('もどる'),
               onPressed: () => Navigator.of(context).pop()),
           ChildActionButton(
-              child: const Text('けっかを みる', textAlign: TextAlign.center),
+              child: const Text('けっかをみる', textAlign: TextAlign.center),
               onPressed: () {
                 Navigator.of(context).pop();
                 context.push('/child/result');
