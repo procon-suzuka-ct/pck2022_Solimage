@@ -4,6 +4,7 @@ import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:solimage/components/child_actions.dart';
 import 'package:solimage/states/camera.dart';
 import 'package:solimage/states/permission.dart';
 
@@ -24,7 +25,7 @@ class CameraScreen extends ConsumerWidget {
             if (scale < 1) scale = 1 / scale;
 
             return Scaffold(
-                body: Stack(children: <Widget>[
+                body: Stack(fit: StackFit.expand, children: <Widget>[
               Transform.scale(
                   scale: scale,
                   alignment: Alignment.center,
@@ -46,41 +47,19 @@ class CameraScreen extends ConsumerWidget {
                           ),
                           style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.all(15.0))))),
-              Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                      height: 100.0,
-                      margin: const EdgeInsets.all(10.0),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: <Widget>[
-                            Expanded(
-                                child: ElevatedButton(
-                                    onPressed: () {
-                                      ref.refresh(imageProvider);
-                                      context.push('/child/standby');
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                        fixedSize: const Size.fromHeight(100.0),
-                                        padding: const EdgeInsets.all(10.0)),
-                                    child: const FittedBox(
-                                        child: Text('さつえい',
-                                            style:
-                                                TextStyle(fontSize: 30.0))))),
-                            const SizedBox(width: 10.0),
-                            Expanded(
-                                child: ElevatedButton(
-                                    onPressed: () =>
-                                        context.push('/child/favorite'),
-                                    style: ElevatedButton.styleFrom(
-                                        fixedSize: const Size.fromHeight(100.0),
-                                        padding: const EdgeInsets.all(10.0)),
-                                    child: const FittedBox(
-                                      child: Text('おきにいり',
-                                          style: TextStyle(fontSize: 30.0)),
-                                    ))),
-                          ])))
+              ChildActions(actions: [
+                ChildActionButton(
+                    onPressed: () {
+                      ref.refresh(imageProvider);
+                      context.push('/child/standby');
+                    },
+                    child:
+                        const Text('さつえい', style: TextStyle(fontSize: 30.0))),
+                ChildActionButton(
+                    onPressed: () => context.push('/child/favorite'),
+                    child:
+                        const Text('おきにいり', style: TextStyle(fontSize: 30.0)))
+              ])
             ]));
           },
           error: (error, _) => Text('Error: $error'),

@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:solimage/components/child_actions.dart';
 import 'package:solimage/states/camera.dart';
 
 class ResultScreen extends ConsumerWidget {
@@ -10,18 +12,70 @@ class ResultScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final image = ref.watch(imageProvider);
-    final height = MediaQuery.of(context).size.height;
+    final controller = PageController();
 
     return Scaffold(
-        body: Center(
-      child: image.when(
-          data: (data) => AspectRatio(
-              aspectRatio: 9.0 / 16.0,
-              child: SizedBox(
-                  height: height,
-                  child: Image.file(File(data.path), fit: BoxFit.fitHeight))),
-          loading: () => const CircularProgressIndicator(),
-          error: (error, _) => Text('エラーが発生しました: $error')),
-    ));
+        backgroundColor: Colors.transparent,
+        body:
+            Stack(alignment: Alignment.center, fit: StackFit.expand, children: [
+          image.when(
+              data: (data) => Container(
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image: FileImage(File(data.path)),
+                          fit: BoxFit.cover))),
+              loading: () => const CircularProgressIndicator(),
+              error: (error, _) => Text('エラーが発生しました: $error')),
+          PageView(
+              controller: controller,
+              physics: const NeverScrollableScrollPhysics(),
+              children: [
+                Center(
+                    child: Opacity(
+                        opacity: 0.9,
+                        child: Card(
+                            child: Container(
+                                margin: const EdgeInsets.all(20.0),
+                                child: Wrap(
+                                    direction: Axis.vertical,
+                                    crossAxisAlignment:
+                                        WrapCrossAlignment.center,
+                                    spacing: 10.0,
+                                    children: const [
+                                      Text('これは',
+                                          style: TextStyle(fontSize: 30.0)),
+                                      Text('かまきり',
+                                          style: TextStyle(
+                                              fontSize: 36.0,
+                                              fontWeight: FontWeight.bold)),
+                                      Text('です',
+                                          style: TextStyle(fontSize: 30.0))
+                                    ]))))),
+                const Center(
+                    child: Text('かまきり', style: TextStyle(fontSize: 30))),
+              ]),
+          ChildActions(actions: [
+            ChildActionButton(
+                onPressed: () {
+                  if (controller.page == 0) {
+                    context.pop();
+                  } else {
+                    controller.previousPage(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut);
+                  }
+                },
+                child: const FittedBox(
+                    fit: BoxFit.fitWidth,
+                    child: Text('もどる', style: TextStyle(fontSize: 30.0)))),
+            ChildActionButton(
+                onPressed: () => controller.nextPage(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut),
+                child: const FittedBox(
+                    fit: BoxFit.fitWidth,
+                    child: Text('つぎへ', style: TextStyle(fontSize: 30.0))))
+          ])
+        ]));
   }
 }
