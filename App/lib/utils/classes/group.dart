@@ -5,6 +5,9 @@ class Group {
   late int groupID;
   String groupName;
   List<String> members = [];
+  List<int> _expDatas = [];
+
+  List<int> get expDatas => _expDatas;
 
   Group({required this.groupName}) {
     generatId().then((value) => groupID = value);
@@ -43,6 +46,7 @@ class Group {
       'groupID': groupID,
       'groupName': groupName,
       'members': members,
+      'expDatas': _expDatas,
     });
   }
 
@@ -55,6 +59,7 @@ class Group {
       final group = Group(groupName: doc['groupName']);
       group.groupID = doc['groupID'];
       group.members = doc['members'];
+      group._expDatas = doc['expDatas'];
       return group;
     } else {
       return null;
@@ -76,6 +81,15 @@ class Group {
     return;
   }
 
+  void addExpData(int expDataID) {
+    if (_expDatas.contains(expDataID)) {
+      return;
+    } else {
+      _expDatas.add(expDataID);
+    }
+    return;
+  }
+
   Future<void> update() async {
     await FirebaseFirestore.instance
         .collection('group')
@@ -83,6 +97,7 @@ class Group {
         .update({
       'groupName': groupName,
       'members': members,
+      'expDatas': _expDatas,
     });
   }
 

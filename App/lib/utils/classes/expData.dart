@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:math';
 import 'package:solimage/utils/auth.dart';
+import 'package:solimage/utils/classes/group.dart';
+import 'package:solimage/utils/classes/user.dart';
 
 class ExpData {
   late final int _dataId;
@@ -20,6 +22,9 @@ class ExpData {
   String? _how;
 
   String? _imageUrl;
+
+  int get dataId => _dataId;
+  String get userId => _userId;
 
   ExpData({required String word, required String meaning, this.rootId}) {
     _word = word;
@@ -91,6 +96,20 @@ class ExpData {
     if (_dataId == 0) {
       throw Exception("dataId is not set");
     }
+
+    AppUser.getUser(_userId).then((value) {
+      if (value != null) {
+        value.addExpData(_dataId);
+        for (var groupId in value.groups) {
+          Group.getGroup(groupId).then((group) {
+            if (group != null) {
+              group.addExpData(_dataId);
+            }
+          });
+        }
+      }
+    });
+
     await FirebaseFirestore.instance
         .collection('expData')
         .doc(_dataId.toString())
@@ -108,6 +127,7 @@ class ExpData {
       'childIds': childIds,
       'rootId': rootId,
     });
+    return;
   }
 
   //Firestoreから取得する
