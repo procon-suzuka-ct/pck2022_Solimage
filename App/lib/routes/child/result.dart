@@ -11,7 +11,7 @@ class ResultScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final image = ref.watch(imageProvider);
+    final imagePath = ref.watch(imagePathProvider);
     final controller = PageController();
 
     return Scaffold(
@@ -19,14 +19,11 @@ class ResultScreen extends ConsumerWidget {
         body:
             Stack(alignment: Alignment.center, fit: StackFit.expand, children: [
           Center(
-              child: image.when(
-                  data: (data) => Container(
-                      decoration: BoxDecoration(
-                          image: DecorationImage(
-                              image: FileImage(File(data.path)),
-                              fit: BoxFit.cover))),
-                  loading: () => const CircularProgressIndicator(),
-                  error: (error, _) => Text('エラーが発生しました: $error'))),
+              child: Container(
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image: FileImage(File(imagePath)),
+                          fit: BoxFit.cover)))),
           PageView(
               controller: controller,
               physics: const NeverScrollableScrollPhysics(),

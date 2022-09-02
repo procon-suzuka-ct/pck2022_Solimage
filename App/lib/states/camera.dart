@@ -9,7 +9,7 @@ final controllerProvider = FutureProvider((ref) async {
   final lifecycle = ref.watch(appLifecycleProvider);
   final controller = CameraController(
       (await availableCameras()).first, ResolutionPreset.medium,
-      imageFormatGroup: ImageFormatGroup.yuv420, enableAudio: false);
+      enableAudio: false);
 
   if (controller.value.isInitialized) {
     if (lifecycle == AppLifecycleState.paused) controller.dispose();
@@ -22,5 +22,4 @@ final controllerProvider = FutureProvider((ref) async {
   return controller;
 });
 
-final imageProvider =
-    FutureProvider((ref) => ref.read(controllerProvider).value!.takePicture());
+final imagePathProvider = StateProvider((ref) => '');
