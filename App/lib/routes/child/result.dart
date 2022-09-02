@@ -18,14 +18,15 @@ class ResultScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         body:
             Stack(alignment: Alignment.center, fit: StackFit.expand, children: [
-          image.when(
-              data: (data) => Container(
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                          image: FileImage(File(data.path)),
-                          fit: BoxFit.cover))),
-              loading: () => const CircularProgressIndicator(),
-              error: (error, _) => Text('エラーが発生しました: $error')),
+          Center(
+              child: image.when(
+                  data: (data) => Container(
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                              image: FileImage(File(data.path)),
+                              fit: BoxFit.cover))),
+                  loading: () => const CircularProgressIndicator(),
+                  error: (error, _) => Text('エラーが発生しました: $error'))),
           PageView(
               controller: controller,
               physics: const NeverScrollableScrollPhysics(),
@@ -65,16 +66,12 @@ class ResultScreen extends ConsumerWidget {
                         curve: Curves.easeInOut);
                   }
                 },
-                child: const FittedBox(
-                    fit: BoxFit.fitWidth,
-                    child: Text('もどる', style: TextStyle(fontSize: 30.0)))),
+                child: const Text('もどる', style: TextStyle(fontSize: 30.0))),
             ChildActionButton(
                 onPressed: () => controller.nextPage(
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeInOut),
-                child: const FittedBox(
-                    fit: BoxFit.fitWidth,
-                    child: Text('つぎへ', style: TextStyle(fontSize: 30.0))))
+                child: const Text('つぎへ', style: TextStyle(fontSize: 30.0)))
           ])
         ]));
   }
