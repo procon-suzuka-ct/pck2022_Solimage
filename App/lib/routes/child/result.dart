@@ -14,6 +14,9 @@ class ResultScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final imagePath = ref.watch(imagePathProvider);
     final controller = PageController();
+    var size = MediaQuery.of(context).size;
+    final itemHeight = (size.height - 120) / 3;
+    final itemWidth = size.width / 2;
 
     return Scaffold(
         backgroundColor: Colors.transparent,
@@ -33,44 +36,34 @@ class ResultScreen extends ConsumerWidget {
                     controller: controller,
                     physics: const NeverScrollableScrollPhysics(),
                     children: [
-                  Container(
-                      margin: const EdgeInsets.all(10.0),
-                      child: Card(
-                          color: Colors.transparent,
-                          child: FlipCard(
-                              fill: Fill.fillBack,
-                              front: Container(
-                                  decoration: BoxDecoration(
-                                      color: Theme.of(context).backgroundColor,
-                                      borderRadius:
-                                          BorderRadius.circular(10.0)),
-                                  child: const Text('まえ')),
-                              back: Container(
-                                  decoration: BoxDecoration(
-                                      color: Theme.of(context).backgroundColor,
-                                      borderRadius:
-                                          BorderRadius.circular(10.0)),
-                                  child: const Text('うしろ')),
-                              alignment: Alignment.center))),
-                  Container(
-                      margin: const EdgeInsets.all(10.0),
-                      child: Card(
-                          color: Colors.transparent,
-                          child: FlipCard(
-                              fill: Fill.fillBack,
-                              front: Container(
-                                  decoration: BoxDecoration(
-                                      color: Theme.of(context).backgroundColor,
-                                      borderRadius:
-                                          BorderRadius.circular(10.0)),
-                                  child: const Text('まえ')),
-                              back: Container(
-                                  decoration: BoxDecoration(
-                                      color: Theme.of(context).backgroundColor,
-                                      borderRadius:
-                                          BorderRadius.circular(10.0)),
-                                  child: const Text('うしろ')),
-                              alignment: Alignment.center)))
+                  GridView.count(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 10.0,
+                      mainAxisSpacing: 10.0,
+                      padding: const EdgeInsets.all(10.0),
+                      childAspectRatio: itemWidth / itemHeight,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: List.generate(
+                          6,
+                          (index) => Card(
+                              color: Colors.transparent,
+                              child: FlipCard(
+                                  fill: Fill.fillBack,
+                                  front: Container(
+                                      decoration: BoxDecoration(
+                                          color:
+                                              Theme.of(context).backgroundColor,
+                                          borderRadius:
+                                              BorderRadius.circular(10.0)),
+                                      child: const Center(child: Text('まえ'))),
+                                  back: Container(
+                                      decoration: BoxDecoration(
+                                          color:
+                                              Theme.of(context).backgroundColor,
+                                          borderRadius:
+                                              BorderRadius.circular(10.0)),
+                                      child: const Center(child: Text('うしろ'))),
+                                  alignment: Alignment.center))))
                 ])),
             ChildActions(actions: [
               ChildActionButton(
