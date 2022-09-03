@@ -174,6 +174,9 @@ class ExpData {
     }
   }
 
+  /// keywordからデータを取得する関数です
+  ///
+  /// 返ってくる[ExpData]オブジェクトの中身は複数あるデータからランダムで抽出され構成されます
   static Future<ExpData?> getExpDataByWord(String word) async {
     final doc = await FirebaseFirestore.instance
         .collection('expDataIndex')
