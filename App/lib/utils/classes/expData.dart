@@ -176,7 +176,7 @@ class ExpData {
 
   /// keywordからデータを取得する関数です
   ///
-  /// 返ってくる[ExpData]オブジェクトの中身は複数あるデータからランダムで抽出され構成されます
+  /// 返ってくる[ExpData]オブジェクトは複数あるデータからランダムで抽出され構成されます
   static Future<ExpData?> getExpDataByWord(String word) async {
     final doc = await FirebaseFirestore.instance
         .collection('expDataIndex')
@@ -239,5 +239,38 @@ class ExpData {
       return data;
     }
     return null;
+  }
+
+  // Firestoreからデータを削除
+  Future<void> delete() async {
+    if (Auth().currentUser()!.uid != _userId) {
+      throw Exception('userId is not match');
+    }
+    if (_dataId == 0) {
+      throw Exception("dataId is not set");
+    }
+
+    AppUser.getUser(_userId).then((value) {
+      if (value != null) {
+        value.removeExpData(_dataId);
+        for (var groupId in value.groups) {
+          Group.getGroup(groupId).then((group) {
+            if (group != null) {
+              group.removeExpData(_dataId);
+            }
+          });
+        }
+      }
+    });
+
+    FirebaseFirestore.instance.collection('expDataIndex').doc(_word).update({
+      "index": FieldValue.arrayRemove([_dataId])
+    });
+
+    await FirebaseFirestore.instance
+        .collection('expData')
+        .doc(_dataId.toString())
+        .delete();
+    return;
   }
 }
