@@ -35,11 +35,16 @@ class ExpData {
   String? get how => _how;
   String? get imageUrl => _imageUrl;
 
-  ExpData({required String word, required String meaning, this.rootId}) {
+  ExpData(
+      {required String word,
+      required String meaning,
+      this.rootId,
+      String? userID}) {
     _word = word;
     _meaning = meaning;
     rootId ??= 0;
     _dataId = 0;
+    _userId = userID ?? "None";
   }
 
   void init() async {
