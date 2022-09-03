@@ -90,6 +90,13 @@ class Group {
     return;
   }
 
+  void removeExpData(int expDataID) {
+    if (_expDatas.contains(expDataID)) {
+      _expDatas.remove(expDataID);
+    }
+    return;
+  }
+
   Future<void> update() async {
     await FirebaseFirestore.instance
         .collection('group')

@@ -33,6 +33,13 @@ class AppUser {
     return;
   }
 
+  void removeExpData(int expDataID) {
+    if (_expDatas.contains(expDataID)) {
+      _expDatas.remove(expDataID);
+    }
+    return;
+  }
+
   void setData(String uid, String name) {
     this.uid = uid;
     this.name = name;

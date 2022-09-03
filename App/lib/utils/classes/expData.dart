@@ -25,6 +25,15 @@ class ExpData {
 
   int get dataId => _dataId;
   String get userId => _userId;
+  String? get word => _word;
+  String? get meaning => _meaning;
+  String? get why => _why;
+  String? get what => _what;
+  String? get where => _where;
+  String? get when => _when;
+  String? get who => _who;
+  String? get how => _how;
+  String? get imageUrl => _imageUrl;
 
   ExpData({required String word, required String meaning, this.rootId}) {
     _word = word;
@@ -110,6 +119,10 @@ class ExpData {
       }
     });
 
+    FirebaseFirestore.instance.collection('expDataIndex').doc(_word).update({
+      "index": FieldValue.arrayUnion([_dataId])
+    });
+
     await FirebaseFirestore.instance
         .collection('expData')
         .doc(_dataId.toString())
@@ -159,5 +172,105 @@ class ExpData {
     } else {
       return null;
     }
+  }
+
+  /// keywordからデータを取得する関数です
+  ///
+  /// 返ってくる[ExpData]オブジェクトは複数あるデータからランダムで抽出され構成されます
+  static Future<ExpData?> getExpDataByWord(String word) async {
+    final doc = await FirebaseFirestore.instance
+        .collection('expDataIndex')
+        .doc(word)
+        .get();
+
+    if (doc.exists) {
+      List<Future<ExpData?>> expDataList = [];
+      for (final dataId in doc['index']) {
+        expDataList.add(getExpData(dataId));
+      }
+      final expDataListResult = await Future.wait(expDataList);
+      List<String> meanings = [];
+      List<String> whyList = [];
+      List<String> whatList = [];
+      List<String> whereList = [];
+      List<String> whenList = [];
+      List<String> whoList = [];
+      List<String> howList = [];
+      List<String> imageUrls = [];
+
+      for (final expData in expDataListResult) {
+        if (expData != null) {
+          meanings.add(expData.meaning!);
+          whyList.add(expData.why!);
+          whatList.add(expData.what!);
+          whereList.add(expData.where!);
+          whenList.add(expData.when!);
+          whoList.add(expData.who!);
+          howList.add(expData.how!);
+          imageUrls.add(expData.imageUrl!);
+        }
+      }
+
+      final random = Random();
+      final meaning = random.nextInt(meanings.length);
+      final why = whyList.isNotEmpty ? random.nextInt(whyList.length) : null;
+      final what = whatList.isNotEmpty ? random.nextInt(whatList.length) : null;
+      final where =
+          whereList.isNotEmpty ? random.nextInt(whereList.length) : null;
+      final when = whenList.isNotEmpty ? random.nextInt(whenList.length) : null;
+      final who = whoList.isNotEmpty ? random.nextInt(whoList.length) : null;
+      final how = howList.isNotEmpty ? random.nextInt(howList.length) : null;
+      final imageUrl =
+          imageUrls.isNotEmpty ? random.nextInt(imageUrls.length) : null;
+
+      ExpData data = ExpData(
+        word: word,
+        meaning: meanings[meaning],
+      );
+      data.setData(
+        why: why != null ? whyList[why] : null,
+        what: what != null ? whatList[what] : null,
+        where: where != null ? whereList[where] : null,
+        when: when != null ? whenList[when] : null,
+        who: who != null ? whoList[who] : null,
+        how: how != null ? howList[how] : null,
+        imageUrl: imageUrl != null ? imageUrls[imageUrl] : null,
+      );
+      return data;
+    }
+    return null;
+  }
+
+  // Firestoreからデータを削除
+  Future<void> delete() async {
+    if (Auth().currentUser()!.uid != _userId) {
+      throw Exception('userId is not match');
+    }
+    if (_dataId == 0) {
+      throw Exception("dataId is not set");
+    }
+
+    AppUser.getUser(_userId).then((value) {
+      if (value != null) {
+        value.removeExpData(_dataId);
+        for (var groupId in value.groups) {
+          Group.getGroup(groupId).then((group) {
+            if (group != null) {
+              group.removeExpData(_dataId);
+            }
+          });
+        }
+      }
+    });
+
+    FirebaseFirestore.instance.collection('expDataIndex').doc(_word).update({
+      "index": FieldValue.arrayRemove([_dataId])
+    });
+
+    await FirebaseFirestore.instance
+        .collection('expData')
+        .doc(_dataId.toString())
+        .delete();
+    return;
   }
 }
