@@ -182,7 +182,10 @@ class ExpData {
   /// keywordからデータを取得する関数です
   ///
   /// 返ってくる[ExpData]オブジェクトは複数あるデータからランダムで抽出され構成されます
-  static Future<ExpData?> getExpDataByWord(String word) async {
+  ///
+  /// [onlyGroup]をtrueにすると、所属しているグループのみを対象にします
+  static Future<ExpData?> getExpDataByWord(
+      {required String word, bool onlyGroup = false}) async {
     final doc = await FirebaseFirestore.instance
         .collection('expDataIndex')
         .doc(word)
@@ -203,8 +206,32 @@ class ExpData {
       List<String> howList = [];
       List<String> imageUrls = [];
 
+      List<Group> groups = [];
+      List<int> expDataIDs = [];
+      if (onlyGroup) {
+        final user = await AppUser.getUser(Auth().currentUser()!.uid);
+        if (user == null) {
+          return null;
+        }
+        final groupIDs = user.groups;
+        for (final groupId in groupIDs) {
+          final group = await Group.getGroup(groupId);
+          if (group != null) {
+            groups.add(group);
+          }
+        }
+        for (final group in groups) {
+          for (final wordId in group.expDatas) {
+            expDataIDs.add(wordId);
+          }
+        }
+      }
+
       for (final expData in expDataListResult) {
-        if (expData != null) {
+        if (expData != null &&
+            (!onlyGroup ||
+                expDataIDs.contains(expData.dataId) ||
+                (expData.dataId >= 0 && expData.dataId < 1000000000))) {
           meanings.add(expData.meaning!);
           whyList.add(expData.why!);
           whatList.add(expData.what!);
