@@ -32,4 +32,3 @@ linter:
 analyzer:
   exclude:
     - test/*.dart
-    - lib/utils/imageProcess/objDetection.dart
