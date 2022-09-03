@@ -110,6 +110,10 @@ class ExpData {
       }
     });
 
+    FirebaseFirestore.instance.collection('expDataIndex').doc(_word).update({
+      "index": FieldValue.arrayUnion([_dataId])
+    });
+
     await FirebaseFirestore.instance
         .collection('expData')
         .doc(_dataId.toString())
