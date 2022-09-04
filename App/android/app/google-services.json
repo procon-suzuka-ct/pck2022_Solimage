@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "44131312724-iarnoms7grsinnr2eh5dkbttc102s1hh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.snctathome.solimage",
+            "certificate_hash": "5eb6174abae8f8d0286754d226f3e2b6f12cd741"
+          }
+        },
+        {
+          "client_id": "44131312724-j0ek71ni7f4hni3o5b6vlarl0tvbd5f3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.snctathome.solimage",
+            "certificate_hash": "d395b865f9c3edff8b5efbf9fb22e8deee405cfa"
+          }
+        },
+        {
           "client_id": "44131312724-gooobgeud34do37iggcq78o6s2ra2hc6.apps.googleusercontent.com",
           "client_type": 3
         }
