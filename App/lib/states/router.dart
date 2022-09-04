@@ -14,8 +14,8 @@ import 'package:solimage/states/preferences.dart';
 final List<Map<String, dynamic>> routes = [
   {'path': '/', 'child': const WelcomeScreen()},
   {'path': '/child/camera', 'child': const CameraScreen()},
-  {'path': '/child/favorite', 'child': const FavoriteScreen()},
   {'path': '/child/result', 'child': const ResultScreen()},
+  {'path': '/child/favorite', 'child': const FavoriteScreen()},
   {'path': '/parent', 'child': const ParentScreen()},
   {'path': '/parent/post', 'child': const PostScreen()}
 ];
