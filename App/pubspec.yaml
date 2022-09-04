@@ -56,6 +56,7 @@ dependencies:
   google_ml_kit: ^0.12.0
   flip_card: ^0.6.0
   animations: ^2.0.4
+  firebase_performance: ^0.8.2+4
 
 dev_dependencies:
   flutter_test:
