@@ -32,7 +32,7 @@ final routerProvider = Provider((ref) {
           .toList(),
       observers: [SystemUiObserver()],
       redirect: (state) {
-        final user = ref.read(userProvider);
+        final user = ref.read(authProvider);
         final prefs = ref.read(prefsProvider);
 
         if (user == null && state.subloc != '/') {
@@ -55,7 +55,7 @@ final routerProvider = Provider((ref) {
         return null;
       },
       refreshListenable: Listenable.merge([
-        ValueNotifier(ref.watch(userProvider) != null),
+        ValueNotifier(ref.watch(authProvider) != null),
         ValueNotifier(ref.watch(prefsProvider).asData != null)
       ]));
 });

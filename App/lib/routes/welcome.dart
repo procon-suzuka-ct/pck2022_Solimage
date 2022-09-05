@@ -30,7 +30,7 @@ class WelcomeScreen extends ConsumerWidget {
                         context: context,
                         barrierDismissible: true,
                         builder: (context) => const ModeSelectionDialog());
-                    ref.read(userProvider.notifier).state = user;
+                    ref.read(authProvider.notifier).state = user;
                   }
                 },
                 child: const Text('ログイン'))

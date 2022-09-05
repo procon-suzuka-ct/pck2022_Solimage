@@ -8,7 +8,7 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(userProvider);
+    final user = ref.watch(authProvider);
 
     return ListView(children: [
       const ListTile(
@@ -107,7 +107,7 @@ class LogoutDialog extends ConsumerWidget {
               child: const Text('はい'),
               onPressed: () async {
                 await Auth().signOut();
-                ref.refresh(userProvider);
+                ref.refresh(authProvider);
               }),
           TextButton(
               child: const Text('いいえ'),
