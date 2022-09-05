@@ -10,10 +10,10 @@ class Group {
   List<int> get expDatas => _expDatas;
 
   Group({required this.groupName}) {
-    generatId().then((value) => groupID = value);
+    generateId().then((value) => groupID = value);
   }
 
-  Future<int> generatId() async {
+  Future<int> generateId() async {
     final docs =
         (await FirebaseFirestore.instance.collection('group').get()).docs;
     List<String> ids = [];
