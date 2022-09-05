@@ -48,7 +48,7 @@ class ExpData {
   }
 
   void init() async {
-    await generatId().then((value) => _dataId = value);
+    await generateId().then((value) => _dataId = value);
     return;
   }
 
@@ -77,7 +77,7 @@ class ExpData {
     return;
   }
 
-  Future<int> generatId() async {
+  Future<int> generateId() async {
     final docs =
         (await FirebaseFirestore.instance.collection('expData').get()).docs;
     List<String> ids = [];
