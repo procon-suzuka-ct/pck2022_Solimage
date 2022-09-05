@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:solimage/states/auth.dart';
+import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/auth.dart';
 
 class WelcomeScreen extends ConsumerWidget {
@@ -24,13 +25,14 @@ class WelcomeScreen extends ConsumerWidget {
                     ?.copyWith(fontSize: 40, fontWeight: FontWeight.bold)),
             ElevatedButton(
                 onPressed: () async {
-                  final user = await Auth().signIn();
-                  if (user != null) {
+                  final auth = await Auth().signIn();
+                  if (auth != null) {
                     await showDialog(
                         context: context,
                         barrierDismissible: true,
                         builder: (context) => const ModeSelectionDialog());
-                    ref.read(authProvider.notifier).state = user;
+                    ref.read(authProvider.notifier).state = auth;
+                    await ref.refresh(userProvider)!.save();
                   }
                 },
                 child: const Text('ログイン'))
