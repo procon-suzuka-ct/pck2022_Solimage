@@ -18,7 +18,9 @@ final userProvider = StreamProvider((ref) async* {
   }
 });
 
-final photoURLProvider = StateProvider(
+final photoURLProvider = StateProvider.autoDispose(
     (ref) => ref.watch(authProvider.select((value) => value.value?.photoURL)));
-final nameProvider = StateProvider(
+final nameProvider = StateProvider.autoDispose(
     (ref) => ref.watch(userProvider.select((value) => value.value?.name)));
+final groupsProvider = StateProvider.autoDispose(
+    (ref) => ref.watch(userProvider.select((value) => value.value?.groups)));
