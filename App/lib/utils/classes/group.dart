@@ -13,6 +13,21 @@ class Group {
     generateId().then((value) => groupID = value);
   }
 
+  Group.fromJson(Map<String, Object?> json)
+      : groupID = json['groupID'] as int,
+        groupName = json['groupName'] as String,
+        members = json['members'] as List<String>,
+        _expDatas = json['expDatas'] as List<int>;
+
+  Map<String, Object?> toJson(){
+    return {
+      'groupID': groupID,
+      'groupName': groupName,
+      'members': members,
+      'expDatas': _expDatas,
+    };
+  }
+
   Future<int> generateId() async {
     final docs =
         (await FirebaseFirestore.instance.collection('group').get()).docs;
@@ -51,16 +66,13 @@ class Group {
   }
 
   static Future<Group?> getGroup(int groupID) async {
-    final doc = await FirebaseFirestore.instance
-        .collection('group')
-        .doc(groupID.toString())
-        .get();
+    final userRef = FirebaseFirestore.instance.collection('group').doc(groupID.toString()).withConverter<Group>(
+      fromFirestore: (snapshot, _) => Group.fromJson(snapshot.data()!),
+      toFirestore: (group, _) => group.toJson(),
+    );
+    final doc = await userRef.get();
     if (doc.exists) {
-      final group = Group(groupName: doc['groupName']);
-      group.groupID = doc['groupID'];
-      group.members = doc['members'];
-      group._expDatas = doc['expDatas'];
-      return group;
+      return doc.data();
     } else {
       return null;
     }

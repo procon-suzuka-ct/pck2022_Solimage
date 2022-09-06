@@ -12,6 +12,25 @@ class AppUser {
 
   AppUser({required this.uid, required this.name});
 
+  AppUser.fromJson(Map<String, Object?> json)
+      : uid = json['uid'] as String,
+        name = json['name'] as String,
+        groups = json['groups'] as List<int>,
+        histories = json['histories'] as List<String>,
+        favorites = json['favorites'] as List<int>,
+        _expDatas = json['expDatas'] as List<int>;
+
+  Map<String, Object?> toJson(){
+    return {
+      'uid': uid,
+      'name': name,
+      'groups': groups,
+      'histories': histories,
+      'favorites': favorites,
+      'expDatas': _expDatas,
+    };
+  }
+
   //ユーザー情報をFirestoreに保存する
   Future<void> save() async {
     await FirebaseFirestore.instance.collection('users').doc(uid).set({
@@ -48,17 +67,11 @@ class AppUser {
 
   //ユーザー情報をFirestoreから取得する
   static Future<AppUser?> getUser(String uid) async {
-    final doc =
-        await FirebaseFirestore.instance.collection('users').doc(uid).get();
-    if (doc.exists) {
-      final appUser = AppUser(uid: doc['uid'], name: doc['name']);
-      appUser.groups = doc['groups'];
-      appUser.histories = doc['histories'];
-      appUser.favorites = doc['favorites'];
-      appUser._expDatas = doc['expDatas'];
-      return appUser;
-    } else {
-      return null;
-    }
+    final userRef = FirebaseFirestore.instance.collection('users').doc(uid).withConverter<AppUser>(
+      fromFirestore: (snapshot, _) => AppUser.fromJson(snapshot.data()!),
+      toFirestore: (user, _) => user.toJson(),
+    );
+    final doc = await userRef.get();
+    return doc.data();
   }
 }
