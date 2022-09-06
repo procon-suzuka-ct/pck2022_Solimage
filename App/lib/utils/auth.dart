@@ -9,6 +9,8 @@ class Auth {
   Auth._internal();
   factory Auth() => _instance;
 
+  Stream<User?> get authStateChanges => _auth.authStateChanges();
+
   Future<User?> signIn() async {
     final googleSignin = GoogleSignIn(scopes: [
       'email',
