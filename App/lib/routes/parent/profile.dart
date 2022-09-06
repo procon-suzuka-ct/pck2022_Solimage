@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:solimage/states/auth.dart';
+import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/auth.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -8,7 +8,8 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(authProvider);
+    final photoURL = ref.watch(photoURLProvider);
+    final name = ref.watch(nameProvider);
 
     return ListView(children: [
       const ListTile(
@@ -20,13 +21,14 @@ class ProfileScreen extends ConsumerWidget {
               verticalDirection: VerticalDirection.down,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
-                    margin: const EdgeInsets.all(10.0),
-                    child: CircleAvatar(
-                        radius: 64.0,
-                        backgroundImage: NetworkImage('${user?.photoURL}'))),
-                Text('${user?.displayName}さん',
-                    style: const TextStyle(fontSize: 20.0))
+                if (photoURL != null)
+                  Container(
+                      margin: const EdgeInsets.all(10.0),
+                      child: CircleAvatar(
+                          radius: 64.0,
+                          backgroundImage: NetworkImage(photoURL))),
+                if (name != null)
+                  Text('$nameさん', style: const TextStyle(fontSize: 20.0))
               ])),
       Card(
           child: ListTile(
@@ -76,23 +78,35 @@ class ProfileScreen extends ConsumerWidget {
   }
 }
 
-class UserNameDialog extends StatelessWidget {
+class UserNameDialog extends ConsumerWidget {
   const UserNameDialog({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => AlertDialog(
-        title: const Text('名前'),
-        content: const TextField(
-            decoration: InputDecoration(hintText: '名前を入力してください')),
-        actions: <Widget>[
-          TextButton(
-              child: const Text('OK'),
-              onPressed: () => Navigator.of(context).pop()),
-          TextButton(
-              child: const Text('キャンセル'),
-              onPressed: () => Navigator.of(context).pop()),
-        ],
-      );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(userProvider);
+    final name = ref.watch(nameProvider);
+    final controller = TextEditingController(text: name);
+
+    return AlertDialog(
+      title: const Text('名前'),
+      content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(hintText: '名前を入力してください')),
+      actions: <Widget>[
+        TextButton(
+            child: const Text('OK'),
+            onPressed: () async {
+              user.value!.setData(user.value!.uid, controller.text);
+              ref.refresh(nameProvider);
+              user.value!.save();
+              Navigator.of(context).pop();
+            }),
+        TextButton(
+            child: const Text('キャンセル'),
+            onPressed: () => Navigator.of(context).pop()),
+      ],
+    );
+  }
 }
 
 class LogoutDialog extends ConsumerWidget {
@@ -104,11 +118,7 @@ class LogoutDialog extends ConsumerWidget {
         content: const Text('ログアウトしてもよろしいでしょうか?'),
         actions: <Widget>[
           TextButton(
-              child: const Text('はい'),
-              onPressed: () async {
-                await Auth().signOut();
-                ref.refresh(authProvider);
-              }),
+              child: const Text('はい'), onPressed: () => Auth().signOut()),
           TextButton(
               child: const Text('いいえ'),
               onPressed: () => Navigator.of(context).pop()),
