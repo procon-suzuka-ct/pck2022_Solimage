@@ -17,8 +17,3 @@ final userProvider = StreamProvider((ref) async* {
     yield null;
   }
 });
-
-final photoURLProvider = StateProvider(
-    (ref) => ref.watch(authProvider.select((value) => value.value?.photoURL)));
-final nameProvider = StateProvider(
-    (ref) => ref.watch(userProvider.select((value) => value.value?.name)));
