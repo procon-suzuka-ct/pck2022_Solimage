@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:solimage/states/auth.dart';
 import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/auth.dart';
 
@@ -31,8 +30,8 @@ class WelcomeScreen extends ConsumerWidget {
                         context: context,
                         barrierDismissible: true,
                         builder: (context) => const ModeSelectionDialog());
-                    ref.read(authProvider.notifier).state = auth;
-                    await ref.refresh(userProvider)!.save();
+                    ref.refresh(photoURLProvider);
+                    ref.refresh(nameProvider);
                   }
                 },
                 child: const Text('ログイン'))
