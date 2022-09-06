@@ -47,8 +47,40 @@ class ExpData {
     _userId = userID ?? "None";
   }
 
+  ExpData.fromJson(Map<String, Object?> json): _dataId = json['dataId'] as int,
+    _userId = json['userId'] as String,
+    rootId = json['rootId'] as int?,
+    childIds = json['childIds'] as List<int>,
+    _word = json['word'] as String,
+    _meaning = json['meaning'] as String,
+    _why = json['why'] as String?,
+    _what = json['what'] as String?,
+    _where = json['where'] as String?,
+    _when = json['when'] as String?,
+    _who = json['who'] as String?,
+    _how = json['how'] as String?,
+    _imageUrl = json['imageUrl'] as String?;
+
+  Map<String, Object?> toJson(){
+    return {
+      "dataId": _dataId,
+      'userId': _userId,
+      'rootId': rootId,
+      'childIds': childIds,
+      'word': _word,
+      'meaning': _meaning,
+      'why': _why,
+      'what': _what,
+      'where': _where,
+      'when': _when,
+      'who': _who,
+      'how': _how,
+      'imageUrl': _imageUrl,
+    };
+  }
+
   void init() async {
-    await generatId().then((value) => _dataId = value);
+    await generateId().then((value) => _dataId = value);
     return;
   }
 
@@ -77,7 +109,7 @@ class ExpData {
     return;
   }
 
-  Future<int> generatId() async {
+  Future<int> generateId() async {
     final docs =
         (await FirebaseFirestore.instance.collection('expData').get()).docs;
     List<String> ids = [];
@@ -132,6 +164,7 @@ class ExpData {
         .collection('expData')
         .doc(_dataId.toString())
         .set({
+      "dataId": _dataId,
       'userId': _userId,
       'word': _word,
       'meaning': _meaning,
@@ -150,33 +183,12 @@ class ExpData {
 
   //Firestoreから取得する
   static Future<ExpData?> getExpData(int dataId) async {
-    final doc = await FirebaseFirestore.instance
-        .collection('expData')
-        .doc(dataId.toString())
-        .get();
-    if (doc.exists) {
-      final expData = ExpData(
-        word: doc['word'],
-        meaning: doc['meaning'],
-        rootId: doc['rootId'],
-      );
-      expData.setData(
-        why: doc['why'],
-        what: doc['what'],
-        where: doc['where'],
-        when: doc['when'],
-        who: doc['who'],
-        how: doc['how'],
-        imageUrl: doc['imageUrl'],
-      );
-      expData._dataId = doc['dataId'];
-      expData._userId = doc['userId'];
-      expData.childIds = doc['childIds'];
-
-      return expData;
-    } else {
-      return null;
-    }
+    final userRef = FirebaseFirestore.instance.collection('expData').doc(dataId.toString()).withConverter<ExpData>(
+      fromFirestore: (snapshot, _) => ExpData.fromJson(snapshot.data()!),
+      toFirestore: (expData, _) => expData.toJson(),
+    );
+    final doc = await userRef.get();
+    return doc.data();
   }
 
   /// keywordからデータを取得する関数です
