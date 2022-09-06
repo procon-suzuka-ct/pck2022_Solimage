@@ -75,9 +75,9 @@ class ProfileScreen extends ConsumerWidget {
                               context: context,
                               builder: (context) => GroupDialog(
                                   groupName: '${snapshot.data?.groupName}'))));
-                } else {
-                  return const SizedBox();
                 }
+
+                return const SizedBox();
               });
         }),
       const ListTile(
