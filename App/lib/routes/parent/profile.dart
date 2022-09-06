@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:solimage/states/auth.dart';
+import 'package:solimage/states/preferences.dart';
 import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/auth.dart';
 import 'package:solimage/utils/classes/group.dart';
@@ -122,17 +123,25 @@ class LogoutDialog extends ConsumerWidget {
   const LogoutDialog({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => AlertDialog(
-        title: const Text('確認'),
-        content: const Text('ログアウトしてもよろしいでしょうか?'),
-        actions: <Widget>[
-          TextButton(
-              child: const Text('はい'), onPressed: () => Auth().signOut()),
-          TextButton(
-              child: const Text('いいえ'),
-              onPressed: () => Navigator.of(context).pop()),
-        ],
-      );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final prefs = ref.watch(prefsProvider);
+
+    return AlertDialog(
+      title: const Text('確認'),
+      content: const Text('ログアウトしてもよろしいでしょうか?'),
+      actions: <Widget>[
+        TextButton(
+            child: const Text('はい'),
+            onPressed: () {
+              Auth().signOut();
+              prefs.maybeWhen(data: (data) => data.clear(), orElse: () => null);
+            }),
+        TextButton(
+            child: const Text('いいえ'),
+            onPressed: () => Navigator.of(context).pop()),
+      ],
+    );
+  }
 }
 
 class GroupDialog extends StatelessWidget {
