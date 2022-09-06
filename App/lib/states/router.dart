@@ -34,27 +34,26 @@ final routerProvider = Provider((ref) => GoRouter(
       final auth = ref.read(authProvider);
       final prefs = ref.read(prefsProvider);
 
-      return auth.when(
+      return auth.maybeWhen(
           data: (data) {
             if (data == null && state.subloc != '/') {
               return '/';
             } else if (data != null && state.subloc == '/') {
-              return prefs.maybeWhen(
-                  data: (data) {
-                    final mode = data.getInt('mode');
-                    if (mode == 0) {
-                      return '/parent';
-                    } else if (mode == 1) {
-                      return '/child/camera';
-                    }
-                    return null;
-                  },
-                  orElse: () => null);
+              return prefs.maybeWhen(data: (data) {
+                final mode = data.getInt('mode');
+                if (mode == 0) {
+                  return '/parent';
+                } else if (mode == 1) {
+                  return '/child/camera';
+                }
+                return null;
+              }, orElse: () {
+                return null;
+              });
             }
             return null;
           },
-          loading: () => null,
-          error: (error, stack) => null);
+          orElse: () => null);
     },
     refreshListenable: Listenable.merge([
       GoRouterRefreshStream(ref.watch(authProvider.stream)),
