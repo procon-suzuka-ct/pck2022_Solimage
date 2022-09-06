@@ -50,7 +50,7 @@ class ExpData {
   ExpData.fromJson(Map<String, Object?> json): _dataId = json['dataId'] as int,
     _userId = json['userId'] as String,
     rootId = json['rootId'] as int?,
-    childIds = json['childIds'] as List<int>,
+    childIds = (json['childIds'] as List<dynamic>).cast<int>(),
     _word = json['word'] as String,
     _meaning = json['meaning'] as String,
     _why = json['why'] as String?,

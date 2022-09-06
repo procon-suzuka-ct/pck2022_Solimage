@@ -15,10 +15,10 @@ class AppUser {
   AppUser.fromJson(Map<String, Object?> json)
       : uid = json['uid'] as String,
         name = json['name'] as String,
-        groups = json['groups'] as List<int>,
-        histories = json['histories'] as List<String>,
-        favorites = json['favorites'] as List<int>,
-        _expDatas = json['expDatas'] as List<int>;
+        groups = (json['groups'] as List<dynamic>).cast<int>(),
+        histories = (json['histories'] as List<dynamic>).cast<String>(),
+        favorites = (json['favorites'] as List<dynamic>).cast<int>(),
+        _expDatas = (json['expDatas'] as List<dynamic>).cast<int>();
 
   Map<String, Object?> toJson(){
     return {

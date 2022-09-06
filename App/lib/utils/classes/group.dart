@@ -16,7 +16,7 @@ class Group {
   Group.fromJson(Map<String, Object?> json)
       : groupID = json['groupID'] as int,
         groupName = json['groupName'] as String,
-        members = json['members'] as List<String>,
+        members = (json['members'] as List<dynamic>).cast<String>(),
         _expDatas = json['expDatas'] as List<int>;
 
   Map<String, Object?> toJson(){
