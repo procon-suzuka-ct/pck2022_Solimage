@@ -50,14 +50,14 @@ class CameraScreen extends ConsumerWidget {
                       ChildActionButton(
                           onPressed: () async {
                             ref.read(imagePathProvider.notifier).state = null;
-                            showDialog(
+                            ref.read(imagePathProvider.notifier).state =
+                                (await controller!.takePicture()).path;
+                            await showDialog(
                                 context: context,
                                 barrierDismissible: false,
                                 barrierColor: Colors.black.withOpacity(0.8),
                                 builder: (context) =>
-                                    StandbyDialog(controller: controller!));
-                            ref.read(imagePathProvider.notifier).state =
-                                (await controller!.takePicture()).path;
+                                    StandbyDialog(controller: controller));
                           },
                           child: const Text('さつえい')),
                       ChildActionButton(
