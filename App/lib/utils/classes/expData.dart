@@ -5,10 +5,10 @@ import 'package:solimage/utils/classes/group.dart';
 import 'package:solimage/utils/classes/user.dart';
 
 class ExpData {
-  late final int _dataId;
-  late final String _userId;
-  late final int? rootId;
-  late final List<int> childIds;
+  late int _dataId;
+  late String _userId;
+  late int? rootId;
+  late List<int> childIds;
 
   late String _word;
   late String _meaning;
@@ -47,21 +47,22 @@ class ExpData {
     _userId = userID ?? "None";
   }
 
-  ExpData.fromJson(Map<String, Object?> json): _dataId = json['dataId'] as int,
-    _userId = json['userId'] as String,
-    rootId = json['rootId'] as int?,
-    childIds = (json['childIds'] as List<dynamic>).cast<int>(),
-    _word = json['word'] as String,
-    _meaning = json['meaning'] as String,
-    _why = json['why'] as String?,
-    _what = json['what'] as String?,
-    _where = json['where'] as String?,
-    _when = json['when'] as String?,
-    _who = json['who'] as String?,
-    _how = json['how'] as String?,
-    _imageUrl = json['imageUrl'] as String?;
+  ExpData.fromJson(Map<String, Object?> json)
+      : _dataId = json['dataId'] as int,
+        _userId = json['userId'] as String,
+        rootId = json['rootId'] as int?,
+        childIds = (json['childIds'] as List<dynamic>).cast<int>(),
+        _word = json['word'] as String,
+        _meaning = json['meaning'] as String,
+        _why = json['why'] as String?,
+        _what = json['what'] as String?,
+        _where = json['where'] as String?,
+        _when = json['when'] as String?,
+        _who = json['who'] as String?,
+        _how = json['how'] as String?,
+        _imageUrl = json['imageUrl'] as String?;
 
-  Map<String, Object?> toJson(){
+  Map<String, Object?> toJson() {
     return {
       "dataId": _dataId,
       'userId': _userId,
@@ -183,10 +184,13 @@ class ExpData {
 
   //Firestoreから取得する
   static Future<ExpData?> getExpData(int dataId) async {
-    final userRef = FirebaseFirestore.instance.collection('expData').doc(dataId.toString()).withConverter<ExpData>(
-      fromFirestore: (snapshot, _) => ExpData.fromJson(snapshot.data()!),
-      toFirestore: (expData, _) => expData.toJson(),
-    );
+    final userRef = FirebaseFirestore.instance
+        .collection('expData')
+        .doc(dataId.toString())
+        .withConverter<ExpData>(
+          fromFirestore: (snapshot, _) => ExpData.fromJson(snapshot.data()!),
+          toFirestore: (expData, _) => expData.toJson(),
+        );
     final doc = await userRef.get();
     return doc.data();
   }
