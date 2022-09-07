@@ -52,19 +52,19 @@ def main():
     for cat in categories:
       for file in fileNames:
         root = "image"
-        file = file + ".png"
-        path = os.path.join(base, root, cat, file)
+        loadfile = file + ".png"
+        path = os.path.join(base, root, cat, loadfile)
         writeRootPath = "Bloated"
         writePath = os.path.join(base, writeRootPath, cat)
         os.makedirs(writePath, exist_ok=True)
-        writePath = os.path.join(base, writeRootPath, cat, str(i) + file)
+        writePath = os.path.join(base, writeRootPath, cat, file)
         image = cv2.imread(path)
         images = rotate(image)
         images = flip(images)
         images = change_Value(images)
         images = change_Saturatio(images)
         for i in range(0, len(images)):
-          cv2.imwrite(writePath, images[i])
+          cv2.imwrite(writePath + str(i) + ".png", images[i])
   return
 
 if __name__ == '__main__':
