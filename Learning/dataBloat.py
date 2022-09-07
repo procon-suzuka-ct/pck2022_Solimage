@@ -18,7 +18,7 @@ def flip(images : list):
   flipped = []
   for image in images:
     flipped.append(cv2.flip(image, 1))
-    flipped.append(cv2.flip(image, -1))
+    flipped.append(cv2.flip(image, 0))
     flipped.append((image))
   return flipped
 
@@ -52,6 +52,9 @@ def process(cat : str, fileNames : list):
     os.makedirs(writePath, exist_ok=True)
     writePath = os.path.join(base, writeRootPath, cat, file)
     image = cv2.imread(path)
+    WIDTH = 216
+    HEIGHT = 384
+    image = cv2.resize(image, (WIDTH, HEIGHT))
     images = rotate(image)
     images = flip(images)
     images = change_Value(images)
