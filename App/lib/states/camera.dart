@@ -11,20 +11,21 @@ final controllerProvider = FutureProvider((ref) async {
 
   if (cameras.isNotEmpty) {
     final controller = CameraController(cameras.first, ResolutionPreset.medium,
-        enableAudio: false);
+        imageFormatGroup: ImageFormatGroup.yuv420, enableAudio: false);
 
     if (controller.value.isInitialized) {
-      if (lifecycle == AppLifecycleState.paused) controller.dispose();
+      if (lifecycle == AppLifecycleState.inactive) controller.dispose();
     } else {
-      if (lifecycle == AppLifecycleState.resumed) await controller.initialize();
-      controller.setFlashMode(FlashMode.off);
-      controller.lockCaptureOrientation(DeviceOrientation.portraitUp);
+      if (lifecycle == AppLifecycleState.resumed) {
+        await controller.initialize();
+        await controller.setFlashMode(FlashMode.off);
+        await controller.lockCaptureOrientation(DeviceOrientation.portraitUp);
+      }
+      return controller;
     }
-
-    return controller;
-  } else {
-    return null;
   }
+
+  return null;
 });
 
 final imagePathProvider = StateProvider<String?>((ref) => null);
