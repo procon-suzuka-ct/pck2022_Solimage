@@ -19,7 +19,7 @@ class Group {
         members = (json['members'] as List<dynamic>).cast<String>(),
         _expDatas = json['expDatas'] as List<int>;
 
-  Map<String, Object?> toJson(){
+  Map<String, Object?> toJson() {
     return {
       'groupID': groupID,
       'groupName': groupName,
@@ -36,8 +36,8 @@ class Group {
       ids.add(doc.id);
     }
     while (true) {
-      const max = 9999999999;
-      const min = 1000000000;
+      const max = 999999999;
+      const min = 100000000;
       final num = Random().nextInt(max - min) + min;
       final numString = num.toString();
       bool isExist = false;
@@ -66,10 +66,13 @@ class Group {
   }
 
   static Future<Group?> getGroup(int groupID) async {
-    final userRef = FirebaseFirestore.instance.collection('group').doc(groupID.toString()).withConverter<Group>(
-      fromFirestore: (snapshot, _) => Group.fromJson(snapshot.data()!),
-      toFirestore: (group, _) => group.toJson(),
-    );
+    final userRef = FirebaseFirestore.instance
+        .collection('group')
+        .doc(groupID.toString())
+        .withConverter<Group>(
+          fromFirestore: (snapshot, _) => Group.fromJson(snapshot.data()!),
+          toFirestore: (group, _) => group.toJson(),
+        );
     final doc = await userRef.get();
     if (doc.exists) {
       return doc.data();
