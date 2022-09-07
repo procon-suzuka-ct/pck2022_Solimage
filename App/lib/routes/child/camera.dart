@@ -39,7 +39,6 @@ class CameraScreen extends ConsumerWidget {
                                 icon: const Icon(Icons.supervisor_account),
                                 onPressed: () => showDialog(
                                     context: context,
-                                    barrierDismissible: true,
                                     builder: (context) =>
                                         const SwitchToParentDialog()),
                                 label: const FittedBox(
@@ -53,6 +52,7 @@ class CameraScreen extends ConsumerWidget {
                             ref.read(imagePathProvider.notifier).state = null;
                             showDialog(
                                 context: context,
+                                barrierDismissible: false,
                                 barrierColor: Colors.black.withOpacity(0.8),
                                 builder: (context) =>
                                     StandbyDialog(controller: controller!));
