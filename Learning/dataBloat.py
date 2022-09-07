@@ -52,6 +52,7 @@ def main():
     for cat in categories:
       for file in fileNames:
         root = "image"
+        file = file + ".png"
         path = os.path.join(base, root, cat, file)
         writeRootPath = "Bloated"
         writePath = os.path.join(base, writeRootPath, cat)
