@@ -80,9 +80,8 @@ class ExpData {
     };
   }
 
-  void init() async {
-    await generateId().then((value) => _dataId = value);
-    return;
+  Future<int> init() async {
+    return await generateId().then((value) => _dataId = value);
   }
 
   void setData(
