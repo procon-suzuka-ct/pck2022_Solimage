@@ -8,7 +8,7 @@ filename = os.path.join(base, filename)
 
 def rotate(image):
   images = []
-  images.append(np.rot90(image, 0))
+  images.append(image)
   images.append(np.rot90(image, 2))
   
   return images
@@ -57,14 +57,14 @@ def main():
         writeRootPath = "Bloated"
         writePath = os.path.join(base, writeRootPath, cat)
         os.makedirs(writePath, exist_ok=True)
-        writePath = os.path.join(base, writeRootPath, cat, file)
+        writePath = os.path.join(base, writeRootPath, cat, str(i) + file)
         image = cv2.imread(path)
         images = rotate(image)
         images = flip(images)
         images = change_Value(images)
         images = change_Saturatio(images)
         for i in range(0, len(images)):
-          cv2.imwrite(writePath + str(i) + ".png", images[i])
+          cv2.imwrite(writePath, images[i])
   return
 
 if __name__ == '__main__':
