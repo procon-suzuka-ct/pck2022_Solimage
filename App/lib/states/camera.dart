@@ -7,19 +7,24 @@ import 'package:solimage/states/app.dart';
 
 final controllerProvider = FutureProvider((ref) async {
   final lifecycle = ref.watch(appLifecycleProvider);
-  final controller = CameraController(
-      (await availableCameras()).first, ResolutionPreset.medium,
-      enableAudio: false);
+  final cameras = await availableCameras();
 
-  if (controller.value.isInitialized) {
-    if (lifecycle == AppLifecycleState.paused) controller.dispose();
+  if (cameras.isNotEmpty) {
+    final controller = CameraController(cameras.first, ResolutionPreset.medium,
+        enableAudio: false);
+
+    if (controller.value.isInitialized) {
+      if (lifecycle == AppLifecycleState.paused) controller.dispose();
+    } else {
+      if (lifecycle == AppLifecycleState.resumed) await controller.initialize();
+      controller.setFlashMode(FlashMode.off);
+      controller.lockCaptureOrientation(DeviceOrientation.portraitUp);
+    }
+
+    return controller;
   } else {
-    if (lifecycle == AppLifecycleState.resumed) await controller.initialize();
-    controller.setFlashMode(FlashMode.off);
-    controller.lockCaptureOrientation(DeviceOrientation.portraitUp);
+    return null;
   }
-
-  return controller;
 });
 
 final imagePathProvider = StateProvider<String?>((ref) => null);
