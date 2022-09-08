@@ -7,6 +7,10 @@ void changeSystemUi(Route<dynamic>? route, Route<dynamic>? previousRoute) {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   } else {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarBrightness: Brightness.dark,
+      statusBarIconBrightness: Brightness.light,
+    ));
   }
 }
 
