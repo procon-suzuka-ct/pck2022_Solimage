@@ -28,7 +28,6 @@ class WelcomeScreen extends ConsumerWidget {
                   if (auth != null) {
                     await showDialog(
                         context: context,
-                        barrierDismissible: true,
                         builder: (context) => const ModeSelectionDialog());
                     ref.refresh(authProvider);
                   }
