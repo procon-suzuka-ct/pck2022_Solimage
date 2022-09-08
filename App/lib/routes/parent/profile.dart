@@ -1,14 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:solimage/states/auth.dart';
+import 'package:solimage/states/preferences.dart';
+import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/auth.dart';
+import 'package:solimage/utils/classes/group.dart';
+
+final _photoURLProvider = StateProvider.autoDispose(
+    (ref) => ref.watch(authProvider.select((value) => value.value?.photoURL)));
+final _nameProvider = StateProvider.autoDispose(
+    (ref) => ref.watch(userProvider.select((value) => value.value?.name)));
+final _groupsProvider = StateProvider.autoDispose(
+    (ref) => ref.watch(userProvider.select((value) => value.value?.groups)));
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(userProvider);
+    final photoURL = ref.watch(_photoURLProvider);
+    final name = ref.watch(_nameProvider);
+    final groups = ref.watch(_groupsProvider);
 
     return ListView(children: [
       const ListTile(
@@ -20,13 +32,14 @@ class ProfileScreen extends ConsumerWidget {
               verticalDirection: VerticalDirection.down,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
-                    margin: const EdgeInsets.all(10.0),
-                    child: CircleAvatar(
-                        radius: 64.0,
-                        backgroundImage: NetworkImage('${user?.photoURL}'))),
-                Text('${user?.displayName}さん',
-                    style: const TextStyle(fontSize: 20.0))
+                if (photoURL != null)
+                  Container(
+                      margin: const EdgeInsets.all(10.0),
+                      child: CircleAvatar(
+                          radius: 64.0,
+                          backgroundImage: NetworkImage(photoURL))),
+                if (name != null)
+                  Text('$nameさん', style: const TextStyle(fontSize: 20.0))
               ])),
       Card(
           child: ListTile(
@@ -45,30 +58,29 @@ class ProfileScreen extends ConsumerWidget {
       const ListTile(
           title: Text('グループ',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold))),
-      Card(
-          child: ListTile(
-              title: const Text('グループA'),
-              trailing: const Icon(Icons.info),
-              onTap: () => showDialog(
-                  context: context,
-                  builder: (context) =>
-                      const GroupDialog(groupName: 'グループA')))),
-      Card(
-          child: ListTile(
-              title: const Text('グループB'),
-              trailing: const Icon(Icons.info),
-              onTap: () => showDialog(
-                  context: context,
-                  builder: (context) =>
-                      const GroupDialog(groupName: 'グループB')))),
-      Card(
-          child: ListTile(
-              title: const Text('グループC'),
-              trailing: const Icon(Icons.info),
-              onTap: () => showDialog(
-                  context: context,
-                  builder: (context) =>
-                      const GroupDialog(groupName: 'グループC')))),
+      if (groups != null)
+        ...groups.map((groupId) {
+          return FutureBuilder<Group?>(
+              future: Group.getGroup(groupId),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return const CircularProgressIndicator();
+                }
+
+                if (snapshot.data != null) {
+                  return Card(
+                      child: ListTile(
+                          title: Text('${snapshot.data?.groupName}'),
+                          trailing: const Icon(Icons.info),
+                          onTap: () => showDialog(
+                              context: context,
+                              builder: (context) => GroupDialog(
+                                  groupName: '${snapshot.data?.groupName}'))));
+                }
+
+                return const SizedBox();
+              });
+        }),
       const ListTile(
           title: Text('アクセス履歴',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)))
@@ -76,44 +88,60 @@ class ProfileScreen extends ConsumerWidget {
   }
 }
 
-class UserNameDialog extends StatelessWidget {
+class UserNameDialog extends ConsumerWidget {
   const UserNameDialog({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => AlertDialog(
-        title: const Text('名前'),
-        content: const TextField(
-            decoration: InputDecoration(hintText: '名前を入力してください')),
-        actions: <Widget>[
-          TextButton(
-              child: const Text('OK'),
-              onPressed: () => Navigator.of(context).pop()),
-          TextButton(
-              child: const Text('キャンセル'),
-              onPressed: () => Navigator.of(context).pop()),
-        ],
-      );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(userProvider);
+    final name = ref.watch(_nameProvider);
+    final controller = TextEditingController(text: name);
+
+    return AlertDialog(
+      title: const Text('名前'),
+      content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(hintText: '名前を入力してください')),
+      actions: <Widget>[
+        TextButton(
+            child: const Text('OK'),
+            onPressed: () async {
+              user.value!.setData(user.value!.uid, controller.text);
+              ref.refresh(_nameProvider);
+              user.value!.save();
+              Navigator.of(context).pop();
+            }),
+        TextButton(
+            child: const Text('キャンセル'),
+            onPressed: () => Navigator.of(context).pop()),
+      ],
+    );
+  }
 }
 
 class LogoutDialog extends ConsumerWidget {
   const LogoutDialog({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => AlertDialog(
-        title: const Text('確認'),
-        content: const Text('ログアウトしてもよろしいでしょうか?'),
-        actions: <Widget>[
-          TextButton(
-              child: const Text('はい'),
-              onPressed: () async {
-                await Auth().signOut();
-                ref.refresh(userProvider);
-              }),
-          TextButton(
-              child: const Text('いいえ'),
-              onPressed: () => Navigator.of(context).pop()),
-        ],
-      );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final prefs = ref.watch(prefsProvider);
+
+    return AlertDialog(
+      title: const Text('確認'),
+      content: const Text('ログアウトしてもよろしいでしょうか?'),
+      actions: <Widget>[
+        TextButton(
+            child: const Text('はい'),
+            onPressed: () {
+              Auth().signOut();
+              prefs.maybeWhen(data: (data) => data.clear(), orElse: () => null);
+            }),
+        TextButton(
+            child: const Text('いいえ'),
+            onPressed: () => Navigator.of(context).pop()),
+      ],
+    );
+  }
 }
 
 class GroupDialog extends StatelessWidget {

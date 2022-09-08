@@ -14,48 +14,49 @@ import 'package:solimage/states/preferences.dart';
 final List<Map<String, dynamic>> routes = [
   {'path': '/', 'child': const WelcomeScreen()},
   {'path': '/child/camera', 'child': const CameraScreen()},
-  {'path': '/child/favorite', 'child': const FavoriteScreen()},
   {'path': '/child/result', 'child': const ResultScreen()},
+  {'path': '/child/favorite', 'child': const FavoriteScreen()},
   {'path': '/parent', 'child': const ParentScreen()},
   {'path': '/parent/post', 'child': const PostScreen()}
 ];
 
-final routerProvider = Provider((ref) {
-  return GoRouter(
-      initialLocation: '/',
-      routes: routes
-          .map((route) => GoRoute(
-                path: route['path'],
-                name: route['path'],
-                builder: (context, state) => SafeArea(child: route['child']),
-              ))
-          .toList(),
-      observers: [SystemUiObserver()],
-      redirect: (state) {
-        final user = ref.read(userProvider);
-        final prefs = ref.read(prefsProvider);
+final routerProvider = Provider((ref) => GoRouter(
+    initialLocation: '/',
+    routes: routes
+        .map((route) => GoRoute(
+              path: route['path'],
+              name: route['path'],
+              builder: (context, state) => SafeArea(child: route['child']),
+            ))
+        .toList(),
+    observers: [SystemUiObserver()],
+    redirect: (state) {
+      final auth = ref.read(authProvider);
+      final prefs = ref.read(prefsProvider);
 
-        if (user == null && state.subloc != '/') {
-          return '/';
-        } else if (user != null && state.subloc == '/') {
-          return prefs.maybeWhen(data: (data) {
-            final mode = data.getInt('mode');
-            if (mode == 0) {
-              return '/parent';
-            } else if (mode == 1) {
-              return '/child/camera';
+      return auth.maybeWhen(
+          data: (data) {
+            if (data == null && state.subloc != '/') {
+              return '/';
+            } else if (data != null && state.subloc == '/') {
+              return prefs.maybeWhen(data: (data) {
+                final mode = data.getInt('mode');
+                if (mode == 0) {
+                  return '/parent';
+                } else if (mode == 1) {
+                  return '/child/camera';
+                }
+                return null;
+              }, orElse: () {
+                return null;
+              });
             }
             return null;
-          }, orElse: () {
-            ref.refresh(prefsProvider);
-            return null;
-          });
-        }
-
-        return null;
-      },
-      refreshListenable: Listenable.merge([
-        ValueNotifier(ref.watch(userProvider) != null),
-        ValueNotifier(ref.watch(prefsProvider).asData != null)
-      ]));
-});
+          },
+          orElse: () => null);
+    },
+    refreshListenable: Listenable.merge([
+      GoRouterRefreshStream(ref.watch(authProvider.stream)),
+      GoRouterRefreshStream(ref.watch(prefsProvider.stream))
+    ]),
+    debugLogDiagnostics: true));
