@@ -52,7 +52,6 @@ dependencies:
   fl_chart: ^0.55.1
   shared_preferences: ^2.0.15
   flutter_simple_treeview: ^3.0.1
-  flip_card: ^0.6.0
   animations: ^2.0.4
   firebase_performance: ^0.8.2+4
 
