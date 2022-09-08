@@ -7,8 +7,8 @@ import 'package:solimage/utils/classes/user.dart';
 class ExpData {
   late int _dataId;
   late String _userId;
-  late int? rootId;
-  late List<int> childIds;
+  int? rootId;
+  List<int> childIds = [];
 
   late String _word;
   late String _meaning;
