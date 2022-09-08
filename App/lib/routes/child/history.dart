@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solimage/components/child_actions.dart';
 
-class FavoriteScreen extends ConsumerWidget {
-  const FavoriteScreen({Key? key}) : super(key: key);
+class HistoryScreen extends ConsumerWidget {
+  const HistoryScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -12,7 +12,7 @@ class FavoriteScreen extends ConsumerWidget {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           centerTitle: true,
-          title: const Text('おきにいり'),
+          title: const Text('きろく'),
         ),
         body: ChildActions(actions: [
           ChildActionButton(

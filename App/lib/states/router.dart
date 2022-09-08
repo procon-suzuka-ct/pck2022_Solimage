@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solimage/observers/system_ui.dart';
 import 'package:solimage/routes/child/camera.dart';
-import 'package:solimage/routes/child/favorite.dart';
+import 'package:solimage/routes/child/history.dart';
 import 'package:solimage/routes/child/result.dart';
 import 'package:solimage/routes/parent/parent.dart';
 import 'package:solimage/routes/parent/post.dart';
@@ -16,7 +16,7 @@ final List<Map<String, dynamic>> routes = [
   {'path': '/', 'child': const WelcomeScreen()},
   {'path': '/child/camera', 'child': const CameraScreen()},
   {'path': '/child/result', 'child': const ResultScreen()},
-  {'path': '/child/favorite', 'child': const FavoriteScreen()},
+  {'path': '/child/history', 'child': const HistoryScreen()},
   {'path': '/parent', 'child': const ParentScreen()},
   {'path': '/parent/post', 'child': const PostScreen()}
 ];

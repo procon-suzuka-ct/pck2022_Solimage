@@ -61,8 +61,8 @@ class CameraScreen extends ConsumerWidget {
                           },
                           child: const Text('さつえい')),
                       ChildActionButton(
-                          onPressed: () => context.push('/child/favorite'),
-                          child: const Text('おきにいり'))
+                          onPressed: () => context.push('/child/history'),
+                          child: const Text('きろく'))
                     ])
                   ]));
                 },
