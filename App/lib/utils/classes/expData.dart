@@ -146,18 +146,31 @@ class ExpData {
     AppUser.getUser(_userId).then((value) {
       if (value != null) {
         value.addExpData(_dataId);
+        value.save();
         for (var groupId in value.groups) {
           Group.getGroup(groupId).then((group) {
             if (group != null) {
               group.addExpData(_dataId);
+              group.save();
             }
           });
         }
       }
     });
 
-    FirebaseFirestore.instance.collection('expDataIndex').doc(_word).update({
-      "index": FieldValue.arrayUnion([_dataId])
+    final docRef =
+        FirebaseFirestore.instance.collection("expDataIndex").doc(_word);
+
+    docRef.get().then((value) {
+      if (value.exists) {
+        docRef.update({
+          "index": FieldValue.arrayUnion([_dataId])
+        });
+      } else {
+        docRef.set({
+          "index": [_dataId]
+        });
+      }
     });
 
     await FirebaseFirestore.instance
