@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_simple_treeview/flutter_simple_treeview.dart';
 import 'package:go_router/go_router.dart';
+import 'package:solimage/states/user.dart';
+import 'package:solimage/utils/classes/expData.dart';
 
-final wordProvider = StateProvider.autoDispose((ref) => '');
-final descriptionProvider = StateProvider.autoDispose((ref) => '');
-final whyProvider = StateProvider.autoDispose((ref) => '');
-final whereProvider = StateProvider.autoDispose((ref) => '');
-final whatProvider = StateProvider.autoDispose((ref) => '');
-final whenProvider = StateProvider.autoDispose((ref) => '');
-final howProvider = StateProvider.autoDispose((ref) => '');
-final controllerProvider =
+final _wordProvider = StateProvider.autoDispose((ref) => '');
+final _meaningProvider = StateProvider.autoDispose((ref) => '');
+final _whyProvider = StateProvider.autoDispose((ref) => '');
+final _whatProvider = StateProvider.autoDispose((ref) => '');
+final _whereProvider = StateProvider.autoDispose((ref) => '');
+final _whenProvider = StateProvider.autoDispose((ref) => '');
+final _whoProvider = StateProvider.autoDispose((ref) => '');
+final _howProvider = StateProvider.autoDispose((ref) => '');
+final _imageUrlProvider = StateProvider.autoDispose((ref) => '');
+final _controllerProvider =
     Provider.autoDispose((ref) => TreeController(allNodesExpanded: false));
 
 class PostScreen extends ConsumerWidget {
@@ -18,25 +22,18 @@ class PostScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final word = ref.watch(wordProvider);
-    final description = ref.watch(descriptionProvider);
-    final why = ref.watch(whyProvider);
-    final where = ref.watch(whereProvider);
-    final what = ref.watch(whatProvider);
-    final when = ref.watch(whenProvider);
-    final how = ref.watch(howProvider);
+    final user = ref.watch(userProvider);
+    final word = ref.watch(_wordProvider);
 
     final List<Map<String, dynamic>> textEditTiles = [
-      {
-        'title': '簡単な説明',
-        'subtitle': description,
-        'provider': descriptionProvider
-      },
-      {'title': 'なぜ', 'subtitle': why, 'provider': whyProvider},
-      {'title': 'どこ', 'subtitle': where, 'provider': whereProvider},
-      {'title': 'なに', 'subtitle': what, 'provider': whatProvider},
-      {'title': 'いつ', 'subtitle': when, 'provider': whenProvider},
-      {'title': 'どうやって', 'subtitle': how, 'provider': howProvider}
+      {'title': '簡単な説明', 'provider': _meaningProvider},
+      {'title': 'なぜ', 'provider': _whyProvider},
+      {'title': 'なに', 'provider': _whatProvider},
+      {'title': 'いつ', 'provider': _whenProvider},
+      {'title': 'どこ', 'provider': _whereProvider},
+      {'title': 'だれ', 'provider': _whoProvider},
+      {'title': 'どうやって', 'provider': _howProvider},
+      {'title': '画像のURL', 'provider': _imageUrlProvider}
     ];
 
     return Scaffold(
@@ -60,7 +57,7 @@ class PostScreen extends ConsumerWidget {
               .map((tile) => Card(
                   child: ListTile(
                       title: Text(tile['title']),
-                      subtitle: Text(tile['subtitle']),
+                      subtitle: Text(ref.watch(tile['provider'])),
                       trailing: const Icon(Icons.edit),
                       onTap: () => showDialog(
                           context: context,
@@ -72,8 +69,27 @@ class PostScreen extends ConsumerWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-          onPressed: () => showDialog(
-              context: context, builder: (context) => const ConfirmDialog()),
+          onPressed: () async {
+            final expData = ExpData(
+                word: word,
+                meaning: ref.read(_meaningProvider),
+                userID: user.value!.uid);
+            expData.setData(
+                word: word,
+                meaning: ref.read(_meaningProvider),
+                why: ref.read(_whyProvider),
+                what: ref.read(_whatProvider),
+                when: ref.read(_whenProvider),
+                where: ref.read(_whereProvider),
+                who: ref.read(_whoProvider),
+                how: ref.read(_howProvider),
+                imageUrl: ref.read(_imageUrlProvider));
+            await expData.init();
+
+            return showDialog(
+                context: context,
+                builder: (context) => ConfirmDialog(expData: expData));
+          },
           icon: const Icon(Icons.check),
           label: const Text('投稿')),
     );
@@ -88,7 +104,7 @@ class WordButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) => TextButton(
       onPressed: () {
-        ref.read(wordProvider.notifier).state = word;
+        ref.read(_wordProvider.notifier).state = word;
         Navigator.of(context).pop(context);
       },
       child: Text(word));
@@ -99,7 +115,7 @@ class WordSelectDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final controller = ref.watch(controllerProvider);
+    final controller = ref.watch(_controllerProvider);
 
     return AlertDialog(
         scrollable: true,
@@ -158,7 +174,9 @@ class TextEditDialog extends ConsumerWidget {
 }
 
 class ConfirmDialog extends StatelessWidget {
-  const ConfirmDialog({Key? key}) : super(key: key);
+  final ExpData expData;
+
+  const ConfirmDialog({Key? key, required this.expData}) : super(key: key);
 
   @override
   Widget build(BuildContext context) => AlertDialog(
@@ -166,7 +184,11 @@ class ConfirmDialog extends StatelessWidget {
         content: const Text('投稿してもよろしいでしょうか?'),
         actions: <Widget>[
           TextButton(
-              child: const Text('はい'), onPressed: () => context.go('/parent')),
+              child: const Text('はい'),
+              onPressed: () async {
+                expData.save();
+                context.go('/parent');
+              }),
           TextButton(
               child: const Text('いいえ'),
               onPressed: () => Navigator.of(context).pop()),
