@@ -20,7 +20,7 @@ class AppUser {
         favorites = (json['favorites'] as List<dynamic>).cast<int>(),
         _expDatas = (json['expDatas'] as List<dynamic>).cast<int>();
 
-  Map<String, Object?> toJson(){
+  Map<String, Object?> toJson() {
     return {
       'uid': uid,
       'name': name,
@@ -67,10 +67,13 @@ class AppUser {
 
   //ユーザー情報をFirestoreから取得する
   static Future<AppUser?> getUser(String uid) async {
-    final userRef = FirebaseFirestore.instance.collection('users').doc(uid).withConverter<AppUser>(
-      fromFirestore: (snapshot, _) => AppUser.fromJson(snapshot.data()!),
-      toFirestore: (user, _) => user.toJson(),
-    );
+    final userRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .withConverter<AppUser>(
+          fromFirestore: (snapshot, _) => AppUser.fromJson(snapshot.data()!),
+          toFirestore: (user, _) => user.toJson(),
+        );
     final doc = await userRef.get();
     return doc.data();
   }

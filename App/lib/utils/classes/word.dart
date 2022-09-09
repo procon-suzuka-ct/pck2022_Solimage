@@ -11,10 +11,11 @@ class Word {
       : _word = word,
         _root = root;
 
-  Word.fromJson(Map<String, Object?> json): _word = json['word'] as String,
-    _root = json['root'] as String;
-  
-  Map<String, Object?> toJson(){
+  Word.fromJson(Map<String, Object?> json)
+      : _word = json['word'] as String,
+        _root = json['root'] as String;
+
+  Map<String, Object?> toJson() {
     return {
       'word': _word,
       'root': _root,
@@ -43,9 +44,11 @@ class Word {
 
   //WordsをFirestoreから取得する
   static Future<List<Word>> getWords() async {
-    final userRef = FirebaseFirestore.instance.collection('words').withConverter<Word>(
-        fromFirestore: (snapshot, _) => Word.fromJson(snapshot.data()!),
-        toFirestore: (word, _) => word.toJson());
+    final userRef = FirebaseFirestore.instance
+        .collection('words')
+        .withConverter<Word>(
+            fromFirestore: (snapshot, _) => Word.fromJson(snapshot.data()!),
+            toFirestore: (word, _) => word.toJson());
     final doc = await userRef.get();
     final words = doc.docs.map((doc) => doc.data()).toList();
     return words;
