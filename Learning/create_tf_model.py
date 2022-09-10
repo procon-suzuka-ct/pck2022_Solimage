@@ -62,7 +62,7 @@ model.summary()
 
 early_stopping = EarlyStopping(monitor = "val_loss", patience = 10, min_delta = 1e-3)
 #学習
-history = model.fit(trainGenerator, epochs = 400, callbacks = [early_stopping])
+history = model.fit_generator(trainGenerator, epochs = 400, callbacks = [early_stopping])
 
 #学習結果表示
 import matplotlib.pyplot as plt
