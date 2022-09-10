@@ -1,52 +1,68 @@
 import pickle, os, numpy as np, cv2
 
 #data setの読み込み
-x_train = np.load("./tmp/dataset/X_train.npy")
-y_train = np.load("./tmp/dataset/y_train.npy")
+#x_train = np.load("./tmp/dataset/X_train.npy")
+#y_train = np.load("./tmp/dataset/y_train.npy")
 
-label_dic : dict
-with open("./tmp/dataset/label_dic.pickle", "rb") as f:
-  label_dic = pickle.load(f)
-
-label_dic = label_dic.items()
+#label_dic : dict
+#with open("./tmp/dataset/label_dic.pickle", "rb") as f:
+#  label_dic = pickle.load(f)
+#
+#label_dic = label_dic.items()
 
 #機械学習
 import tensorflow as tf
-from keras.utils import to_categorical
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Flatten
+from keras.models import Model
+from keras.layers import Dense, Dropout, GlobalAveragePooling2D
 import tensorflow_addons as tfa
 from keras.applications.vgg16 import VGG16
+from keras.preprocessing.image import ImageDataGenerator
+from keras.callbacks import EarlyStopping
 
-classes = len(label_dic)
-y_train = to_categorical(y_train, classes)
+#classes = len(label_dic)
+#y_train = to_categorical(y_train, classes)
+
+dataPath = "image"
+
+basePath = os.path.dirname(os.path.abspath(__file__))
+dataPath = os.path.join(basePath, dataPath)
+
+train = ImageDataGenerator(rescale = 1.0/255.0)
+trainGenerator = train.flow_from_directory(dataPath, target_size = (216, 384), batch_size = 64, class_mode = "categorical", shuffle=True)
+
+labels = trainGenerator.class_indices
+print("labels:", labels)
+classes = trainGenerator.classes
+print("classes:", classes)
 
 #layer 構築
-shape = x_train.shape[1:]
+#shape = x_train.shape[1:]
 
 #VGG16の特徴検出の出力層を消してimport
-vgg16 = VGG16(input_shape = shape, include_top = False, weights = "imagenet")
-model = Sequential(vgg16.layers)
+vgg16 = VGG16(include_top = False, weights = "imagenet")
+x = vgg16.output
+
+x = GlobalAveragePooling2D()(x)
+x = Dense(512, activation = tfa.activations.rrelu)(x)
+x = Dropout(0.5)(x)
+predictions = Dense(len(labels), activation=tfa.activations.sparsemax)(x)
 
 #15層目までは再学習しないよう固定する
-for layer in model.layers[:15]:
+for layer in vgg16.layers[:15]:
   layer.trainable = False
-
-#出力層を追加
-model.add(Flatten())
-model.add(Dense(1024, activation = tfa.activations.rrelu))
-model.add(Dropout(0.5))
-model.add(Dense(classes, activation = tfa.activations.sparsemax))
 
 #最適化アルゴリズムのimportと設定
 opt = tf.keras.optimizers.Adam(lr = 1e-4, decay = 1e-6, amsgrad = True)
+
+model = Model(inputs = vgg16.input, outputs = predictions)
 
 #モデルのコンパイルと詳細出力
 model.compile(loss = "categorical_crossentropy", optimizer = opt, metrics = ["accuracy"])
 model.summary()
 
+early_stopping = EarlyStopping(monitor = "val_loss", patience = 10, min_delta = 1e-3)
 #学習
-history = model.fit(x = x_train, y = y_train, epochs = 400)
+history = model.fit(trainGenerator, epochs = 400, callbacks = [early_stopping])
 
 #学習結果表示
 import matplotlib.pyplot as plt
