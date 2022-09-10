@@ -17,9 +17,15 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 import tensorflow_addons as tfa
 from keras.applications.vgg16 import VGG16
+from keras.preprocessing.image import ImageDataGenerator
 
 classes = len(label_dic)
 y_train = to_categorical(y_train, classes)
+
+dataPath = "./image"
+
+train = ImageDataGenerator(rescale = 1.0/255.0)
+trainGenerator = train.flow_from_directory(dataPath, target_size = (216, 384), batch_size = 64, class_mode = "categorical")
 
 #layer 構築
 shape = x_train.shape[1:]
@@ -46,7 +52,7 @@ model.compile(loss = "categorical_crossentropy", optimizer = opt, metrics = ["ac
 model.summary()
 
 #学習
-history = model.fit(x = x_train, y = y_train, epochs = 400)
+history = model.fit(trainGenerator, epochs = 400)
 
 #学習結果表示
 import matplotlib.pyplot as plt
