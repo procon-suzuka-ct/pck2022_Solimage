@@ -15,37 +15,35 @@ def createDataset(cat, label):
     path = os.path.join(imageBase, cat, file)
     image = cv2.imread(path)
     dataset.append([image, label])
+    del image
 
-def main():
-  categories = os.listdir(imageBase)
-  categories = [cat for cat in categories if os.path.isdir(os.path.join(imageBase, cat))]
-  #カテゴリーの辞書を作成
-  catdic = {i : categories[i] for i in range(0, len(categories))}
-  #逆辞書を作成
-  dic = dict(zip(catdic.values(), catdic.keys()))
-  #マルチスレッド処理(24スレッド)
-  with futures.ThreadPoolExecutor(max_workers = 24) as executor:
-    futureList = []
-    for cat in categories:
-      future = executor.submit(createDataset, cat = categories, label = dic[cat])
-      futureList.append(future)
-    
-    _ = futures.as_completed(futureList)
-    
-  #dataset
-  X_train = np.array([data[0] for data in dataset])
-  y_train = np.array([data[1] for data in dataset])
+categories = os.listdir(imageBase)
+categories = [cat for cat in categories if os.path.isdir(os.path.join(imageBase, cat))]
+#カテゴリーの辞書を作成
+catdic = {i : categories[i] for i in range(0, len(categories))}
+#逆辞書を作成
+dic = dict(zip(catdic.values(), catdic.keys()))
+#マルチスレッド処理(24スレッド)
+with futures.ThreadPoolExecutor(max_workers = 24) as executor:
+  futureList = []
+  for cat in categories:
+    future = executor.submit(createDataset, cat = categories, label = dic[cat])
+    futureList.append(future)
+  
+  _ = futures.as_completed(futureList)
+  
+#dataset
+X_train = np.array([data[0] for data in dataset])
+os.makedirs("./tmp/dataset", exist_ok=True)
 
-  os.makedirs("./tmp/dataset", exist_ok=True)
-  np.save("./tmp/dataset/X_train.npy", X_train)
-  np.save("./tmp/dataset/y_train.npy", y_train)
+np.save("./tmp/dataset/X_train.npy", X_train)
+del X_train
+y_train = np.array([data[1] for data in dataset])
+np.save("./tmp/dataset/y_train.npy", y_train)
+del y_train
 
-  #label dic data
-  with open("./tmp/dataset/label_dic.pickle", "wb") as f:
-    pickle.dump(dic, f)
-  return
+#label dic data
+with open("./tmp/dataset/label_dic.pickle", "wb") as f:
+  pickle.dump(dic, f)
 
-if __name__ == "__main__":
-  main()
-  print("finish")
-  exit()
+print("finished!")
