@@ -13,6 +13,9 @@ class ExpData {
   late String _word;
   late String _meaning;
 
+  List<int> _goodUsers = [];
+  List<int> _badUsers = [];
+
   //5W1H
   String? _why;
   String? _what;
@@ -34,6 +37,8 @@ class ExpData {
   String? get who => _who;
   String? get how => _how;
   String? get imageUrl => _imageUrl;
+  int get goodNum => _goodUsers.length;
+  int get badNum => _badUsers.length;
 
   ExpData(
       {required String word,
@@ -60,7 +65,9 @@ class ExpData {
         _when = json['when'] as String?,
         _who = json['who'] as String?,
         _how = json['how'] as String?,
-        _imageUrl = json['imageUrl'] as String?;
+        _imageUrl = json['imageUrl'] as String?,
+        _goodUsers = (json['goodUsers'] as List<dynamic>).cast<int>(),
+        _badUsers = (json['badUsers'] as List<dynamic>).cast<int>();
 
   Map<String, Object?> toJson() {
     return {
@@ -77,7 +84,19 @@ class ExpData {
       'who': _who,
       'how': _how,
       'imageUrl': _imageUrl,
+      'goodUsers': _goodUsers,
+      'badUsers': _badUsers
     };
+  }
+
+  static DocumentReference<ExpData> _getRef(String id) {
+    return FirebaseFirestore.instance
+        .collection('expData')
+        .doc(id)
+        .withConverter<ExpData>(
+          fromFirestore: ((snapshot, _) => ExpData.fromJson(snapshot.data()!)),
+          toFirestore: ((data, __) => data.toJson()),
+        );
   }
 
   Future<int> init() async {
@@ -173,37 +192,13 @@ class ExpData {
       }
     });
 
-    await FirebaseFirestore.instance
-        .collection('expData')
-        .doc(_dataId.toString())
-        .set({
-      "dataId": _dataId,
-      'userId': _userId,
-      'word': _word,
-      'meaning': _meaning,
-      'why': _why,
-      'what': _what,
-      'where': _where,
-      'when': _when,
-      'who': _who,
-      'how': _how,
-      'imageUrl': _imageUrl,
-      'childIds': childIds,
-      'rootId': rootId,
-    });
+    await _getRef(_dataId.toString()).set(this);
     return;
   }
 
   //Firestoreから取得する
   static Future<ExpData?> getExpData(int dataId) async {
-    final userRef = FirebaseFirestore.instance
-        .collection('expData')
-        .doc(dataId.toString())
-        .withConverter<ExpData>(
-          fromFirestore: (snapshot, _) => ExpData.fromJson(snapshot.data()!),
-          toFirestore: (expData, _) => expData.toJson(),
-        );
-    final doc = await userRef.get();
+    final doc = await _getRef(dataId.toString()).get();
     return doc.data();
   }
 
@@ -327,10 +322,41 @@ class ExpData {
       "index": FieldValue.arrayRemove([_dataId])
     });
 
-    await FirebaseFirestore.instance
-        .collection('expData')
-        .doc(_dataId.toString())
-        .delete();
+    await _getRef(dataId.toString()).delete();
     return;
+  }
+
+  /// 高評価ボタン押下時の処理
+  /// uidを引数に入れてください
+  ///
+  /// Userのデータもこの関数で更新されます
+  Future<void> good(String uid) async {
+    final user = await AppUser.getUser(uid);
+    if (user == null) {
+      return;
+    }
+    final isGood = user.goodDatas.contains(_dataId);
+    if (isGood == true) {
+      await user.removeGoodData(_dataId);
+    } else if (isGood == false) {
+      await user.addGoodData(_dataId);
+    }
+  }
+
+  /// 低評価ボタン押下時の処理
+  /// uidを引数に入れてください
+  ///
+  /// Userのデータもこの関数で更新されます
+  Future<void> bad(String uid) async {
+    final user = await AppUser.getUser(uid);
+    if (user == null) {
+      return;
+    }
+    final isBad = user.badDatas.contains(_dataId);
+    if (isBad == true) {
+      await user.removeBadData(_dataId);
+    } else if (isBad == false) {
+      await user.addBadData(_dataId);
+    }
   }
 }
