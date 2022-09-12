@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solimage/observers/system_ui.dart';
@@ -34,26 +35,33 @@ final routerProvider = Provider((ref) => GoRouter(
       final auth = ref.read(authProvider);
       final prefs = ref.read(prefsProvider);
 
-      return auth.maybeWhen(
-          data: (data) {
-            if (data == null && state.subloc != '/') {
-              return '/';
-            } else if (data != null && state.subloc == '/') {
-              return prefs.maybeWhen(data: (data) {
-                final mode = data.getInt('mode');
-                if (mode == 0) {
-                  return '/parent';
-                } else if (mode == 1) {
-                  return '/child/camera';
-                }
-                return null;
-              }, orElse: () {
-                return null;
-              });
+      return auth.maybeWhen(data: (data) {
+        if (data == null) {
+          if (state.subloc != '/') {
+            return '/';
+          } else {
+            WidgetsBinding.instance
+                .addPostFrameCallback((_) => FlutterNativeSplash.remove());
+          }
+        } else if (state.subloc == '/') {
+          return prefs.maybeWhen(data: (data) {
+            WidgetsBinding.instance
+                .addPostFrameCallback((_) => FlutterNativeSplash.remove());
+            final mode = data.getInt('mode');
+            if (mode == 0) {
+              return '/parent';
+            } else if (mode == 1) {
+              return '/child/camera';
             }
             return null;
-          },
-          orElse: () => null);
+          }, orElse: () {
+            return null;
+          });
+        }
+        return null;
+      }, orElse: () {
+        return null;
+      });
     },
     refreshListenable: Listenable.merge([
       GoRouterRefreshStream(ref.watch(authProvider.stream)),

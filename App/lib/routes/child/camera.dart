@@ -14,65 +14,92 @@ class CameraScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cameraPermission = ref.watch(cameraPermissionProvider);
 
-    if (cameraPermission.value == PermissionStatus.granted) {
-      final controller = ref.watch(controllerProvider);
+    return cameraPermission.maybeWhen(
+        data: (data) {
+          if (data == PermissionStatus.granted) {
+            final controller = ref.watch(controllerProvider);
 
-      return controller.when(
-          data: (controller) {
-            final size = MediaQuery.of(context).size;
-            var scale = size.aspectRatio * controller.value.aspectRatio;
-            if (scale < 1) scale = 1 / scale;
+            return controller.when(
+                data: (controller) {
+                  final size = MediaQuery.of(context).size;
 
+                  return Scaffold(
+                      body: Stack(fit: StackFit.expand, children: <Widget>[
+                    if (controller != null)
+                      Transform.scale(
+                          scale: 1 /
+                              (size.aspectRatio * controller.value.aspectRatio),
+                          alignment: Alignment.center,
+                          child: Center(child: CameraPreview(controller))),
+                    Align(
+                        alignment: Alignment.topCenter,
+                        child: Container(
+                            margin: const EdgeInsets.all(10.0),
+                            child: ElevatedButton.icon(
+                                icon: const Icon(Icons.supervisor_account),
+                                onPressed: () => showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        const SwitchToParentDialog()),
+                                label: const FittedBox(
+                                  child: Text('大人用メニュー'),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                    padding: const EdgeInsets.all(15.0))))),
+                    ChildActions(actions: [
+                      ChildActionButton(
+                          onPressed: () async {
+                            ref.read(imagePathProvider.notifier).state = null;
+                            ref.read(imagePathProvider.notifier).state =
+                                (await controller!.takePicture()).path;
+                            await showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                barrierColor: Colors.black.withOpacity(0.8),
+                                builder: (context) =>
+                                    StandbyDialog(controller: controller));
+                          },
+                          child: const Text('さつえい')),
+                      ChildActionButton(
+                          onPressed: () => context.push('/child/favorite'),
+                          child: const Text('おきにいり'))
+                    ])
+                  ]));
+                },
+                error: (error, _) => Text('Error: $error'),
+                loading: () => const Scaffold(
+                    body: Center(child: CircularProgressIndicator())));
+          } else {
             return Scaffold(
-                body: Stack(fit: StackFit.expand, children: <Widget>[
-              Transform.scale(
-                  scale: scale,
-                  alignment: Alignment.center,
-                  child: Center(child: CameraPreview(controller))),
-              Align(
-                  alignment: Alignment.topCenter,
-                  child: Container(
-                      margin: const EdgeInsets.all(10.0),
-                      child: ElevatedButton.icon(
-                          icon: const Icon(Icons.supervisor_account),
-                          onPressed: () => showDialog(
-                              context: context,
-                              barrierDismissible: true,
-                              builder: (context) =>
-                                  const SwitchToParentDialog()),
-                          label: const FittedBox(
-                            child: Text('大人用メニュー'),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.all(15.0))))),
-              ChildActions(actions: [
-                ChildActionButton(
-                    onPressed: () async {
-                      ref.read(imagePathProvider.notifier).state = null;
-                      showDialog(
-                          context: context,
-                          barrierColor: Colors.black.withOpacity(0.8),
-                          builder: (context) =>
-                              StandbyDialog(controller: controller));
-                      ref.read(imagePathProvider.notifier).state =
-                          (await controller.takePicture()).path;
-                    },
-                    child: const Text('さつえい')),
-                ChildActionButton(
-                    onPressed: () => context.push('/child/favorite'),
-                    child: const Text('おきにいり'))
-              ])
-            ]));
-          },
-          error: (error, _) => Text('Error: $error'),
-          loading: () =>
-              const Scaffold(body: Center(child: CircularProgressIndicator())));
-    } else {
-      return const Scaffold(
-          body: Center(
-        child: Text('カメラの許可が必要です'),
-      ));
-    }
+                body: Center(
+                    child: Wrap(
+                        direction: Axis.vertical,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 10.0,
+                        children: [
+                  const Text('カメラの許可が必要です'),
+                  ElevatedButton(
+                      onPressed: () {
+                        final cameraPermission =
+                            ref.watch(cameraPermissionProvider);
+
+                        cameraPermission.maybeWhen(
+                            data: (data) async {
+                              if (data == PermissionStatus.granted) {
+                                ref.refresh(controllerProvider);
+                              } else {
+                                ref.refresh(cameraPermissionProvider);
+                                await openAppSettings();
+                              }
+                            },
+                            orElse: () {});
+                      },
+                      child: const Text('許可する'))
+                ])));
+          }
+        },
+        orElse: () =>
+            const Scaffold(body: Center(child: CircularProgressIndicator())));
   }
 }
 
