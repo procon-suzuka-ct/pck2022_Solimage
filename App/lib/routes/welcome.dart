@@ -23,14 +23,18 @@ class WelcomeScreen extends ConsumerWidget {
                     .titleMedium
                     ?.copyWith(fontSize: 40, fontWeight: FontWeight.bold)),
             ElevatedButton(
-                onPressed: () async {
-                  final auth = await Auth().signIn();
-                  if (auth != null) {
-                    await showDialog(
-                        context: context,
-                        builder: (context) => const ModeSelectionDialog());
-                    ref.refresh(authProvider);
-                  }
+                onPressed: () {
+                  final auth = Auth().signIn();
+                  auth.then((value) async {
+                    if (value != null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("ログインしました")));
+                      await showDialog(
+                          context: context,
+                          builder: (context) => const ModeSelectionDialog());
+                      ref.refresh(authProvider);
+                    }
+                  });
                 },
                 child: const Text('ログイン'))
           ])));
