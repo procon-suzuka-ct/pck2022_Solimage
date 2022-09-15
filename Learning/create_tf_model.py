@@ -27,10 +27,10 @@ labels = trainGenerator.class_indices
 vgg16 = VGG16(include_top = False, weights = "imagenet")
 x = vgg16.output
 
-c_1 = Conv2D(filters=512, kernel_size = (3, 3), activation = tfa.activations.rrelu)(x)
-c_2 = Conv2D(filters=512, kernel_size = (5, 5), activation = tfa.activations.rrelu)(x)
-c_3 = Conv2D(filters=512, kernel_size = (7, 7), activation = tfa.activations.rrelu)(x)
-x = Add()([c_1, c_2, c_3])
+#c_1 = Conv2D(filters=512, kernel_size = (3, 3), activation = tfa.activations.rrelu)(x)
+#c_2 = Conv2D(filters=512, kernel_size = (5, 5), activation = tfa.activations.rrelu)(x)
+#c_3 = Conv2D(filters=512, kernel_size = (7, 7), activation = tfa.activations.rrelu)(x)
+#x = Add()([c_1, c_2, c_3])
 x = GlobalAveragePooling2D()(x)
 x = Dense(512, activation = tfa.activations.rrelu)(x)
 x = Dropout(0.5)(x)
