@@ -48,19 +48,19 @@ class ParentScreen extends ConsumerWidget {
             onDestinationSelected: (index) {
               ref.read(tabIndexProvider.notifier).state = index;
             }),
-        floatingActionButton: tabIndex == 0
-            ? Wrap(spacing: 10.0, children: [
-                FloatingActionButton.extended(
-                    onPressed: () => context.go('/child/camera'),
-                    icon: const Icon(Icons.photo_camera),
-                    label: const Text('カメラ'),
-                    heroTag: 'camera'),
-                FloatingActionButton.extended(
-                    onPressed: () => context.push('/parent/post'),
-                    icon: const Icon(Icons.add),
-                    label: const Text('投稿'),
-                    heroTag: 'post')
-              ])
-            : null);
+        floatingActionButton: Wrap(spacing: 10.0, children: [
+          if (tabIndex == 0)
+            FloatingActionButton.extended(
+                onPressed: () => context.go('/child/camera'),
+                icon: const Icon(Icons.photo_camera),
+                label: const Text('カメラ'),
+                heroTag: 'camera'),
+          if (tabIndex == 0)
+            FloatingActionButton.extended(
+                onPressed: () => context.push('/parent/post'),
+                icon: const Icon(Icons.add),
+                label: const Text('投稿'),
+                heroTag: 'post')
+        ]));
   }
 }
