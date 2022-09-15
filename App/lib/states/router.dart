@@ -45,14 +45,17 @@ final routerProvider = Provider((ref) => GoRouter(
           }
         } else if (state.subloc == '/') {
           return prefs.maybeWhen(data: (data) {
-            WidgetsBinding.instance
-                .addPostFrameCallback((_) => FlutterNativeSplash.remove());
             final mode = data.getInt('mode');
-            if (mode == 0) {
-              return '/parent';
-            } else if (mode == 1) {
-              return '/child/camera';
+            if (mode != null) {
+              WidgetsBinding.instance
+                  .addPostFrameCallback((_) => FlutterNativeSplash.remove());
+              if (mode == 0) {
+                return '/parent';
+              } else if (mode == 1) {
+                return '/child/camera';
+              }
             }
+            FlutterNativeSplash.remove();
             return null;
           }, orElse: () {
             return null;
