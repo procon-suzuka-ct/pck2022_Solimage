@@ -40,11 +40,13 @@ class ProfileScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 photoURL.maybeWhen(
-                    data: (data) => Container(
-                        margin: const EdgeInsets.all(10.0),
-                        child: CircleAvatar(
-                            radius: 64.0,
-                            backgroundImage: NetworkImage(data!))),
+                    data: (data) => data != null
+                        ? Container(
+                            margin: const EdgeInsets.all(10.0),
+                            child: CircleAvatar(
+                                radius: 64.0,
+                                backgroundImage: NetworkImage(data)))
+                        : const SizedBox.shrink(),
                     orElse: () => const CircularProgressIndicator()),
                 name.maybeWhen(
                     data: (data) =>
