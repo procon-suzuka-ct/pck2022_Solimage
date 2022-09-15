@@ -48,16 +48,18 @@ class ProfileScreen extends ConsumerWidget {
                     orElse: () => const CircularProgressIndicator()),
                 name.maybeWhen(
                     data: (data) =>
-                        Text('$dataさん', style: const TextStyle(fontSize: 20.0)),
+                        Row(mainAxisSize: MainAxisSize.min, children: [
+                          Text('$dataさん',
+                              style: const TextStyle(fontSize: 20.0)),
+                          IconButton(
+                              icon: const Icon(Icons.edit),
+                              onPressed: () => showDialog(
+                                  context: context,
+                                  builder: (context) =>
+                                      NameEditDialog(user: user.value)))
+                        ]),
                     orElse: () => const CircularProgressIndicator())
               ])),
-      Card(
-          child: ListTile(
-              title: const Text('名前'),
-              trailing: const Icon(Icons.edit),
-              onTap: () => showDialog(
-                  context: context,
-                  builder: (context) => NameEditDialog(user: user.value)))),
       Card(
           child: ListTile(
               title: const Text('ログアウト'),
