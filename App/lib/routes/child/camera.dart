@@ -14,6 +14,9 @@ class CameraScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cameraPermission = ref.watch(cameraPermissionProvider);
 
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_) => ScaffoldMessenger.of(context).clearSnackBars());
+
     return cameraPermission.maybeWhen(
         data: (data) {
           if (data == PermissionStatus.granted) {
