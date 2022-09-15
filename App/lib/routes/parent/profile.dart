@@ -66,7 +66,8 @@ class ProfileScreen extends ConsumerWidget {
               trailing: const Icon(Icons.logout),
               onTap: () => showDialog(
                   context: context,
-                  builder: (context) => LogoutDialog(prefs: prefs.value)))),
+                  builder: (context) =>
+                      LogoutConfirmDialog(prefs: prefs.value)))),
       ListTile(
           title: const Text('グループ',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
@@ -96,8 +97,8 @@ class ProfileScreen extends ConsumerWidget {
                           onTap: () => showDialog(
                               barrierDismissible: false,
                               context: context,
-                              builder: (context) =>
-                                  GroupDetailDialog(group: group))))
+                              builder: (context) => GroupDetailDialog(
+                                  parentRef: ref, group: group))))
                   : const SizedBox.shrink())
               .toList(),
           orElse: () => const [Center(child: CircularProgressIndicator())]),
@@ -144,8 +145,8 @@ class NameEditDialog extends ConsumerWidget {
   }
 }
 
-class LogoutDialog extends StatelessWidget {
-  const LogoutDialog({Key? key, required this.prefs}) : super(key: key);
+class LogoutConfirmDialog extends StatelessWidget {
+  const LogoutConfirmDialog({Key? key, required this.prefs}) : super(key: key);
 
   final SharedPreferences? prefs;
 
@@ -169,13 +170,16 @@ class LogoutDialog extends StatelessWidget {
       );
 }
 
-class GroupDetailDialog extends StatelessWidget {
-  const GroupDetailDialog({Key? key, required this.group}) : super(key: key);
+class GroupDetailDialog extends ConsumerWidget {
+  const GroupDetailDialog(
+      {Key? key, required this.parentRef, required this.group})
+      : super(key: key);
 
+  final WidgetRef parentRef;
   final Group group;
 
   @override
-  Widget build(BuildContext context) => AlertDialog(
+  Widget build(BuildContext context, WidgetRef ref) => AlertDialog(
         title: Text(group.groupName),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
           Card(child: ListTile(title: const Text('メンバー'), onTap: () {})),
@@ -185,12 +189,54 @@ class GroupDetailDialog extends StatelessWidget {
         actions: <Widget>[
           TextButton(
               child: const Text('グループから抜ける'),
-              onPressed: () => Navigator.of(context).pop()),
+              onPressed: () {
+                Navigator.of(context).pop();
+                showDialog(
+                    context: context,
+                    builder: (context) => GroupLeaveConfirmDialog(
+                        parentRef: parentRef, group: group));
+              }),
           TextButton(
               child: const Text('閉じる'),
               onPressed: () => Navigator.of(context).pop())
         ],
       );
+}
+
+class GroupLeaveConfirmDialog extends ConsumerWidget {
+  const GroupLeaveConfirmDialog(
+      {Key? key, required this.parentRef, required this.group})
+      : super(key: key);
+
+  final WidgetRef parentRef;
+  final Group group;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(userProvider).value;
+
+    return AlertDialog(
+      title: const Text('確認'),
+      content: const Text('グループを脱退してもよろしいでしょうか?'),
+      actions: <Widget>[
+        TextButton(
+            child: const Text('はい'),
+            onPressed: () async {
+              Navigator.of(context).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('${group.groupName}を脱退しました')));
+              user!.groups.remove(group.groupID);
+              await user.save();
+              group.removeMember(user.uid);
+              await group.save();
+              parentRef.refresh(_groupsProvider);
+            }),
+        TextButton(
+            child: const Text('いいえ'),
+            onPressed: () => Navigator.of(context).pop()),
+      ],
+    );
+  }
 }
 
 class GroupCreationDialog extends ConsumerWidget {
@@ -260,9 +306,11 @@ class GroupParticipationDialog extends ConsumerWidget {
               onPressed: () async {
                 if (_controller.text.isNotEmpty) {
                   final group = Group.getGroup(int.parse(_controller.text));
-                  Navigator.of(context).pop();
                   group.then((value) async {
                     if (value != null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('${value.groupName}に参加しました')));
+                      Navigator.of(context).pop();
                       user!.groups.add(value.groupID);
                       await user!.save();
                       value.addMember(user!.uid);
@@ -271,6 +319,7 @@ class GroupParticipationDialog extends ConsumerWidget {
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('そのグループは存在しません')));
+                      Navigator.of(context).pop();
                     }
                   });
                 } else {
