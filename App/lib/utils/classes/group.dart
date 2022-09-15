@@ -1,5 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Group {
   late int groupID;
@@ -9,15 +10,17 @@ class Group {
 
   List<int> get expDatas => _expDatas;
 
-  Group({required this.groupName}) {
-    generateId().then((value) => groupID = value);
+  Group({required this.groupName});
+
+  Future<void> init() async {
+    await generateId().then((value) => groupID = value);
   }
 
   Group.fromJson(Map<String, Object?> json)
       : groupID = json['groupID'] as int,
         groupName = json['groupName'] as String,
         members = (json['members'] as List<dynamic>).cast<String>(),
-        _expDatas = json['expDatas'] as List<int>;
+        _expDatas = (json['expDatas'] as List<dynamic>).cast<int>();
 
   Map<String, Object?> toJson() {
     return {
