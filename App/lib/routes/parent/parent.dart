@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:solimage/routes/parent/history.dart';
 import 'package:solimage/routes/parent/profile.dart';
 
-final tabIndexProvider = StateProvider((ref) => 0);
+final tabIndexProvider = StateProvider.autoDispose((ref) => 0);
 
 class ParentScreen extends ConsumerWidget {
   const ParentScreen({Key? key}) : super(key: key);
