@@ -4,8 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/expData.dart';
 
-final _expDatasProvider =
-    StateProvider((ref) => ref.watch(userProvider).value?.expDatas);
+final _expDatasProvider = FutureProvider.autoDispose((ref) async =>
+    await Future.wait((await ref
+            .watch(userProvider.future)
+            .then((value) => value?.expDatas ?? []))
+        .map((expData) => ExpData.getExpData(expData))));
 
 class HistoryScreen extends ConsumerWidget {
   const HistoryScreen({Key? key}) : super(key: key);
@@ -14,29 +17,16 @@ class HistoryScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final expDatas = ref.watch(_expDatasProvider);
 
-    return ListView(children: [
-      if (expDatas != null)
-        ...expDatas.map((expDataId) {
-          final expData = ExpData.getExpData(expDataId);
-
-          return FutureBuilder<ExpData?>(
-              future: expData,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState != ConnectionState.done) {
-                  return const CircularProgressIndicator();
-                }
-
-                if (snapshot.data != null) {
-                  return Card(
-                      child: ListTile(
-                          title: Text('${snapshot.data!.word}'),
-                          trailing: const Icon(Icons.edit),
-                          onTap: () => context.push('/parent/post')));
-                }
-
-                return const SizedBox();
-              });
-        })
-    ]);
+    return expDatas.maybeWhen(
+        data: (data) => ListView(
+            children: data
+                .map((expData) => Card(
+                    child: ListTile(
+                        title: Text('${expData?.word}'),
+                        trailing: const Icon(Icons.edit),
+                        onTap: () => context.push(
+                            '/parent/post?expDataId=${expData?.dataId}'))))
+                .toList()),
+        orElse: () => const Center(child: CircularProgressIndicator()));
   }
 }

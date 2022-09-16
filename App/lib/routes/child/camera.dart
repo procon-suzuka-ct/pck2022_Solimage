@@ -4,8 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:solimage/components/child_actions.dart';
+import 'package:solimage/components/loading_overlay.dart';
 import 'package:solimage/states/camera.dart';
 import 'package:solimage/states/permission.dart';
+
+final _takingPictureProvider = StateProvider<bool>((ref) => false);
 
 class CameraScreen extends ConsumerWidget {
   const CameraScreen({Key? key}) : super(key: key);
@@ -13,6 +16,9 @@ class CameraScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cameraPermission = ref.watch(cameraPermissionProvider);
+
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_) => ScaffoldMessenger.of(context).clearSnackBars());
 
     return cameraPermission.maybeWhen(
         data: (data) {
@@ -49,9 +55,12 @@ class CameraScreen extends ConsumerWidget {
                     ChildActions(actions: [
                       ChildActionButton(
                           onPressed: () async {
-                            ref.read(imagePathProvider.notifier).state = null;
+                            ref.read(_takingPictureProvider.notifier).state =
+                                true;
                             ref.read(imagePathProvider.notifier).state =
                                 (await controller!.takePicture()).path;
+                            ref.read(_takingPictureProvider.notifier).state =
+                                false;
                             await showDialog(
                                 context: context,
                                 barrierDismissible: false,
@@ -63,7 +72,8 @@ class CameraScreen extends ConsumerWidget {
                       ChildActionButton(
                           onPressed: () => context.push('/child/history'),
                           child: const Text('きろく'))
-                    ])
+                    ]),
+                    LoadingOverlay(visible: ref.watch(_takingPictureProvider))
                   ]));
                 },
                 error: (error, _) => Text('Error: $error'),

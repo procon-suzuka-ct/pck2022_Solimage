@@ -40,11 +40,13 @@ class ProfileScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 photoURL.maybeWhen(
-                    data: (data) => Container(
-                        margin: const EdgeInsets.all(10.0),
-                        child: CircleAvatar(
-                            radius: 64.0,
-                            backgroundImage: NetworkImage(data!))),
+                    data: (data) => data != null
+                        ? Container(
+                            margin: const EdgeInsets.all(10.0),
+                            child: CircleAvatar(
+                                radius: 64.0,
+                                backgroundImage: NetworkImage(data)))
+                        : const SizedBox.shrink(),
                     orElse: () => const CircularProgressIndicator()),
                 name.maybeWhen(
                     data: (data) =>
@@ -184,7 +186,8 @@ class GroupDetailDialog extends ConsumerWidget {
         content: Column(mainAxisSize: MainAxisSize.min, children: [
           Card(
               child: ListTile(
-                  title: const Text('メンバー'),
+                  leading: const Icon(Icons.person),
+                  title: const Text('メンバー一覧'),
                   onTap: () {
                     Navigator.of(context).pop();
                     showDialog(
@@ -292,6 +295,8 @@ class GroupCreationDialog extends ConsumerWidget {
             child: const Text('OK'),
             onPressed: () async {
               if (controller.text.isNotEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('${controller.text}を作成しました')));
                 Navigator.of(context).pop();
                 final group = Group(groupName: controller.text);
                 await group.init();
