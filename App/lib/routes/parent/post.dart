@@ -186,6 +186,8 @@ class ConfirmDialog extends ConsumerWidget {
           TextButton(
               child: const Text('はい'),
               onPressed: () => expData.save().then((_) {
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(const SnackBar(content: Text('投稿しました')));
                     ref.refresh(userProvider);
                     context.go('/parent');
                   })),
