@@ -1,5 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:solimage/utils/auth.dart';
 import 'package:solimage/utils/classes/group.dart';
 import 'package:solimage/utils/classes/user.dart';
@@ -162,15 +163,15 @@ class ExpData {
       throw Exception("dataId is not set");
     }
 
-    AppUser.getUser(_userId).then((value) {
+    await AppUser.getUser(_userId).then((value) async {
       if (value != null) {
         value.addExpData(_dataId);
-        value.save();
+        await value.save();
         for (var groupId in value.groups) {
-          Group.getGroup(groupId).then((group) {
+          Group.getGroup(groupId).then((group) async {
             if (group != null) {
               group.addExpData(_dataId);
-              group.save();
+              await group.save();
             }
           });
         }
