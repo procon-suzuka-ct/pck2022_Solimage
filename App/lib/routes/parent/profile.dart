@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:solimage/states/auth.dart';
@@ -195,7 +196,15 @@ class GroupDetailDialog extends ConsumerWidget {
                         builder: (context) =>
                             GroupMemberListDialog(group: group));
                   })),
-          Card(child: ListTile(title: Text('グループID: ${group.groupID}')))
+          Card(
+              child: ListTile(
+                  leading: const Icon(Icons.qr_code),
+                  title: const Text('グループID'),
+                  subtitle: Text('${group.groupID}'),
+                  onTap: () => Clipboard.setData(
+                          ClipboardData(text: '${group.groupID}'))
+                      .then((_) => ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('クリップボードにコピーしました')))))),
         ]),
         actionsAlignment: MainAxisAlignment.spaceBetween,
         actions: <Widget>[
