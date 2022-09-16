@@ -17,6 +17,12 @@ class SolimageApp extends ConsumerWidget {
           brightness: Brightness.dark,
           colorSchemeSeed: Colors.blue),
       themeMode: ThemeMode.system,
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          child: child!,
+        );
+      },
       routerDelegate: router.routerDelegate,
       routeInformationParser: router.routeInformationParser,
       routeInformationProvider: router.routeInformationProvider,
