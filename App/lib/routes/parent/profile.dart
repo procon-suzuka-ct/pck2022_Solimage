@@ -349,32 +349,40 @@ class GroupParticipationDialog extends ConsumerWidget {
               child: const Text('OK'),
               onPressed: () async {
                 if (_controller.text.isNotEmpty) {
-                  final group = Group.getGroup(int.parse(_controller.text));
-                  group.then((value) async {
-                    if (value != null) {
-                      if (user!.groups.contains(value.groupID)) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('既に参加しているグループです')));
-                        Navigator.of(context).pop();
+                  final id = int.tryParse(_controller.text);
+                  if (id != null) {
+                    final group = Group.getGroup(id);
+                    group.then((value) async {
+                      if (value != null) {
+                        if (user!.groups.contains(value.groupID)) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('既に参加しているグループです')));
+                          Navigator.of(context).pop();
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text('${value.groupName}に参加しました')));
+                          Navigator.of(context).pop();
+                          user!.groups.add(value.groupID);
+                          await user!.save();
+                          value.addMember(user!.uid);
+                          await value.save();
+                          parentRef.refresh(_groupsProvider);
+                        }
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text('${value.groupName}に参加しました')));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('そのグループは存在しません')));
                         Navigator.of(context).pop();
-                        user!.groups.add(value.groupID);
-                        await user!.save();
-                        value.addMember(user!.uid);
-                        await value.save();
-                        parentRef.refresh(_groupsProvider);
                       }
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('そのグループは存在しません')));
-                      Navigator.of(context).pop();
-                    }
-                  });
+                    });
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('正しいグループIDを入力してください')));
+                    Navigator.of(context).pop();
+                  }
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('グループIDを入力してください')));
+                  Navigator.of(context).pop();
                 }
               }),
           TextButton(
