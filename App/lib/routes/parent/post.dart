@@ -14,6 +14,21 @@ final _whenProvider = StateProvider.autoDispose((ref) => '');
 final _whoProvider = StateProvider.autoDispose((ref) => '');
 final _howProvider = StateProvider.autoDispose((ref) => '');
 final _imageUrlProvider = StateProvider.autoDispose((ref) => '');
+final _expDataProvider =
+    FutureProvider.autoDispose.family<ExpData, String>((ref, expDataId) async {
+  final expData = await ExpData.getExpData(int.parse(expDataId)) ??
+      ExpData(word: '', meaning: '');
+  ref.read(_wordProvider.notifier).state = expData.word ?? '';
+  ref.read(_meaningProvider.notifier).state = expData.meaning ?? '';
+  ref.read(_whyProvider.notifier).state = expData.why ?? '';
+  ref.read(_whatProvider.notifier).state = expData.what ?? '';
+  ref.read(_whereProvider.notifier).state = expData.where ?? '';
+  ref.read(_whenProvider.notifier).state = expData.when ?? '';
+  ref.read(_whoProvider.notifier).state = expData.who ?? '';
+  ref.read(_howProvider.notifier).state = expData.how ?? '';
+  ref.read(_imageUrlProvider.notifier).state = expData.imageUrl ?? '';
+  return expData;
+});
 
 class PostScreen extends ConsumerWidget {
   const PostScreen({Key? key, this.expDataId}) : super(key: key);
@@ -24,6 +39,8 @@ class PostScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userProvider);
     final word = ref.watch(_wordProvider);
+
+    if (expDataId != null) ref.watch(_expDataProvider(expDataId!));
 
     final List<Map<String, dynamic>> textEditTiles = [
       {'title': '簡単な説明', 'provider': _meaningProvider},
