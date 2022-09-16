@@ -10,7 +10,7 @@ class LoadingOverlay extends StatelessWidget {
     return visible
         ? Container(
             decoration:
-                const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.6)),
+                const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.8)),
             child: Wrap(
                 direction: Axis.vertical,
                 alignment: WrapAlignment.center,
