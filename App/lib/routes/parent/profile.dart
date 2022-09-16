@@ -186,7 +186,8 @@ class GroupDetailDialog extends ConsumerWidget {
         content: Column(mainAxisSize: MainAxisSize.min, children: [
           Card(
               child: ListTile(
-                  title: const Text('メンバー'),
+                  leading: const Icon(Icons.person),
+                  title: const Text('メンバー一覧'),
                   onTap: () {
                     Navigator.of(context).pop();
                     showDialog(
