@@ -14,11 +14,11 @@ final _whenProvider = StateProvider.autoDispose((ref) => '');
 final _whoProvider = StateProvider.autoDispose((ref) => '');
 final _howProvider = StateProvider.autoDispose((ref) => '');
 final _imageUrlProvider = StateProvider.autoDispose((ref) => '');
-final _controllerProvider =
-    Provider.autoDispose((ref) => TreeController(allNodesExpanded: false));
 
 class PostScreen extends ConsumerWidget {
-  const PostScreen({Key? key}) : super(key: key);
+  const PostScreen({Key? key, this.expDataId}) : super(key: key);
+
+  final String? expDataId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -115,7 +115,7 @@ class WordSelectDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final controller = ref.watch(_controllerProvider);
+    final controller = TreeController(allNodesExpanded: false);
 
     return AlertDialog(
         scrollable: true,
@@ -173,22 +173,25 @@ class TextEditDialog extends ConsumerWidget {
   }
 }
 
-class ConfirmDialog extends StatelessWidget {
+class ConfirmDialog extends ConsumerWidget {
   final ExpData expData;
 
   const ConfirmDialog({Key? key, required this.expData}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => AlertDialog(
+  Widget build(BuildContext context, WidgetRef ref) => AlertDialog(
         title: const Text('確認'),
         content: const Text('投稿してもよろしいでしょうか?'),
         actions: <Widget>[
           TextButton(
               child: const Text('はい'),
-              onPressed: () async {
-                expData.save();
-                context.go('/parent');
-              }),
+              /*
+              onPressed: () => expData.save().then((_) {
+                    ref.refresh(userProvider);
+                    context.go('/parent');
+                  })),
+               */
+              onPressed: () => context.go('/parent')),
           TextButton(
               child: const Text('いいえ'),
               onPressed: () => Navigator.of(context).pop()),

@@ -17,19 +17,23 @@ final List<Map<String, dynamic>> routes = [
   {'path': '/child/history', 'child': const HistoryScreen()},
   {'path': '/child/result', 'child': const ResultScreen()},
   {'path': '/parent', 'child': const ParentScreen()},
-  {'path': '/parent/post', 'child': const PostScreen()},
   {'path': '/', 'child': const WelcomeScreen()}
 ];
 
 final routerProvider = Provider((ref) => GoRouter(
     initialLocation: '/',
-    routes: routes
-        .map((route) => GoRoute(
-              path: route['path'],
-              name: route['path'],
-              builder: (context, state) => SafeArea(child: route['child']),
-            ))
-        .toList(),
+    routes: [
+      ...routes.map((route) => GoRoute(
+            path: route['path'],
+            name: route['path'],
+            builder: (context, state) => SafeArea(child: route['child']),
+          )),
+      GoRoute(
+          path: '/parent/post',
+          name: '/parent/post',
+          builder: (context, state) => SafeArea(
+              child: PostScreen(expDataId: state.queryParams['expDataId']))),
+    ],
     observers: [SystemUiObserver()],
     redirect: (state) {
       final auth = ref.read(authProvider);
