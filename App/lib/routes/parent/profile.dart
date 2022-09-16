@@ -294,6 +294,8 @@ class GroupCreationDialog extends ConsumerWidget {
             child: const Text('OK'),
             onPressed: () async {
               if (controller.text.isNotEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('${controller.text}を作成しました')));
                 Navigator.of(context).pop();
                 final group = Group(groupName: controller.text);
                 await group.init();
