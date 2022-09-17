@@ -87,10 +87,16 @@ class PostScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
           onPressed: () async {
-            final expData = ExpData(
-                word: word,
-                meaning: ref.read(_meaningProvider),
-                userID: user.value!.uid);
+            final ExpData expData;
+            if (expDataId != null) {
+              expData = (await ExpData.getExpData(int.parse(expDataId!)))!;
+            } else {
+              expData = ExpData(
+                  word: word,
+                  meaning: ref.read(_meaningProvider),
+                  userID: user.value!.uid);
+              await expData.init();
+            }
             expData.setData(
                 word: word,
                 meaning: ref.read(_meaningProvider),
@@ -101,7 +107,6 @@ class PostScreen extends ConsumerWidget {
                 who: ref.read(_whoProvider),
                 how: ref.read(_howProvider),
                 imageUrl: ref.read(_imageUrlProvider));
-            await expData.init();
 
             return showDialog(
                 context: context,
