@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_simple_treeview/flutter_simple_treeview.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/expData.dart';
 
@@ -42,6 +45,7 @@ class PostScreen extends ConsumerWidget {
     final step = ref.watch(_stepProvider);
     final user = ref.watch(userProvider);
     final word = ref.watch(_wordProvider);
+    final imageUrl = ref.watch(_imageUrlProvider);
 
     if (expDataId != null) ref.watch(_expDataProvider(expDataId!));
 
@@ -80,12 +84,7 @@ class PostScreen extends ConsumerWidget {
         'title': 'どうやって',
         'provider': _howProvider,
         'state': ref.watch(_howProvider)
-      },
-      {
-        'title': '画像のURL',
-        'provider': _imageUrlProvider,
-        'state': ref.watch(_imageUrlProvider)
-      },
+      }
     ];
 
     final steps = [
@@ -161,39 +160,52 @@ class PostScreen extends ConsumerWidget {
       ),
       body: SingleChildScrollView(
           child: Column(children: [
-            Stepper(
-                currentStep: step,
-                onStepCancel: step != 0
-                    ? () => ref.read(_stepProvider.notifier).state = step - 1
-                    : null,
-                onStepContinue: step < steps.length - 1
-                    ? () => ref.read(_stepProvider.notifier).state = step + 1
-                    : null,
-                onStepTapped: (index) =>
-                    ref.read(_stepProvider.notifier).state = index,
-                steps: steps,
-                controlsBuilder:
-                    (BuildContext context, ControlsDetails details) {
-                  return Container(
-                      width: double.infinity,
-                      margin: const EdgeInsets.all(10.0),
-                      child: Wrap(
-                        spacing: 10.0,
-                        children: <Widget>[
-                          ElevatedButton(
-                            //13
-                            onPressed: details.onStepContinue,
-                            child: const Text('次へ'),
-                          ),
-                          ElevatedButton(
-                            //14
-                            onPressed: details.onStepCancel,
-                            child: const Text('戻る'),
-                          ),
-                        ],
-                      ));
-                })
-          ])),
+        if (File(imageUrl).existsSync())
+          Container(
+              constraints: const BoxConstraints(maxHeight: 300.0),
+              margin: const EdgeInsets.all(10.0),
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10.0),
+                  child: Image(image: FileImage(File(imageUrl))))),
+        ElevatedButton.icon(
+            onPressed: () async => ref.read(_imageUrlProvider.notifier).state =
+                (await ImagePicker().pickImage(source: ImageSource.gallery))!
+                    .path,
+            icon: const Icon(Icons.cloud_upload),
+            label: const Text('画像を追加')),
+        Stepper(
+            physics: const NeverScrollableScrollPhysics(),
+            currentStep: step,
+            onStepCancel: step != 0
+                ? () => ref.read(_stepProvider.notifier).state = step - 1
+                : null,
+            onStepContinue: step < steps.length - 1
+                ? () => ref.read(_stepProvider.notifier).state = step + 1
+                : null,
+            onStepTapped: (index) =>
+                ref.read(_stepProvider.notifier).state = index,
+            steps: steps,
+            controlsBuilder: (BuildContext context, ControlsDetails details) {
+              return Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.all(10.0),
+                  child: Wrap(
+                    spacing: 10.0,
+                    children: <Widget>[
+                      ElevatedButton(
+                        //13
+                        onPressed: details.onStepContinue,
+                        child: const Text('次へ'),
+                      ),
+                      ElevatedButton(
+                        //14
+                        onPressed: details.onStepCancel,
+                        child: const Text('戻る'),
+                      ),
+                    ],
+                  ));
+            })
+      ])),
       floatingActionButton: FloatingActionButton.extended(
           onPressed: () async {
             final ExpData expData;

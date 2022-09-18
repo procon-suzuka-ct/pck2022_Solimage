@@ -55,6 +55,7 @@ dependencies:
   animations: ^2.0.4
   firebase_performance: ^0.8.3
   cached_network_image: ^3.2.2
+  image_picker: ^0.8.5+3
 
 dev_dependencies:
   flutter_test:
