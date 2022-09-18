@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/expData.dart';
 
+final _stepProvider = StateProvider.autoDispose((ref) => 0);
 final _wordProvider = StateProvider.autoDispose((ref) => '');
 final _meaningProvider = StateProvider.autoDispose((ref) => '');
 final _whyProvider = StateProvider.autoDispose((ref) => '');
@@ -15,19 +16,20 @@ final _whoProvider = StateProvider.autoDispose((ref) => '');
 final _howProvider = StateProvider.autoDispose((ref) => '');
 final _imageUrlProvider = StateProvider.autoDispose((ref) => '');
 final _expDataProvider =
-    FutureProvider.autoDispose.family<ExpData, String>((ref, expDataId) async {
-  final expData = await ExpData.getExpData(int.parse(expDataId)) ??
-      ExpData(word: '', meaning: '');
-  ref.read(_wordProvider.notifier).state = expData.word ?? '';
-  ref.read(_meaningProvider.notifier).state = expData.meaning ?? '';
-  ref.read(_whyProvider.notifier).state = expData.why ?? '';
-  ref.read(_whatProvider.notifier).state = expData.what ?? '';
-  ref.read(_whereProvider.notifier).state = expData.where ?? '';
-  ref.read(_whenProvider.notifier).state = expData.when ?? '';
-  ref.read(_whoProvider.notifier).state = expData.who ?? '';
-  ref.read(_howProvider.notifier).state = expData.how ?? '';
-  ref.read(_imageUrlProvider.notifier).state = expData.imageUrl ?? '';
-  return expData;
+    FutureProvider.autoDispose.family<void, String>((ref, expDataId) async {
+  final expData = await ExpData.getExpData(int.parse(expDataId));
+
+  if (expData != null) {
+    ref.read(_wordProvider.notifier).state = expData.word ?? '';
+    ref.read(_meaningProvider.notifier).state = expData.meaning ?? '';
+    ref.read(_whyProvider.notifier).state = expData.why ?? '';
+    ref.read(_whatProvider.notifier).state = expData.what ?? '';
+    ref.read(_whereProvider.notifier).state = expData.where ?? '';
+    ref.read(_whenProvider.notifier).state = expData.when ?? '';
+    ref.read(_whoProvider.notifier).state = expData.who ?? '';
+    ref.read(_howProvider.notifier).state = expData.how ?? '';
+    ref.read(_imageUrlProvider.notifier).state = expData.imageUrl ?? '';
+  }
 });
 
 class PostScreen extends ConsumerWidget {
@@ -37,54 +39,161 @@ class PostScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final step = ref.watch(_stepProvider);
     final user = ref.watch(userProvider);
     final word = ref.watch(_wordProvider);
 
     if (expDataId != null) ref.watch(_expDataProvider(expDataId!));
 
     final List<Map<String, dynamic>> textEditTiles = [
-      {'title': '簡単な説明', 'provider': _meaningProvider},
-      {'title': 'なぜ', 'provider': _whyProvider},
-      {'title': 'なに', 'provider': _whatProvider},
-      {'title': 'いつ', 'provider': _whenProvider},
-      {'title': 'どこ', 'provider': _whereProvider},
-      {'title': 'だれ', 'provider': _whoProvider},
-      {'title': 'どうやって', 'provider': _howProvider},
-      {'title': '画像のURL', 'provider': _imageUrlProvider}
+      {
+        'title': '簡単な説明',
+        'provider': _meaningProvider,
+        'state': ref.watch(_meaningProvider)
+      },
+      {
+        'title': 'なぜ',
+        'provider': _whyProvider,
+        'state': ref.watch(_whyProvider)
+      },
+      {
+        'title': 'なに',
+        'provider': _whatProvider,
+        'state': ref.watch(_whatProvider)
+      },
+      {
+        'title': 'どこで',
+        'provider': _whereProvider,
+        'state': ref.watch(_whereProvider)
+      },
+      {
+        'title': 'いつ',
+        'provider': _whenProvider,
+        'state': ref.watch(_whenProvider)
+      },
+      {
+        'title': 'だれ',
+        'provider': _whoProvider,
+        'state': ref.watch(_whoProvider)
+      },
+      {
+        'title': 'どうやって',
+        'provider': _howProvider,
+        'state': ref.watch(_howProvider)
+      },
+      {
+        'title': '画像のURL',
+        'provider': _imageUrlProvider,
+        'state': ref.watch(_imageUrlProvider)
+      },
+    ];
+
+    final steps = [
+      Step(
+          title: const Text('ワード'),
+          subtitle: Text(word),
+          content: TreeView(
+              treeController: TreeController(allNodesExpanded: false),
+              nodes: [
+                TreeNode(
+                    content: ElevatedButton(
+                        onPressed: () {
+                          ref.read(_wordProvider.notifier).state = '生物';
+                          ref.read(_stepProvider.notifier).state = step + 1;
+                        },
+                        child: const Text('生物')),
+                    children: [
+                      TreeNode(
+                          content: ElevatedButton(
+                              onPressed: () {
+                                ref.read(_wordProvider.notifier).state = '虫';
+                                ref.read(_stepProvider.notifier).state =
+                                    step + 1;
+                              },
+                              child: const Text('虫')),
+                          children: [
+                            TreeNode(
+                                content: ElevatedButton(
+                                    onPressed: () {
+                                      ref.read(_wordProvider.notifier).state =
+                                          'かまきり';
+                                      ref.read(_stepProvider.notifier).state =
+                                          step + 1;
+                                    },
+                                    child: const Text('かまきり')),
+                                children: [
+                                  TreeNode(
+                                      content: ElevatedButton(
+                                          onPressed: () {
+                                            ref
+                                                .read(_wordProvider.notifier)
+                                                .state = '触角';
+                                            ref
+                                                .read(_stepProvider.notifier)
+                                                .state = step + 1;
+                                          },
+                                          child: const Text('触角')))
+                                ])
+                          ])
+                    ]),
+              ],
+              indent: 20.0)),
+      ...textEditTiles.map((tile) {
+        final controller = TextEditingController.fromValue(TextEditingValue(
+            text: tile['state'],
+            selection: TextSelection.collapsed(offset: tile['state'].length)));
+
+        controller.addListener(
+            () => ref.read(tile['provider'].notifier).state = controller.text);
+
+        return Step(
+            title: Text(tile['title']),
+            subtitle: Text(ref.watch(tile['provider'])),
+            content: TextField(
+                controller: controller,
+                decoration: InputDecoration(labelText: tile['title'])));
+      })
     ];
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('投稿'),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(10.0),
-        scrollDirection: Axis.vertical,
-        children: [
-          Card(
-              child: ListTile(
-                  title: const Text('ワード'),
-                  subtitle: Text(word),
-                  trailing: const Icon(Icons.edit),
-                  onTap: () => showDialog(
-                      context: context,
-                      builder: (context) => const WordSelectDialog()),
-                  isThreeLine: true)),
-          ...textEditTiles
-              .map((tile) => Card(
-                  child: ListTile(
-                      title: Text(tile['title']),
-                      subtitle: Text(ref.watch(tile['provider'])),
-                      trailing: const Icon(Icons.edit),
-                      onTap: () => showDialog(
-                          context: context,
-                          builder: (context) => TextEditDialog(
-                              title: tile['title'],
-                              provider: tile['provider'])),
-                      isThreeLine: true)))
-              .toList()
-        ],
-      ),
+      body: SingleChildScrollView(
+          child: Column(children: [
+            Stepper(
+                currentStep: step,
+                onStepCancel: step != 0
+                    ? () => ref.read(_stepProvider.notifier).state = step - 1
+                    : null,
+                onStepContinue: step < steps.length - 1
+                    ? () => ref.read(_stepProvider.notifier).state = step + 1
+                    : null,
+                onStepTapped: (index) =>
+                    ref.read(_stepProvider.notifier).state = index,
+                steps: steps,
+                controlsBuilder:
+                    (BuildContext context, ControlsDetails details) {
+                  return Container(
+                      width: double.infinity,
+                      margin: const EdgeInsets.all(10.0),
+                      child: Wrap(
+                        spacing: 10.0,
+                        children: <Widget>[
+                          ElevatedButton(
+                            //13
+                            onPressed: details.onStepContinue,
+                            child: const Text('次へ'),
+                          ),
+                          ElevatedButton(
+                            //14
+                            onPressed: details.onStepCancel,
+                            child: const Text('戻る'),
+                          ),
+                        ],
+                      ));
+                })
+          ])),
       floatingActionButton: FloatingActionButton.extended(
           onPressed: () async {
             final ExpData expData;
@@ -114,83 +223,6 @@ class PostScreen extends ConsumerWidget {
           },
           icon: const Icon(Icons.check),
           label: const Text('投稿')),
-    );
-  }
-}
-
-class WordButton extends ConsumerWidget {
-  const WordButton({Key? key, required this.word}) : super(key: key);
-
-  final String word;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) => TextButton(
-      onPressed: () {
-        ref.read(_wordProvider.notifier).state = word;
-        Navigator.of(context).pop(context);
-      },
-      child: Text(word));
-}
-
-class WordSelectDialog extends ConsumerWidget {
-  const WordSelectDialog({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final controller = TreeController(allNodesExpanded: false);
-
-    return AlertDialog(
-        scrollable: true,
-        title: const Text('ワード'),
-        content:
-            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text('以下からワードを選択してください', style: TextStyle(color: Colors.grey)),
-          TreeView(
-              treeController: controller,
-              nodes: [
-                TreeNode(content: const WordButton(word: '生物'), children: [
-                  TreeNode(content: const WordButton(word: '虫'), children: [
-                    TreeNode(
-                        content: const WordButton(word: 'かまきり'),
-                        children: [
-                          TreeNode(content: const WordButton(word: '触角'))
-                        ])
-                  ])
-                ]),
-              ],
-              indent: 20.0)
-        ]));
-  }
-}
-
-class TextEditDialog extends ConsumerWidget {
-  const TextEditDialog({Key? key, required this.title, required this.provider})
-      : super(key: key);
-
-  final String title;
-  final AutoDisposeStateProvider<String> provider;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final text = ref.watch(provider);
-    final controller = TextEditingController(text: text);
-
-    return AlertDialog(
-      title: Text(title),
-      content: TextField(
-          controller: controller,
-          decoration: InputDecoration(labelText: title)),
-      actions: <Widget>[
-        TextButton(
-            child: const Text('OK'),
-            onPressed: () {
-              ref.read(provider.notifier).update((_) => controller.text);
-              Navigator.of(context).pop();
-            }),
-        TextButton(
-            child: const Text('キャンセル'),
-            onPressed: () => Navigator.of(context).pop())
-      ],
     );
   }
 }
