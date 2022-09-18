@@ -16,7 +16,7 @@ jobs:
         with: 
           channel: 'stable'
           cache: true
-          cache-key: flutter # optional, change this to force refresh cache
+          cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:' # optional, change this to force refresh cache
           cache-path: ${{ runner.tool_cache }}/flutter
       - name: install dependencies
         continue-on-error: true
