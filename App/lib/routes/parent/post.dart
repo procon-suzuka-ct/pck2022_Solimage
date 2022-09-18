@@ -49,7 +49,7 @@ class PostScreen extends ConsumerWidget {
 
     if (expDataId != null) ref.watch(_expDataProvider(expDataId!));
 
-    final List<Map<String, dynamic>> textEditTiles = [
+    final List<Map<String, dynamic>> textEdits = [
       {
         'title': '簡単な説明',
         'provider': _meaningProvider,
@@ -137,21 +137,14 @@ class PostScreen extends ConsumerWidget {
                     ]),
               ],
               indent: 20.0)),
-      ...textEditTiles.map((tile) {
-        final controller = TextEditingController.fromValue(TextEditingValue(
-            text: tile['state'],
-            selection: TextSelection.collapsed(offset: tile['state'].length)));
-
-        controller.addListener(
-            () => ref.read(tile['provider'].notifier).state = controller.text);
-
-        return Step(
-            title: Text(tile['title']),
-            subtitle: Text(ref.watch(tile['provider'])),
-            content: TextField(
-                controller: controller,
-                decoration: InputDecoration(labelText: tile['title'])));
-      })
+      ...textEdits.map((tile) => Step(
+          title: Text(tile['title']),
+          subtitle: Text(tile['state']),
+          content: TextFormField(
+              initialValue: tile['state'],
+              decoration: InputDecoration(labelText: tile['title']),
+              onChanged: (value) =>
+                  ref.read(tile['provider'].notifier).state = value))),
     ];
 
     return Scaffold(
@@ -185,26 +178,25 @@ class PostScreen extends ConsumerWidget {
             onStepTapped: (index) =>
                 ref.read(_stepProvider.notifier).state = index,
             steps: steps,
-            controlsBuilder: (BuildContext context, ControlsDetails details) {
-              return Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.all(10.0),
-                  child: Wrap(
-                    spacing: 10.0,
-                    children: <Widget>[
-                      ElevatedButton(
-                        //13
-                        onPressed: details.onStepContinue,
-                        child: const Text('次へ'),
-                      ),
-                      ElevatedButton(
-                        //14
-                        onPressed: details.onStepCancel,
-                        child: const Text('戻る'),
-                      ),
-                    ],
-                  ));
-            })
+            controlsBuilder: (BuildContext context, ControlsDetails details) =>
+                Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.all(10.0),
+                    child: Wrap(
+                      spacing: 10.0,
+                      children: <Widget>[
+                        ElevatedButton(
+                          //13
+                          onPressed: details.onStepContinue,
+                          child: const Text('次へ'),
+                        ),
+                        ElevatedButton(
+                          //14
+                          onPressed: details.onStepCancel,
+                          child: const Text('戻る'),
+                        ),
+                      ],
+                    )))
       ])),
       floatingActionButton: FloatingActionButton.extended(
           onPressed: () async {
