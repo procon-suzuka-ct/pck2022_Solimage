@@ -17,9 +17,6 @@ class CameraScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cameraPermission = ref.watch(cameraPermissionProvider);
 
-    WidgetsBinding.instance.addPostFrameCallback(
-        (_) => ScaffoldMessenger.of(context).clearSnackBars());
-
     return cameraPermission.maybeWhen(
         data: (data) {
           if (data == PermissionStatus.granted) {
@@ -43,10 +40,26 @@ class CameraScreen extends ConsumerWidget {
                             margin: const EdgeInsets.all(10.0),
                             child: ElevatedButton.icon(
                                 icon: const Icon(Icons.supervisor_account),
-                                onPressed: () => showDialog(
-                                    context: context,
-                                    builder: (context) =>
-                                        const SwitchToParentDialog()),
+                                onPressed: () => ScaffoldMessenger.of(context)
+                                        .showMaterialBanner(MaterialBanner(
+                                            actions: [
+                                          TextButton(
+                                              onPressed: () {
+                                                ScaffoldMessenger.of(context)
+                                                    .hideCurrentMaterialBanner();
+                                                ScaffoldMessenger.of(context)
+                                                    .clearMaterialBanners();
+                                                context.go('/parent');
+                                              },
+                                              child: const Text('はい')),
+                                          TextButton(
+                                              onPressed: () =>
+                                                  ScaffoldMessenger.of(context)
+                                                      .clearMaterialBanners(),
+                                              child: const Text('いいえ')),
+                                        ],
+                                            content: const Text(
+                                                '大人用メニューに切り替えてもよろしいでしょうか?'))),
                                 label: const FittedBox(
                                   child: Text('大人用メニュー'),
                                 ),
@@ -55,6 +68,8 @@ class CameraScreen extends ConsumerWidget {
                     ChildActions(actions: [
                       ChildActionButton(
                           onPressed: () async {
+                            ScaffoldMessenger.of(context)
+                                .clearMaterialBanners();
                             ref.read(_takingPictureProvider.notifier).state =
                                 true;
                             ref.read(imagePathProvider.notifier).state =
@@ -70,7 +85,11 @@ class CameraScreen extends ConsumerWidget {
                           },
                           child: const Text('さつえい')),
                       ChildActionButton(
-                          onPressed: () => context.push('/child/history'),
+                          onPressed: () {
+                            ScaffoldMessenger.of(context)
+                                .clearMaterialBanners();
+                            context.push('/child/history');
+                          },
                           child: const Text('きろく'))
                     ]),
                     LoadingOverlay(visible: ref.watch(_takingPictureProvider))
@@ -111,23 +130,6 @@ class CameraScreen extends ConsumerWidget {
         orElse: () =>
             const Scaffold(body: Center(child: CircularProgressIndicator())));
   }
-}
-
-class SwitchToParentDialog extends StatelessWidget {
-  const SwitchToParentDialog({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) => AlertDialog(
-        title: const Text('確認'),
-        content: const Text('大人用メニューに切り替えてもよろしいですか？'),
-        actions: <Widget>[
-          TextButton(
-              child: const Text('はい'), onPressed: () => context.go('/parent')),
-          TextButton(
-              child: const Text('いいえ'),
-              onPressed: () => Navigator.of(context).pop()),
-        ],
-      );
 }
 
 class StandbyDialog extends StatelessWidget {
