@@ -68,6 +68,8 @@ class CameraScreen extends ConsumerWidget {
                     ChildActions(actions: [
                       ChildActionButton(
                           onPressed: () async {
+                            ScaffoldMessenger.of(context)
+                                .clearMaterialBanners();
                             ref.read(_takingPictureProvider.notifier).state =
                                 true;
                             ref.read(imagePathProvider.notifier).state =
@@ -83,7 +85,11 @@ class CameraScreen extends ConsumerWidget {
                           },
                           child: const Text('さつえい')),
                       ChildActionButton(
-                          onPressed: () => context.push('/child/history'),
+                          onPressed: () {
+                            ScaffoldMessenger.of(context)
+                                .clearMaterialBanners();
+                            context.push('/child/history');
+                          },
                           child: const Text('きろく'))
                     ]),
                     LoadingOverlay(visible: ref.watch(_takingPictureProvider))
