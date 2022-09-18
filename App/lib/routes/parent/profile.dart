@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,7 +47,8 @@ class ProfileScreen extends ConsumerWidget {
                             margin: const EdgeInsets.all(10.0),
                             child: CircleAvatar(
                                 radius: 64.0,
-                                backgroundImage: NetworkImage(data)))
+                                backgroundImage:
+                                    CachedNetworkImageProvider(data)))
                         : const SizedBox.shrink(),
                     orElse: () => const CircularProgressIndicator()),
                 name.maybeWhen(
