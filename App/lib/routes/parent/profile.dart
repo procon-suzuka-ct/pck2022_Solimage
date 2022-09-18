@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:solimage/states/auth.dart';
+import 'package:solimage/states/groups.dart';
 import 'package:solimage/states/preferences.dart';
 import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/auth.dart';
@@ -14,11 +15,6 @@ final _photoURLProvider = FutureProvider.autoDispose(
     (ref) => ref.watch(authProvider.future).then((auth) => auth?.photoURL));
 final _nameProvider = FutureProvider.autoDispose(
     (ref) => ref.watch(userProvider.future).then((user) => user?.name));
-final _groupsProvider = FutureProvider.autoDispose((ref) async =>
-    await Future.wait((await ref
-            .watch(userProvider.future)
-            .then((user) => user?.groups ?? []))
-        .map((groupID) => Group.getGroup(groupID))));
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -27,7 +23,7 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final photoURL = ref.watch(_photoURLProvider);
     final name = ref.watch(_nameProvider);
-    final groups = ref.watch(_groupsProvider);
+    final groups = ref.watch(groupsProvider);
     final prefs = ref.watch(prefsProvider);
     final user = ref.watch(userProvider);
 
@@ -273,7 +269,7 @@ class GroupLeaveConfirmDialog extends ConsumerWidget {
               await user.save();
               group.removeMember(user.uid);
               await group.save();
-              parentRef.refresh(_groupsProvider);
+              parentRef.refresh(groupsProvider);
             }),
         TextButton(
             child: const Text('いいえ'),
@@ -315,7 +311,7 @@ class GroupCreationDialog extends ConsumerWidget {
                 await user?.save();
                 group.addMember(user!.uid);
                 await group.save();
-                parentRef.refresh(_groupsProvider);
+                parentRef.refresh(groupsProvider);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('グループ名を入力してください')));
@@ -368,7 +364,7 @@ class GroupParticipationDialog extends ConsumerWidget {
                           await user!.save();
                           value.addMember(user!.uid);
                           await value.save();
-                          parentRef.refresh(_groupsProvider);
+                          parentRef.refresh(groupsProvider);
                         }
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
