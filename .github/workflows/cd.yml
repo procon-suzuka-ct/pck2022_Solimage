@@ -1,0 +1,31 @@
+name: Continuous Delivery
+
+on:
+  pull_request:
+    branches: [ dev ]
+    types: [ closed ]
+
+jobs:
+  build:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+          cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:' # optional, change this to force refresh cache
+          cache-path: ${{ runner.tool_cache }}/flutter
+      - name: install dependencies
+        continue-on-error: true
+        run: cd App && flutter pub get
+      - name: build apk
+        continue-on-error: true
+        run: cd App && flutter build apk
+      - name: apk
+        uses: actions/upload-artifact@v2
+        with:
+          name: apk
+          path: App/build/app/outputs/flutter-apk/app-release.apk
