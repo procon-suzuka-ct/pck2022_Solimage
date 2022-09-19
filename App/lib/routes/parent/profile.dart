@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:solimage/components/app_detail.dart';
 import 'package:solimage/states/auth.dart';
 import 'package:solimage/states/groups.dart';
 import 'package:solimage/states/preferences.dart';
@@ -28,9 +29,6 @@ class ProfileScreen extends ConsumerWidget {
     final user = ref.watch(userProvider);
 
     return ListView(children: [
-      const ListTile(
-          title: Text('ユーザー情報',
-              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold))),
       Container(
           margin: const EdgeInsets.all(20.0),
           child: Column(
@@ -63,12 +61,17 @@ class ProfileScreen extends ConsumerWidget {
               ])),
       Card(
           child: ListTile(
+              leading: const Icon(Icons.logout),
               title: const Text('ログアウト'),
-              trailing: const Icon(Icons.logout),
               onTap: () => showDialog(
                   context: context,
                   builder: (context) =>
                       LogoutConfirmDialog(prefs: prefs.value)))),
+      Card(
+          child: ListTile(
+              leading: const Icon(Icons.info),
+              title: const Text('アプリについて'),
+              onTap: () => showAppDetailDialog(context))),
       ListTile(
           title: const Text('グループ',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
@@ -93,6 +96,7 @@ class ProfileScreen extends ConsumerWidget {
               .map((group) => group != null
                   ? Card(
                       child: ListTile(
+                          leading: const Icon(Icons.group),
                           title: Text(group.groupName),
                           trailing: const Icon(Icons.info),
                           onTap: () => showDialog(
