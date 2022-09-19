@@ -157,13 +157,16 @@ class PostScreen extends ConsumerWidget {
           child: Column(children: [
         if (imageUrl.isNotEmpty)
           Container(
-              constraints: const BoxConstraints(maxHeight: 300.0),
               margin: const EdgeInsets.all(10.0),
               child: ClipRRect(
                   borderRadius: BorderRadius.circular(10.0),
                   child: imageUrl.startsWith('http')
-                      ? Image(image: CachedNetworkImageProvider(imageUrl))
-                      : Image.file(File(imageUrl)))),
+                      ? CachedNetworkImage(
+                          height: 300.0,
+                          imageUrl: imageUrl,
+                          placeholder: (context, url) =>
+                              const Center(child: CircularProgressIndicator()))
+                      : Image.file(File(imageUrl), height: 300.0))),
         ElevatedButton.icon(
             onPressed: () async {
               final path =
