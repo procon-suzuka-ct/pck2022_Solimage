@@ -6,7 +6,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:solimage/utils/auth.dart';
 import 'package:solimage/utils/classes/group.dart';
 import 'package:solimage/utils/classes/user.dart';
-import 'package:image/image.dart';
 
 class ExpData {
   late int _dataId;
