@@ -178,7 +178,7 @@ class PostScreen extends ConsumerWidget {
               }
             },
             icon: const Icon(Icons.cloud_upload),
-            label: const Text('画像を追加')),
+            label: Text('画像を${imageUrl.isEmpty ? '追加' : '変更'}')),
         Stepper(
             physics: const NeverScrollableScrollPhysics(),
             currentStep: step,
