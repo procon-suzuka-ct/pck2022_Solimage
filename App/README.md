@@ -1,5 +1,11 @@
 # PCK2022_Solimage
 
+## 注意事項
+- Flutterのバージョンはstableチャンネルの最新を使う
+- pubspec.yamlに記載されているパッケージは最新を使う
+- 不要なパッケージは削除する
+  - ビルドしたアプリに不要なデータが含まれる可能性があるため
+
 ## 準備
 1. Android Studio, Flutterの環境構築をする
    - Visual Studioは不要
