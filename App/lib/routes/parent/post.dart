@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_simple_treeview/flutter_simple_treeview.dart';
@@ -34,6 +35,7 @@ final _expDataProvider =
     ref.read(_imageUrlProvider.notifier).state = expData.imageUrl ?? '';
   }
 });
+final _postingProvider = StateProvider.autoDispose((ref) => false);
 
 class PostScreen extends ConsumerWidget {
   const PostScreen({Key? key, this.expDataId}) : super(key: key);
@@ -153,19 +155,30 @@ class PostScreen extends ConsumerWidget {
       ),
       body: SingleChildScrollView(
           child: Column(children: [
-        if (File(imageUrl).existsSync())
+        if (imageUrl.isNotEmpty)
           Container(
-              constraints: const BoxConstraints(maxHeight: 300.0),
               margin: const EdgeInsets.all(10.0),
               child: ClipRRect(
                   borderRadius: BorderRadius.circular(10.0),
-                  child: Image(image: FileImage(File(imageUrl))))),
+                  child: imageUrl.startsWith('http')
+                      ? CachedNetworkImage(
+                          height: 300.0,
+                          imageUrl: imageUrl,
+                          placeholder: (context, url) =>
+                              const Center(child: CircularProgressIndicator()))
+                      : Image.file(File(imageUrl), height: 300.0))),
         ElevatedButton.icon(
-            onPressed: () async => ref.read(_imageUrlProvider.notifier).state =
-                (await ImagePicker().pickImage(source: ImageSource.gallery))!
-                    .path,
+            onPressed: () async {
+              final path =
+                  (await ImagePicker().pickImage(source: ImageSource.gallery))
+                      ?.path;
+
+              if (path != null) {
+                ref.read(_imageUrlProvider.notifier).state = path;
+              }
+            },
             icon: const Icon(Icons.cloud_upload),
-            label: const Text('画像を追加')),
+            label: Text('画像を${imageUrl.isEmpty ? '追加' : '変更'}')),
         Stepper(
             physics: const NeverScrollableScrollPhysics(),
             currentStep: step,
@@ -201,6 +214,7 @@ class PostScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
           onPressed: () async {
             final ExpData expData;
+
             if (expDataId != null) {
               expData = (await ExpData.getExpData(int.parse(expDataId!)))!;
             } else {
@@ -210,6 +224,7 @@ class PostScreen extends ConsumerWidget {
                   userID: user.value!.uid);
               await expData.init();
             }
+
             expData.setData(
                 word: word,
                 meaning: ref.read(_meaningProvider),
@@ -218,12 +233,13 @@ class PostScreen extends ConsumerWidget {
                 when: ref.read(_whenProvider),
                 where: ref.read(_whereProvider),
                 who: ref.read(_whoProvider),
-                how: ref.read(_howProvider),
-                imageUrl: ref.read(_imageUrlProvider));
+                how: ref.read(_howProvider));
 
             return showDialog(
                 context: context,
-                builder: (context) => ConfirmDialog(expData: expData));
+                barrierDismissible: false,
+                builder: (context) =>
+                    ConfirmDialog(expData: expData, imagePath: imageUrl));
           },
           icon: const Icon(Icons.check),
           label: const Text('投稿')),
@@ -233,25 +249,46 @@ class PostScreen extends ConsumerWidget {
 
 class ConfirmDialog extends ConsumerWidget {
   final ExpData expData;
+  final String? imagePath;
 
-  const ConfirmDialog({Key? key, required this.expData}) : super(key: key);
+  const ConfirmDialog({Key? key, required this.expData, this.imagePath})
+      : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => AlertDialog(
-        title: const Text('確認'),
-        content: const Text('投稿してもよろしいでしょうか?'),
-        actions: <Widget>[
-          TextButton(
-              child: const Text('はい'),
-              onPressed: () => expData.save().then((_) {
-                    ScaffoldMessenger.of(context)
-                        .showSnackBar(const SnackBar(content: Text('投稿しました')));
-                    ref.refresh(userProvider);
-                    context.go('/parent');
-                  })),
-          TextButton(
-              child: const Text('いいえ'),
-              onPressed: () => Navigator.of(context).pop()),
-        ],
-      );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final posting = ref.watch(_postingProvider);
+
+    return AlertDialog(
+      title: Text(posting ? '投稿中' : '確認'),
+      content: posting
+          ? const Center(
+              widthFactor: 1.0,
+              heightFactor: 1.0,
+              child: CircularProgressIndicator())
+          : const Text('投稿してもよろしいでしょうか?'),
+      actions: [
+        TextButton(
+            onPressed: !posting
+                ? () async {
+                    ref.read(_postingProvider.notifier).state = true;
+
+                    if (imagePath != null && !imagePath!.startsWith('http')) {
+                      await expData.saveImage(imagePath: imagePath!);
+                    }
+
+                    expData.save().then((_) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('投稿しました')));
+                      ref.refresh(userProvider);
+                      context.go('/parent');
+                    });
+                  }
+                : null,
+            child: const Text('はい')),
+        TextButton(
+            onPressed: !posting ? () => Navigator.of(context).pop() : null,
+            child: const Text('いいえ')),
+      ],
+    );
+  }
 }
