@@ -15,7 +15,7 @@ class ResultScreen extends ConsumerWidget {
     final imagePath = ref.watch(imagePathProvider);
     final controller = PageController();
     var size = MediaQuery.of(context).size;
-    final itemHeight = (size.height - 120) / 3;
+    final itemHeight = (size.height - 56 - 120) / 3;
     final itemWidth = size.width / 2;
 
     return Scaffold(
@@ -31,6 +31,12 @@ class ResultScreen extends ConsumerWidget {
                               fit: BoxFit.cover)))
                   : const CircularProgressIndicator()),
           Column(children: [
+            AppBar(
+              centerTitle: true,
+              title: const Text('けっか'),
+              backgroundColor: Colors.transparent,
+              automaticallyImplyLeading: false,
+            ),
             Expanded(
                 child: PageView(
                     controller: controller,
@@ -40,7 +46,7 @@ class ResultScreen extends ConsumerWidget {
                       crossAxisCount: 2,
                       crossAxisSpacing: 10.0,
                       mainAxisSpacing: 10.0,
-                      padding: const EdgeInsets.all(10.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       childAspectRatio: itemWidth / itemHeight,
                       physics: const NeverScrollableScrollPhysics(),
                       children: List.generate(
@@ -70,8 +76,9 @@ class ResultScreen extends ConsumerWidget {
                                           ])),
                                   closedBuilder: (context, action) => Container(
                                       decoration: BoxDecoration(
-                                          color:
-                                              Theme.of(context).backgroundColor,
+                                          color: Theme.of(context)
+                                              .backgroundColor
+                                              .withOpacity(0.8),
                                           borderRadius:
                                               BorderRadius.circular(10.0)),
                                       child: const Center(child: Text('A')))))))

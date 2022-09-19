@@ -1,24 +1,20 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:solimage/states/auth.dart';
+import 'package:solimage/states/groups.dart';
 import 'package:solimage/states/preferences.dart';
 import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/auth.dart';
 import 'package:solimage/utils/classes/group.dart';
 import 'package:solimage/utils/classes/user.dart';
 
-final _photoURLProvider = StateProvider.autoDispose(
-    (ref) => ref.watch(authProvider.select((value) => value.value?.photoURL)));
-final _nameProvider = StateProvider.autoDispose(
-    (ref) => ref.watch(userProvider.select((value) => value.value?.name)));
-final _groupsProvider = FutureProvider.autoDispose((ref) async {
-  final groupIds =
-      ref.watch(userProvider.select((value) => value.value?.groups));
-  return groupIds != null
-      ? await Future.wait(groupIds.map((groupId) => Group.getGroup(groupId)))
-      : null;
-});
+final _photoURLProvider = FutureProvider.autoDispose(
+    (ref) => ref.watch(authProvider.future).then((auth) => auth?.photoURL));
+final _nameProvider = FutureProvider.autoDispose(
+    (ref) => ref.watch(userProvider.future).then((user) => user?.name));
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -27,7 +23,7 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final photoURL = ref.watch(_photoURLProvider);
     final name = ref.watch(_nameProvider);
-    final groups = ref.watch(_groupsProvider);
+    final groups = ref.watch(groupsProvider);
     final prefs = ref.watch(prefsProvider);
     final user = ref.watch(userProvider);
 
@@ -41,29 +37,38 @@ class ProfileScreen extends ConsumerWidget {
               verticalDirection: VerticalDirection.down,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                if (photoURL != null)
-                  Container(
-                      margin: const EdgeInsets.all(10.0),
-                      child: CircleAvatar(
-                          radius: 64.0,
-                          backgroundImage: NetworkImage(photoURL))),
-                if (name != null)
-                  Text('$nameさん', style: const TextStyle(fontSize: 20.0))
+                photoURL.maybeWhen(
+                    data: (data) => data != null
+                        ? Container(
+                            margin: const EdgeInsets.all(10.0),
+                            child: CircleAvatar(
+                                radius: 64.0,
+                                backgroundImage:
+                                    CachedNetworkImageProvider(data)))
+                        : const SizedBox.shrink(),
+                    orElse: () => const CircularProgressIndicator()),
+                name.maybeWhen(
+                    data: (data) =>
+                        Row(mainAxisSize: MainAxisSize.min, children: [
+                          Text('$dataさん',
+                              style: const TextStyle(fontSize: 20.0)),
+                          IconButton(
+                              icon: const Icon(Icons.edit),
+                              onPressed: () => showDialog(
+                                  context: context,
+                                  builder: (context) =>
+                                      NameEditDialog(user: user.value)))
+                        ]),
+                    orElse: () => const CircularProgressIndicator())
               ])),
-      Card(
-          child: ListTile(
-              title: const Text('名前'),
-              trailing: const Icon(Icons.edit),
-              onTap: () => showDialog(
-                  context: context,
-                  builder: (context) => NameEditDialog(user: user.value)))),
       Card(
           child: ListTile(
               title: const Text('ログアウト'),
               trailing: const Icon(Icons.logout),
               onTap: () => showDialog(
                   context: context,
-                  builder: (context) => LogoutDialog(prefs: prefs.value)))),
+                  builder: (context) =>
+                      LogoutConfirmDialog(prefs: prefs.value)))),
       ListTile(
           title: const Text('グループ',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
@@ -84,21 +89,19 @@ class ProfileScreen extends ConsumerWidget {
                 child: const Text('参加'))
           ])),
       ...groups.maybeWhen(
-          data: (data) => (data != null
-              ? data
-                  .map((group) => group != null
-                      ? Card(
-                          child: ListTile(
-                              title: Text(group.groupName),
-                              trailing: const Icon(Icons.info),
-                              onTap: () => showDialog(
-                                  barrierDismissible: false,
-                                  context: context,
-                                  builder: (context) =>
-                                      GroupDetailDialog(group: group))))
-                      : const SizedBox.shrink())
-                  .toList()
-              : const [SizedBox.shrink()]),
+          data: (data) => data
+              .map((group) => group != null
+                  ? Card(
+                      child: ListTile(
+                          title: Text(group.groupName),
+                          trailing: const Icon(Icons.info),
+                          onTap: () => showDialog(
+                              barrierDismissible: false,
+                              context: context,
+                              builder: (context) => GroupDetailDialog(
+                                  parentRef: ref, group: group))))
+                  : const SizedBox.shrink())
+              .toList(),
           orElse: () => const [Center(child: CircularProgressIndicator())]),
       const ListTile(
           title: Text('アクセス履歴',
@@ -115,7 +118,7 @@ class NameEditDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final name = ref.watch(_nameProvider);
-    final controller = TextEditingController(text: name);
+    final controller = TextEditingController(text: name.value);
 
     return AlertDialog(
       title: const Text('名前'),
@@ -126,7 +129,7 @@ class NameEditDialog extends ConsumerWidget {
         TextButton(
             child: const Text('OK'),
             onPressed: () {
-              if (controller.text.isNotEmpty && controller.text != name) {
+              if (controller.text.isNotEmpty && controller.text != name.value) {
                 user!.setData(user!.uid, controller.text);
                 ref.refresh(_nameProvider);
                 user!.save();
@@ -143,8 +146,8 @@ class NameEditDialog extends ConsumerWidget {
   }
 }
 
-class LogoutDialog extends StatelessWidget {
-  const LogoutDialog({Key? key, required this.prefs}) : super(key: key);
+class LogoutConfirmDialog extends StatelessWidget {
+  const LogoutConfirmDialog({Key? key, required this.prefs}) : super(key: key);
 
   final SharedPreferences? prefs;
 
@@ -168,28 +171,112 @@ class LogoutDialog extends StatelessWidget {
       );
 }
 
-class GroupDetailDialog extends StatelessWidget {
-  const GroupDetailDialog({Key? key, required this.group}) : super(key: key);
+class GroupDetailDialog extends ConsumerWidget {
+  const GroupDetailDialog(
+      {Key? key, required this.parentRef, required this.group})
+      : super(key: key);
 
+  final WidgetRef parentRef;
   final Group group;
 
   @override
-  Widget build(BuildContext context) => AlertDialog(
-        title: Text(group.groupName),
+  Widget build(BuildContext context, WidgetRef ref) => AlertDialog(
+        title: Text('${group.groupName}について'),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
-          Card(child: ListTile(title: const Text('メンバー'), onTap: () {})),
-          Card(child: ListTile(title: Text('グループID: ${group.groupID}')))
+          Card(
+              child: ListTile(
+                  leading: const Icon(Icons.person),
+                  title: const Text('メンバー一覧'),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    showDialog(
+                        context: context,
+                        builder: (context) =>
+                            GroupMemberListDialog(group: group));
+                  })),
+          Card(
+              child: ListTile(
+                  leading: const Icon(Icons.qr_code),
+                  title: const Text('グループID'),
+                  subtitle: Text('${group.groupID}'),
+                  onTap: () => Clipboard.setData(
+                          ClipboardData(text: '${group.groupID}'))
+                      .then((_) => ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('クリップボードにコピーしました')))))),
         ]),
         actionsAlignment: MainAxisAlignment.spaceBetween,
         actions: <Widget>[
           TextButton(
               child: const Text('グループから抜ける'),
-              onPressed: () => Navigator.of(context).pop()),
+              onPressed: () {
+                Navigator.of(context).pop();
+                showDialog(
+                    context: context,
+                    builder: (context) => GroupLeaveConfirmDialog(
+                        parentRef: parentRef, group: group));
+              }),
           TextButton(
               child: const Text('閉じる'),
               onPressed: () => Navigator.of(context).pop())
         ],
       );
+}
+
+class GroupMemberListDialog extends ConsumerWidget {
+  const GroupMemberListDialog({Key? key, required this.group})
+      : super(key: key);
+
+  final Group group;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => AlertDialog(
+      title: Text('${group.groupName}のメンバー'),
+      content: FutureBuilder(future: Future.wait(group.members.map((uid) async {
+        final user = await AppUser.getUser(uid);
+        return Card(child: ListTile(title: Text('${user?.name}')));
+      })), builder: (context, AsyncSnapshot<List<Card>> snapshot) {
+        return Column(mainAxisSize: MainAxisSize.min, children: [
+          if (snapshot.connectionState == ConnectionState.waiting)
+            const Center(child: CircularProgressIndicator()),
+          if (snapshot.hasData) ...snapshot.data!.toList()
+        ]);
+      }));
+}
+
+class GroupLeaveConfirmDialog extends ConsumerWidget {
+  const GroupLeaveConfirmDialog(
+      {Key? key, required this.parentRef, required this.group})
+      : super(key: key);
+
+  final WidgetRef parentRef;
+  final Group group;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(userProvider).value;
+
+    return AlertDialog(
+      title: const Text('確認'),
+      content: const Text('グループを脱退してもよろしいでしょうか?'),
+      actions: <Widget>[
+        TextButton(
+            child: const Text('はい'),
+            onPressed: () async {
+              Navigator.of(context).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('${group.groupName}を脱退しました')));
+              user!.groups.remove(group.groupID);
+              await user.save();
+              group.removeMember(user.uid);
+              await group.save();
+              parentRef.refresh(groupsProvider);
+            }),
+        TextButton(
+            child: const Text('いいえ'),
+            onPressed: () => Navigator.of(context).pop()),
+      ],
+    );
+  }
 }
 
 class GroupCreationDialog extends ConsumerWidget {
@@ -211,24 +298,25 @@ class GroupCreationDialog extends ConsumerWidget {
           decoration: const InputDecoration(
               labelText: 'グループ名', hintText: 'グループ名を入力してください')),
       actions: <Widget>[
-        Builder(
-            builder: (context) => TextButton(
-                child: const Text('OK'),
-                onPressed: () async {
-                  if (controller.text.isNotEmpty) {
-                    Navigator.of(context).pop();
-                    final group = Group(groupName: controller.text);
-                    await group.init();
-                    user?.groups.add(group.groupID);
-                    await user?.save();
-                    group.addMember(user!.uid);
-                    await group.save();
-                    parentRef.refresh(_groupsProvider);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('グループ名を入力してください')));
-                  }
-                })),
+        TextButton(
+            child: const Text('OK'),
+            onPressed: () async {
+              if (controller.text.isNotEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('${controller.text}を作成しました')));
+                Navigator.of(context).pop();
+                final group = Group(groupName: controller.text);
+                await group.init();
+                user?.groups.add(group.groupID);
+                await user?.save();
+                group.addMember(user!.uid);
+                await group.save();
+                parentRef.refresh(groupsProvider);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('グループ名を入力してください')));
+              }
+            }),
         TextButton(
             child: const Text('キャンセル'),
             onPressed: () => Navigator.of(context).pop()),
@@ -245,55 +333,59 @@ class GroupParticipationDialog extends ConsumerWidget {
   final WidgetRef parentRef;
   final AppUser? user;
   final _controller = TextEditingController();
-  final idProvider = StateProvider<String?>((ref) => null);
-  late final getGroupProvider = FutureProvider((ref) async {
-    final id = ref.read(idProvider);
-    return id != null ? await Group.getGroup(int.parse(id)) : null;
-  });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final groupRef = ref.watch(getGroupProvider);
-
-    return AlertDialog(
-      title: const Text('グループに参加'),
-      content: TextField(
-          controller: _controller,
-          decoration: const InputDecoration(
-              labelText: 'グループID', hintText: 'グループIDを入力してください'),
-          keyboardType: TextInputType.number,
-          onChanged: (value) {
-            ref.read(idProvider.notifier).state = value;
-          }),
-      actions: <Widget>[
-        TextButton(
-            child: const Text('OK'),
-            onPressed: () {
-              if (_controller.text.isNotEmpty) {
-                groupRef.maybeWhen(
-                    data: (group) async {
-                      Navigator.of(context).pop();
-                      if (group != null) {
-                        user!.groups.add(group.groupID);
-                        await user!.save();
-                        group.addMember(user!.uid);
-                        await group.save();
-                        parentRef.refresh(_groupsProvider);
+  Widget build(BuildContext context, WidgetRef ref) => AlertDialog(
+        title: const Text('グループに参加'),
+        content: TextField(
+            controller: _controller,
+            decoration: const InputDecoration(
+                labelText: 'グループID', hintText: 'グループIDを入力してください'),
+            keyboardType: TextInputType.number),
+        actions: <Widget>[
+          TextButton(
+              child: const Text('OK'),
+              onPressed: () async {
+                if (_controller.text.isNotEmpty) {
+                  final id = int.tryParse(_controller.text);
+                  if (id != null) {
+                    final group = Group.getGroup(id);
+                    group.then((value) async {
+                      if (value != null) {
+                        if (user!.groups.contains(value.groupID)) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('既に参加しているグループです')));
+                          Navigator.of(context).pop();
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text('${value.groupName}に参加しました')));
+                          Navigator.of(context).pop();
+                          user!.groups.add(value.groupID);
+                          await user!.save();
+                          value.addMember(user!.uid);
+                          await value.save();
+                          parentRef.refresh(groupsProvider);
+                        }
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('そのグループは存在しません')));
+                        Navigator.of(context).pop();
                       }
-                    },
-                    orElse: () => null);
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('グループIDを入力してください')));
-              }
-            }),
-        TextButton(
-            child: const Text('キャンセル'),
-            onPressed: () => Navigator.of(context).pop()),
-      ],
-    );
-  }
+                    });
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('正しいグループIDを入力してください')));
+                    Navigator.of(context).pop();
+                  }
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('グループIDを入力してください')));
+                  Navigator.of(context).pop();
+                }
+              }),
+          TextButton(
+              child: const Text('キャンセル'),
+              onPressed: () => Navigator.of(context).pop()),
+        ],
+      );
 }
