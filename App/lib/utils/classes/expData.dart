@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:solimage/utils/auth.dart';
 import 'package:solimage/utils/classes/group.dart';
 import 'package:solimage/utils/classes/user.dart';
@@ -359,5 +361,26 @@ class ExpData {
     } else if (isBad == false) {
       await user.addBadData(_dataId);
     }
+  }
+
+  /// 返り値は画像のダウンロードURLです
+  ///
+  /// 画像の保存に成功した場合は、[ExpData]の[imageUrl]にも保存されます
+  ///
+  /// [isExpDataSave]がtrueの場合、[ExpData]のsave関数も呼ばれます
+  Future<String> saveImage(
+      {required String imagePath, bool isExpDataSave = false}) async {
+    final storage = FirebaseStorage.instance;
+    final ref = storage.ref().child('images').child("$_dataId.jpg");
+    File file = File(imagePath);
+    final uploadTask = ref.putFile(file);
+
+    final snapshot = await uploadTask;
+    final url = await snapshot.ref.getDownloadURL();
+    _imageUrl = url;
+    if (isExpDataSave) {
+      await save();
+    }
+    return url;
   }
 }
