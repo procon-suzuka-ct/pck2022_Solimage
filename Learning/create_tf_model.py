@@ -2,13 +2,13 @@ import os, json
 
 #機械学習
 from keras.models import Model
-from keras.layers import Dense, Dropout, GlobalAveragePooling2D, Conv2D, Add
+from keras.layers import Dense, Dropout, GlobalAveragePooling2D
 import tensorflow_addons as tfa
 from keras.applications.vgg16 import VGG16
 from keras.applications.mobilenet_v2 import MobileNetV2
 from keras.applications.nasnet import NASNetMobile
 from keras.preprocessing.image import ImageDataGenerator
-from keras.callbacks import EarlyStopping
+from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.applications.efficientnet import EfficientNetB0
 from keras.optimizers import adam_v2
 
@@ -63,8 +63,10 @@ model.compile(loss = "categorical_crossentropy", optimizer = opt, metrics = ["ac
 model.summary()
 
 early_stopping = EarlyStopping(monitor = "loss", patience = 10, min_delta = 1e-4)
+check_point = ModelCheckpoint("./tmp/model/model.h5", monitor = "loss", save_best_only = True)
+
 #学習
-history = model.fit(trainGenerator, epochs = 500, callbacks = [early_stopping])
+history = model.fit(trainGenerator, epochs = 100, callbacks = [early_stopping, check_point])
 
 #学習結果表示
 import matplotlib.pyplot as plt
@@ -80,6 +82,3 @@ ax.set_xlabel('Epoch')
 print("Learning Finished!")
 
 plt.show()
-
-#モデルの保存
-model.save("./tmp/model/model.h5")
