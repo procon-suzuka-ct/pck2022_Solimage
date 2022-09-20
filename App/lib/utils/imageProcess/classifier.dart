@@ -78,4 +78,16 @@ class Classifier {
     _interpreter.run(inputImage.buffer, _outputBuffer.getBuffer());
     return _outputBuffer.getDoubleList();
   }
+
+  static Map<int, double> getLabelIndexes(List<double> predictResults) {
+    var values = predictResults;
+    values.sort();
+    values = values.reversed.toList();
+    values = values.sublist(0, 4);
+    Map<int, double> labels = {};
+    for (var value in values) {
+      labels[predictResults.indexOf(value)] = value;
+    }
+    return labels;
+  }
 }
