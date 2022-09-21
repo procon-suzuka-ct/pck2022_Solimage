@@ -11,6 +11,7 @@ import 'package:solimage/routes/parent/post.dart';
 import 'package:solimage/routes/welcome.dart';
 import 'package:solimage/states/auth.dart';
 import 'package:solimage/states/preferences.dart';
+import 'package:solimage/utils/stream_listenable.dart';
 
 final List<Map<String, dynamic>> routes = [
   {'path': '/child/camera', 'child': const CameraScreen()},
@@ -35,7 +36,7 @@ final routerProvider = Provider((ref) => GoRouter(
               child: PostScreen(expDataId: state.queryParams['expDataId']))),
     ],
     observers: [SystemUiObserver()],
-    redirect: (state) {
+    redirect: (context, state) {
       final auth = ref.read(authProvider);
       final prefs = ref.read(prefsProvider);
 
@@ -71,7 +72,7 @@ final routerProvider = Provider((ref) => GoRouter(
       });
     },
     refreshListenable: Listenable.merge([
-      GoRouterRefreshStream(ref.watch(authProvider.stream)),
-      GoRouterRefreshStream(ref.watch(prefsProvider.stream))
+      StreamListenable(ref.watch(authProvider.stream)),
+      StreamListenable(ref.watch(prefsProvider.stream))
     ]),
     debugLogDiagnostics: true));
