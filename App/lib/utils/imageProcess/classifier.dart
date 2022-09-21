@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:image/image.dart';
 import 'dart:async';
@@ -8,6 +9,7 @@ import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
 import 'package:solimage/utils/imageProcess/imageUtil.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:http/http.dart' as http;
+import "package:firebase_ml_model_downloader/firebase_ml_model_downloader.dart";
 
 class Classifier {
   //singleton
@@ -25,11 +27,11 @@ class Classifier {
   late TfLiteType _inputType;
   late TfLiteType _outputType;
 
-  late final String _modelName;
+  late final File _modelFile;
 
   final NormalizeOp _preProcessNormalizeOp = NormalizeOp(0, 1);
 
-  Classifier(this._modelName) {
+  Classifier() {
     _interpreterOptions = InterpreterOptions();
     _interpreterOptions.threads = 1;
 
@@ -49,8 +51,11 @@ class Classifier {
 
   Future<void> loadModel() async {
     try {
+      _modelFile = await FirebaseModelDownloader.instance
+          .getModel("solimage-special", FirebaseModelDownloadType.localModel)
+          .then((value) => value.file);
       _interpreter =
-          await Interpreter.fromAsset(_modelName, options: _interpreterOptions);
+          Interpreter.fromFile(_modelFile, options: _interpreterOptions);
 
       _inputShape = _interpreter.getInputTensor(0).shape;
       _inputType = _interpreter.getInputTensor(0).type;
