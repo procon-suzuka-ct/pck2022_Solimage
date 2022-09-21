@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:solimage/components/app_detail.dart';
 import 'package:solimage/states/auth.dart';
 import 'package:solimage/states/groups.dart';
 import 'package:solimage/states/preferences.dart';
@@ -28,9 +29,6 @@ class ProfileScreen extends ConsumerWidget {
     final user = ref.watch(userProvider);
 
     return ListView(children: [
-      const ListTile(
-          title: Text('ユーザー情報',
-              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold))),
       Container(
           margin: const EdgeInsets.all(20.0),
           child: Column(
@@ -63,12 +61,17 @@ class ProfileScreen extends ConsumerWidget {
               ])),
       Card(
           child: ListTile(
+              leading: const Icon(Icons.logout),
               title: const Text('ログアウト'),
-              trailing: const Icon(Icons.logout),
               onTap: () => showDialog(
                   context: context,
                   builder: (context) =>
                       LogoutConfirmDialog(prefs: prefs.value)))),
+      Card(
+          child: ListTile(
+              leading: const Icon(Icons.info),
+              title: const Text('アプリについて'),
+              onTap: () => showAppDetailDialog(context))),
       ListTile(
           title: const Text('グループ',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
@@ -93,6 +96,7 @@ class ProfileScreen extends ConsumerWidget {
               .map((group) => group != null
                   ? Card(
                       child: ListTile(
+                          leading: const Icon(Icons.group),
                           title: Text(group.groupName),
                           trailing: const Icon(Icons.info),
                           onTap: () => showDialog(
@@ -129,7 +133,9 @@ class NameEditDialog extends ConsumerWidget {
         TextButton(
             child: const Text('OK'),
             onPressed: () {
-              if (controller.text.isNotEmpty && controller.text != name.value) {
+              if (user != null &&
+                  controller.text.isNotEmpty &&
+                  controller.text != name.value) {
                 user!.setData(user!.uid, controller.text);
                 ref.refresh(_nameProvider);
                 user!.save();
@@ -160,7 +166,7 @@ class LogoutConfirmDialog extends StatelessWidget {
               child: const Text('はい'),
               onPressed: () {
                 Auth().signOut();
-                prefs?.clear();
+                if (prefs != null) prefs!.clear();
                 ScaffoldMessenger.of(context)
                     .showSnackBar(const SnackBar(content: Text('ログアウトしました')));
               }),
@@ -265,9 +271,11 @@ class GroupLeaveConfirmDialog extends ConsumerWidget {
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('${group.groupName}を脱退しました')));
-              user!.groups.remove(group.groupID);
-              await user.save();
-              group.removeMember(user.uid);
+              if (user != null) {
+                user.groups.remove(group.groupID);
+                await user.save();
+                group.removeMember(user.uid);
+              }
               await group.save();
               parentRef.refresh(groupsProvider);
             }),
@@ -301,14 +309,14 @@ class GroupCreationDialog extends ConsumerWidget {
         TextButton(
             child: const Text('OK'),
             onPressed: () async {
-              if (controller.text.isNotEmpty) {
+              if (user != null && controller.text.isNotEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('${controller.text}を作成しました')));
                 Navigator.of(context).pop();
                 final group = Group(groupName: controller.text);
                 await group.init();
-                user?.groups.add(group.groupID);
-                await user?.save();
+                user!.groups.add(group.groupID);
+                await user!.save();
                 group.addMember(user!.uid);
                 await group.save();
                 parentRef.refresh(groupsProvider);
@@ -351,7 +359,7 @@ class GroupParticipationDialog extends ConsumerWidget {
                   if (id != null) {
                     final group = Group.getGroup(id);
                     group.then((value) async {
-                      if (value != null) {
+                      if (user != null && value != null) {
                         if (user!.groups.contains(value.groupID)) {
                           ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('既に参加しているグループです')));
