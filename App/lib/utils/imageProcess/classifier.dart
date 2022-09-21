@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:image/image.dart';
 import 'dart:async';
@@ -5,6 +8,8 @@ import 'dart:math';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
 import 'package:solimage/utils/imageProcess/imageUtil.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:http/http.dart' as http;
 
 class Classifier {
   //singleton
@@ -89,5 +94,15 @@ class Classifier {
       labels[predictResults.indexOf(value)] = value;
     }
     return labels;
+  }
+
+  static Future<String> getLabel(int index) async {
+    final storage = FirebaseStorage.instance;
+    final ref = storage.ref().child('ml/labels_reverse.json');
+    final url = await ref.getDownloadURL();
+    final response = await http.get(Uri.parse(url));
+    final result = response.body;
+    final Map<String, dynamic> labels = jsonDecode(result);
+    return labels[index.toString()];
   }
 }
