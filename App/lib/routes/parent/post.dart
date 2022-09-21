@@ -250,9 +250,10 @@ class PostScreen extends ConsumerWidget {
 
 class ConfirmDialog extends ConsumerWidget {
   final ExpData expData;
-  final String? imagePath;
+  final String imagePath;
 
-  const ConfirmDialog({Key? key, required this.expData, this.imagePath})
+  const ConfirmDialog(
+      {Key? key, required this.expData, required this.imagePath})
       : super(key: key);
 
   @override
@@ -273,8 +274,8 @@ class ConfirmDialog extends ConsumerWidget {
                 ? () async {
                     ref.read(_postingProvider.notifier).state = true;
 
-                    if (imagePath != null && !imagePath!.startsWith('http')) {
-                      await expData.saveImage(imagePath: imagePath!);
+                    if (imagePath.isNotEmpty && !imagePath.startsWith('http')) {
+                      await expData.saveImage(imagePath: imagePath);
                     }
 
                     expData.save().then((_) {
