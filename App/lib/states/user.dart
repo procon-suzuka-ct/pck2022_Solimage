@@ -9,7 +9,7 @@ final userProvider = StreamProvider((ref) async* {
     var user = await AppUser.getUser(auth.uid);
 
     if (user == null) {
-      user = AppUser(uid: auth.uid, name: auth.displayName!);
+      user = AppUser(uid: auth.uid, name: auth.displayName ?? '');
       await user.save();
     }
     yield user;

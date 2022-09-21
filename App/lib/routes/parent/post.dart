@@ -20,8 +20,10 @@ final _whoProvider = StateProvider.autoDispose((ref) => '');
 final _howProvider = StateProvider.autoDispose((ref) => '');
 final _imageUrlProvider = StateProvider.autoDispose((ref) => '');
 final _expDataProvider =
-    FutureProvider.autoDispose.family<void, String>((ref, expDataId) async {
-  final expData = await ExpData.getExpData(int.parse(expDataId));
+    FutureProvider.autoDispose.family<ExpData, String?>((ref, expDataId) async {
+  var expData =
+      expDataId != null ? await ExpData.getExpData(int.parse(expDataId)) : null;
+  final user = await ref.watch(userProvider.future);
 
   if (expData != null) {
     ref.read(_wordProvider.notifier).state = expData.word ?? '';
@@ -33,7 +35,12 @@ final _expDataProvider =
     ref.read(_whoProvider.notifier).state = expData.who ?? '';
     ref.read(_howProvider.notifier).state = expData.how ?? '';
     ref.read(_imageUrlProvider.notifier).state = expData.imageUrl ?? '';
+  } else {
+    expData = ExpData(word: '', meaning: '', userID: user!.uid);
+    await expData.init();
   }
+
+  return expData;
 });
 final _postingProvider = StateProvider.autoDispose((ref) => false);
 
@@ -45,11 +52,9 @@ class PostScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final step = ref.watch(_stepProvider);
-    final user = ref.watch(userProvider);
     final word = ref.watch(_wordProvider);
     final imageUrl = ref.watch(_imageUrlProvider);
-
-    if (expDataId != null) ref.watch(_expDataProvider(expDataId!));
+    final expData = ref.watch(_expDataProvider(expDataId));
 
     final List<Map<String, dynamic>> textEdits = [
       {
@@ -149,109 +154,106 @@ class PostScreen extends ConsumerWidget {
                   ref.read(tile['provider'].notifier).state = value))),
     ];
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('投稿'),
-      ),
-      body: SingleChildScrollView(
-          child: Column(children: [
-        if (imageUrl.isNotEmpty)
-          Container(
-              margin: const EdgeInsets.all(10.0),
-              child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10.0),
-                  child: imageUrl.startsWith('http')
-                      ? CachedNetworkImage(
-                          height: 300.0,
-                          imageUrl: imageUrl,
-                          placeholder: (context, url) =>
-                              const Center(child: CircularProgressIndicator()))
-                      : Image.file(File(imageUrl), height: 300.0))),
-        ElevatedButton.icon(
-            onPressed: () async {
-              final path =
-                  (await ImagePicker().pickImage(source: ImageSource.gallery))
-                      ?.path;
+    return expData.maybeWhen(
+        data: (data) => Scaffold(
+              appBar: AppBar(
+                title: const Text('投稿'),
+              ),
+              body: SingleChildScrollView(
+                  child: Column(children: [
+                if (imageUrl.isNotEmpty)
+                  Container(
+                      margin: const EdgeInsets.all(10.0),
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10.0),
+                          child: imageUrl.startsWith('http')
+                              ? CachedNetworkImage(
+                                  height: 300.0,
+                                  imageUrl: imageUrl,
+                                  placeholder: (context, url) => const Center(
+                                      child: CircularProgressIndicator()))
+                              : Image.file(File(imageUrl), height: 300.0))),
+                ElevatedButton.icon(
+                    onPressed: () async {
+                      final path = (await ImagePicker()
+                              .pickImage(source: ImageSource.gallery))
+                          ?.path;
 
-              if (path != null) {
-                ref.read(_imageUrlProvider.notifier).state = path;
-              }
-            },
-            icon: const Icon(Icons.cloud_upload),
-            label: Text('画像を${imageUrl.isEmpty ? '追加' : '変更'}')),
-        Stepper(
-            physics: const NeverScrollableScrollPhysics(),
-            currentStep: step,
-            onStepCancel: step != 0
-                ? () => ref.read(_stepProvider.notifier).state = step - 1
-                : null,
-            onStepContinue: step < steps.length - 1
-                ? () => ref.read(_stepProvider.notifier).state = step + 1
-                : null,
-            onStepTapped: (index) =>
-                ref.read(_stepProvider.notifier).state = index,
-            steps: steps,
-            controlsBuilder: (BuildContext context, ControlsDetails details) =>
-                Container(
-                    width: double.infinity,
-                    margin: const EdgeInsets.all(10.0),
-                    child: Wrap(
-                      spacing: 10.0,
-                      children: <Widget>[
-                        ElevatedButton(
-                          //13
-                          onPressed: details.onStepContinue,
-                          child: const Text('次へ'),
-                        ),
-                        ElevatedButton(
-                          //14
-                          onPressed: details.onStepCancel,
-                          child: const Text('戻る'),
-                        ),
-                      ],
-                    )))
-      ])),
-      floatingActionButton: FloatingActionButton.extended(
-          onPressed: () async {
-            final ExpData expData;
+                      if (path != null) {
+                        ref.read(_imageUrlProvider.notifier).state = path;
+                      }
+                    },
+                    icon: const Icon(Icons.cloud_upload),
+                    label: Text('画像を${imageUrl.isEmpty ? '追加' : '変更'}')),
+                Stepper(
+                    physics: const NeverScrollableScrollPhysics(),
+                    currentStep: step,
+                    onStepCancel: step != 0
+                        ? () =>
+                            ref.read(_stepProvider.notifier).state = step - 1
+                        : null,
+                    onStepContinue: step < steps.length - 1
+                        ? () =>
+                            ref.read(_stepProvider.notifier).state = step + 1
+                        : null,
+                    onStepTapped: (index) =>
+                        ref.read(_stepProvider.notifier).state = index,
+                    steps: steps,
+                    controlsBuilder:
+                        (BuildContext context, ControlsDetails details) =>
+                            Container(
+                                width: double.infinity,
+                                margin: const EdgeInsets.all(10.0),
+                                child: Wrap(
+                                  spacing: 10.0,
+                                  children: <Widget>[
+                                    ElevatedButton(
+                                      //13
+                                      onPressed: details.onStepContinue,
+                                      child: const Text('次へ'),
+                                    ),
+                                    ElevatedButton(
+                                      //14
+                                      onPressed: details.onStepCancel,
+                                      child: const Text('戻る'),
+                                    ),
+                                  ],
+                                )))
+              ])),
+              floatingActionButton: FloatingActionButton.extended(
+                  onPressed: () async {
+                    expData.value?.setData(
+                        word: word,
+                        meaning: ref.read(_meaningProvider),
+                        why: ref.read(_whyProvider),
+                        what: ref.read(_whatProvider),
+                        when: ref.read(_whenProvider),
+                        where: ref.read(_whereProvider),
+                        who: ref.read(_whoProvider),
+                        how: ref.read(_howProvider));
 
-            if (expDataId != null) {
-              expData = (await ExpData.getExpData(int.parse(expDataId!)))!;
-            } else {
-              expData = ExpData(
-                  word: word,
-                  meaning: ref.read(_meaningProvider),
-                  userID: user.value!.uid);
-              await expData.init();
-            }
-
-            expData.setData(
-                word: word,
-                meaning: ref.read(_meaningProvider),
-                why: ref.read(_whyProvider),
-                what: ref.read(_whatProvider),
-                when: ref.read(_whenProvider),
-                where: ref.read(_whereProvider),
-                who: ref.read(_whoProvider),
-                how: ref.read(_howProvider));
-
-            return showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (context) =>
-                    ConfirmDialog(expData: expData, imagePath: imageUrl));
-          },
-          icon: const Icon(Icons.check),
-          label: const Text('投稿')),
-    );
+                    return expData.value != null
+                        ? showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) => ConfirmDialog(
+                                expData: expData.value!, imagePath: imageUrl))
+                        : null;
+                  },
+                  icon: const Icon(Icons.check),
+                  label: const Text('投稿')),
+            ),
+        orElse: () =>
+            const Scaffold(body: Center(child: CircularProgressIndicator())));
   }
 }
 
 class ConfirmDialog extends ConsumerWidget {
   final ExpData expData;
-  final String? imagePath;
+  final String imagePath;
 
-  const ConfirmDialog({Key? key, required this.expData, this.imagePath})
+  const ConfirmDialog(
+      {Key? key, required this.expData, required this.imagePath})
       : super(key: key);
 
   @override
@@ -272,8 +274,8 @@ class ConfirmDialog extends ConsumerWidget {
                 ? () async {
                     ref.read(_postingProvider.notifier).state = true;
 
-                    if (imagePath != null && !imagePath!.startsWith('http')) {
-                      await expData.saveImage(imagePath: imagePath!);
+                    if (imagePath.isNotEmpty && !imagePath.startsWith('http')) {
+                      await expData.saveImage(imagePath: imagePath);
                     }
 
                     expData.save().then((_) {
