@@ -2,3 +2,5 @@
 /Bloated
 *.zip
 *.csv
+*.h5
+*.tflite

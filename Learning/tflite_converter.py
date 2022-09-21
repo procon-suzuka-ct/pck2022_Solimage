@@ -1,5 +1,15 @@
 import tensorflow as tf
+import os
+import keras
+import tensorflow_addons as tfa
 
-converter = tf.lite.TFLiteConverter.from_saved_model("./tmp/model/model.h5")
+dirPath = "tmp/model"
+filename = "model.h5"
+modelPath = "model.tflite"
+base = os.path.dirname(os.path.abspath(__file__))
+os.makedirs(os.path.join(base, dirPath), exist_ok = True)
+filePath = os.path.join(base, filename)
+model = keras.models.load_model(filePath, custom_objects = {"rrelu": tfa.activations.rrelu})
+converter = tf.lite.TFLiteConverter.from_keras_model(model)
 tflite_model = converter.convert()
-open("./tmp/model/model.tflite", "wb").write(tflite_model)
+open(os.path.join(base, dirPath, modelPath), "wb").write(tflite_model)
