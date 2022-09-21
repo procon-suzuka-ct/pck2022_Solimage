@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
-
 import 'package:camera/camera.dart';
 import 'package:image/image.dart';
 import 'dart:async';
@@ -69,6 +67,16 @@ class Classifier {
   /// Only [Image] or [CameraImage] arguments are allowed.
   ///
   /// If other types are passed, an exception will be thrown.
+  ///
+  /// usage:
+  /// ```dart
+  /// final result = await Classifier.instance.predict(image);
+  /// final labels = Classifier.getLabelIndexes(result);
+  /// for (var label in labels.keys) {
+  ///   final labelName = await Classifier.getLabel(label);
+  ///   print("$labelName: ${labels[label]}%");
+  /// }
+  /// ```
   List<double> predict(Object image) {
     if (image is CameraImage) {
       image = ImageUtils.convertYUV420ToImage(image);
