@@ -11,6 +11,8 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.applications.efficientnet import EfficientNetB0
 from keras.optimizers import adam_v2
+from keras.models import load_model
+import tensorflow as tf
 
 #classes = len(label_dic)
 #y_train = to_categorical(y_train, classes)
@@ -68,6 +70,22 @@ check_point = ModelCheckpoint("./tmp/model/model.h5", monitor = "loss", save_bes
 #学習
 history = model.fit(trainGenerator, epochs = 100, callbacks = [early_stopping, check_point])
 
+del model
+
+dirPath = "./tmp/model"
+fileName = "model.h5"
+tfliteModel = "model.tflite"
+model = load_model(os.path.join(dirPath, fileName), custom_objects={'rrelu': tfa.activations.rrelu})
+converter = tf.lite.TFLiteConverter.from_keras_model(model)
+converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
+converter.optimizations = [tf.lite.Optimize.DEFAULT]
+converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS, tf.lite.OpsSet.SELECT_TF_OPS]
+converter.allow_custom_ops = True
+tflite_model = converter.convert()
+open(os.path.join(dirPath, tfliteModel), "wb").write(tflite_model)
+
+print("Learning Finished!")
+
 #学習結果表示
 import matplotlib.pyplot as plt
 fig = plt.figure()
@@ -79,6 +97,6 @@ ax = fig.add_subplot(1, 2, 2)
 ax.plot(history.history['accuracy'], color='red')
 ax.set_title('Accuracy')
 ax.set_xlabel('Epoch')
-print("Learning Finished!")
 
 plt.show()
+plt.savefig("./tmp/model/learning_result.png")
