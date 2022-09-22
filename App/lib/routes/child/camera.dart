@@ -99,11 +99,12 @@ class CameraScreen extends ConsumerWidget {
                                */
 
                               // これは動いた
-                              final classifier = Classifier();
+                              final classifier = Classifier.instance;
                               await classifier.loadModel();
 
                               // classifier.predict()でクラッシュする
-                              final result = classifier.predict(decodedImage);
+                              final result =
+                                  await classifier.predict(decodedImage);
                               final labels = Classifier.getLabelIndexes(result);
                               for (var label in labels.keys) {
                                 final labelName =

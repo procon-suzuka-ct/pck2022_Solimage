@@ -82,10 +82,6 @@ fileName = "model.h5"
 tfliteModel = "model.tflite"
 model = load_model(os.path.join(dirPath, fileName), custom_objects={'rrelu': tfa.activations.rrelu})
 converter = tf.lite.TFLiteConverter.from_keras_model(model)
-converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
-converter.optimizations = [tf.lite.Optimize.DEFAULT]
-converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS, tf.lite.OpsSet.SELECT_TF_OPS]
-converter.allow_custom_ops = True
 tflite_model = converter.convert()
 open(os.path.join(dirPath, tfliteModel), "wb").write(tflite_model)
 
