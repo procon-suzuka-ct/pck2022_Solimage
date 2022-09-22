@@ -9,8 +9,10 @@ from keras.applications.mobilenet_v2 import MobileNetV2
 from keras.applications.nasnet import NASNetMobile
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import EarlyStopping, ModelCheckpoint
-from keras.applications.efficientnet import EfficientNetB0
+from keras.applications.efficientnet import EfficientNetB7
 from keras.optimizers import adam_v2
+from keras.models import load_model
+import tensorflow as tf
 
 #classes = len(label_dic)
 #y_train = to_categorical(y_train, classes)
@@ -38,24 +40,29 @@ json.dump(dict(lebels_reverse), json_file)
 json_file.close()
 
 #layer構築
-base_model = VGG16(
-    include_top=False,
-    weights='imagenet',
+base_model = tf.keras.applications.EfficientNetV2M(
+    include_top=True,
+    weights="imagenet",
+    input_tensor=None,
+    input_shape=None,
+    pooling=None,
+    classes=1000,
+    classifier_activation="softmax",
 )
 x = base_model.output
 
-x = Dropout(0.3)(x)
-x = GlobalAveragePooling2D()(x)
+#x = GlobalAveragePooling2D()(x)
 x = Dense(512, activation = tfa.activations.rrelu)(x)
+x = Dropout(0.3)(x)
+x = Dense(256, activation = tfa.activations.rrelu)(x)
 predictions = Dense(len(labels), activation="softmax")(x)
 
 #15層目までは再学習しないよう固定する
-for layer in base_model.layers[:15]:
+for layer in base_model.layers[:-8]:
   layer.trainable = False
 
 #最適化アルゴリズムのimportと設定
-clr = tfa.optimizers.CyclicalLearningRate(initial_learning_rate = 1e-4, maximal_learning_rate = 1e-2, step_size = 2000, scale_fn = lambda x: 1 / (2.0 ** (x - 1)), scale_mode = "cycle")
-opt = adam_v2.Adam(clr)
+opt = adam_v2.Adam()
 
 #モデルのコンパイルと詳細出力
 model = Model(inputs = base_model.input, outputs = predictions)
@@ -68,6 +75,22 @@ check_point = ModelCheckpoint("./tmp/model/model.h5", monitor = "loss", save_bes
 #学習
 history = model.fit(trainGenerator, epochs = 100, callbacks = [early_stopping, check_point])
 
+del model
+
+dirPath = "./tmp/model"
+fileName = "model.h5"
+tfliteModel = "model.tflite"
+model = load_model(os.path.join(dirPath, fileName), custom_objects={'rrelu': tfa.activations.rrelu})
+converter = tf.lite.TFLiteConverter.from_keras_model(model)
+converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
+converter.optimizations = [tf.lite.Optimize.DEFAULT]
+converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS, tf.lite.OpsSet.SELECT_TF_OPS]
+converter.allow_custom_ops = True
+tflite_model = converter.convert()
+open(os.path.join(dirPath, tfliteModel), "wb").write(tflite_model)
+
+print("Learning Finished!")
+
 #学習結果表示
 import matplotlib.pyplot as plt
 fig = plt.figure()
@@ -79,6 +102,6 @@ ax = fig.add_subplot(1, 2, 2)
 ax.plot(history.history['accuracy'], color='red')
 ax.set_title('Accuracy')
 ax.set_xlabel('Epoch')
-print("Learning Finished!")
 
 plt.show()
+plt.savefig("./tmp/model/learning_result.png")
