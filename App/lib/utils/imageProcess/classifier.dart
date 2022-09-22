@@ -1,26 +1,37 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:camera/camera.dart';
-import 'package:image/image.dart';
-import 'dart:async';
 import 'dart:math';
-import 'package:tflite_flutter/tflite_flutter.dart';
-import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
-import 'package:solimage/utils/imageProcess/imageUtil.dart';
+
+import 'package:camera/camera.dart';
+import "package:firebase_ml_model_downloader/firebase_ml_model_downloader.dart";
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:http/http.dart' as http;
-import "package:firebase_ml_model_downloader/firebase_ml_model_downloader.dart";
+import 'package:image/image.dart';
+import 'package:solimage/utils/imageProcess/imageUtil.dart';
+import 'package:tflite_flutter/tflite_flutter.dart';
+import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
 
 class Classifier {
   //singleton
   static final Classifier _singleton = Classifier._internal();
   static Classifier get instance => _singleton;
-  Classifier._internal() {
+  // 変更済み（ここから）
+  Classifier._internal();
+  /*
+    Classifier._internal() {
+      _interpreterOptions = InterpreterOptions();
+      _interpreterOptions.threads = 1;
+
+      loadModel();
+    }
+   */
+
+  Classifier() {
     _interpreterOptions = InterpreterOptions();
     _interpreterOptions.threads = 1;
-
-    loadModel();
   }
+  // 変更済み（ここまで）
 
   late Interpreter _interpreter;
   late InterpreterOptions _interpreterOptions;
