@@ -15,7 +15,12 @@ class Classifier {
   //singleton
   static final Classifier _singleton = Classifier._internal();
   static Classifier get instance => _singleton;
-  Classifier._internal();
+  Classifier._internal() {
+    _interpreterOptions = InterpreterOptions();
+    _interpreterOptions.threads = 1;
+
+    loadModel();
+  }
 
   late Interpreter _interpreter;
   late InterpreterOptions _interpreterOptions;
