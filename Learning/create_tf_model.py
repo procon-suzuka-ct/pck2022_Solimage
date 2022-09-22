@@ -9,7 +9,7 @@ from keras.applications.mobilenet_v2 import MobileNetV2
 from keras.applications.nasnet import NASNetMobile
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import EarlyStopping, ModelCheckpoint
-from keras.applications.efficientnet import EfficientNetB0
+from keras.applications.efficientnet import EfficientNetB7
 from keras.optimizers import adam_v2
 from keras.models import load_model
 import tensorflow as tf
@@ -40,24 +40,29 @@ json.dump(dict(lebels_reverse), json_file)
 json_file.close()
 
 #layer構築
-base_model = VGG16(
-    include_top=False,
-    weights='imagenet',
+base_model = tf.keras.applications.EfficientNetV2M(
+    include_top=True,
+    weights="imagenet",
+    input_tensor=None,
+    input_shape=None,
+    pooling=None,
+    classes=1000,
+    classifier_activation="softmax",
 )
 x = base_model.output
 
-x = Dropout(0.3)(x)
-x = GlobalAveragePooling2D()(x)
+#x = GlobalAveragePooling2D()(x)
 x = Dense(512, activation = tfa.activations.rrelu)(x)
+x = Dropout(0.3)(x)
+x = Dense(256, activation = tfa.activations.rrelu)(x)
 predictions = Dense(len(labels), activation="softmax")(x)
 
 #15層目までは再学習しないよう固定する
-for layer in base_model.layers[:15]:
+for layer in base_model.layers[:-8]:
   layer.trainable = False
 
 #最適化アルゴリズムのimportと設定
-clr = tfa.optimizers.CyclicalLearningRate(initial_learning_rate = 1e-4, maximal_learning_rate = 1e-2, step_size = 2000, scale_fn = lambda x: 1 / (2.0 ** (x - 1)), scale_mode = "cycle")
-opt = adam_v2.Adam(clr)
+opt = adam_v2.Adam()
 
 #モデルのコンパイルと詳細出力
 model = Model(inputs = base_model.input, outputs = predictions)
