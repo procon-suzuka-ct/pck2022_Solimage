@@ -36,6 +36,13 @@ class Classifier {
 
   final NormalizeOp _preProcessNormalizeOp = NormalizeOp(0, 1);
 
+  Classifier() {
+    _interpreterOptions = InterpreterOptions();
+    _interpreterOptions.threads = 1;
+
+    loadModel();
+  }
+
   TensorImage preProcess(TensorImage inputImage) {
     int cropSize = min(inputImage.height, inputImage.width);
     return ImageProcessorBuilder()
