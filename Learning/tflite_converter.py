@@ -12,13 +12,16 @@ os.makedirs(os.path.join(base, dirPath), exist_ok = True)
 filePath = os.path.join(base, filename)
 model = load_model(filePath, custom_objects = {"rrelu": tfa.activations.rrelu})
 
+
+
 converter = tf.lite.TFLiteConverter.from_keras_model(model)
+# quantize
+#converter.optimizations = [tf.lite.Optimize.DEFAULT]
+#converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
+#converter.inference_input_type = tf.int8
+#converter.inference_output_type = tf.int8
 converter.optimizations = [tf.lite.Optimize.DEFAULT]
-# Ensure that if any ops can't be quantized, the converter throws an error
-converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
-# Set the input and output tensors to uint8 (APIs added in r2.3)
-converter.inference_input_type = tf.uint8
-converter.inference_output_type = tf.uint8
+converter.target_spec.supported_types = [tf.float16]
 
 tflite_model = converter.convert()
 open(os.path.join(base, dirPath, modelPath), "wb").write(tflite_model)

@@ -105,12 +105,13 @@ class CameraScreen extends ConsumerWidget {
                               // classifier.predict()でクラッシュする
                               final result =
                                   await classifier.predict(decodedImage);
-                              final labels = Classifier.getLabelIndexes(result);
-                              for (var label in labels.keys) {
-                                final labelName =
-                                    await Classifier.getLabel(label);
-                                print("$labelName: ${labels[label]}%");
-                              }
+                              print(result);
+                              //final labels = Classifier.getLabelIndexes(result);
+                              //for (var label in labels.keys) {
+                              //  final labelName =
+                              //      await Classifier.getLabel(label);
+                              //  print("$labelName: ${labels[label]}%");
+                              //}
                             }
                             await showDialog(
                                 context: context,
