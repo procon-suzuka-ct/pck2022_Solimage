@@ -20,10 +20,7 @@ class Classifier {
     _interpreterOptions.useNnApiForAndroid = true;
   }
 
-  Classifier() {
-    _interpreterOptions.threads = 1;
-  }
-  // 変更済み（ここまで）
+  bool isInited = false;
 
   late Interpreter _interpreter;
   final _interpreterOptions = InterpreterOptions();
@@ -37,12 +34,6 @@ class Classifier {
 
   final NormalizeOp _preProcessNormalizeOp = NormalizeOp(0, 1);
 
-  Classifier() {
-    _interpreterOptions.threads = 1;
-
-    loadModel();
-  }
-
   TensorImage preProcess(TensorImage inputImage) {
     int cropSize = min(inputImage.height, inputImage.width);
     return ImageProcessorBuilder()
@@ -52,6 +43,12 @@ class Classifier {
         .add(_preProcessNormalizeOp)
         .build()
         .process(inputImage);
+  }
+
+  Future<void> init() async{
+    if(isInited) return;
+    await loadModel();
+    isInited = true;
   }
 
   Future<void> loadModel() async {
@@ -96,13 +93,13 @@ class Classifier {
   /// }
   /// ```
   Future<List<double>> predict(Object image) async {
+    if(!isInited) await init();
     if (image is CameraImage) {
       image = ImageUtils.convertYUV420ToImage(image);
     }
     if (image is! Image) {
       throw Exception("Invalid image type");
     }
-    await loadModel();
     TensorImage inputImage = TensorImage(_inputType);
     inputImage.loadImage(image);
     inputImage = preProcess(inputImage);
