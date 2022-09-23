@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:camera/camera.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -9,6 +8,7 @@ import 'package:image/image.dart';
 import 'package:solimage/utils/imageProcess/imageUtil.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
+import 'package:collection/collection.dart';
 
 class Classifier {
   //singleton
@@ -20,10 +20,7 @@ class Classifier {
     _interpreterOptions.useNnApiForAndroid = true;
   }
 
-  Classifier() {
-    _interpreterOptions.threads = 1;
-  }
-  // 変更済み（ここまで）
+  bool isInited = false;
 
   late Interpreter _interpreter;
   final _interpreterOptions = InterpreterOptions();
@@ -34,24 +31,25 @@ class Classifier {
   late TensorBuffer _outputBuffer;
   late TfLiteType _inputType;
   late TfLiteType _outputType;
+  late TensorImage _inputImage;
 
-  final NormalizeOp _preProcessNormalizeOp = NormalizeOp(0, 1);
+  NormalizeOp get _preProcessNormalizeOp => NormalizeOp(127.5, 127.5);
+  NormalizeOp get _postProcessNormalizeOp => NormalizeOp(0, 1);
 
-  Classifier() {
-    _interpreterOptions.threads = 1;
+  late List<String> labels;
+  late SequentialProcessor<TensorBuffer> _probabilityProcessor;
 
-    loadModel();
+  Future<void> init() async {
+    if (isInited) return;
+    var modelLoad = loadModel();
+    var labelLoad = loadLabels();
+    await Future.wait([modelLoad, labelLoad]);
+    isInited = true;
   }
 
-  TensorImage preProcess(TensorImage inputImage) {
-    int cropSize = min(inputImage.height, inputImage.width);
-    return ImageProcessorBuilder()
-        .add(ResizeWithCropOrPadOp(cropSize, cropSize))
-        .add(ResizeOp(
-            _inputShape[1], _inputShape[2], ResizeMethod.NEAREST_NEIGHBOUR))
-        .add(_preProcessNormalizeOp)
-        .build()
-        .process(inputImage);
+  Future<void> loadLabels() async {
+    labels = await FileUtil.loadLabels("assets/labels.txt");
+    return;
   }
 
   Future<void> loadModel() async {
@@ -76,6 +74,10 @@ class Classifier {
       _outputShape = _interpreter.getOutputTensor(0).shape;
       _outputType = _interpreter.getOutputTensor(0).type;
       _outputBuffer = TensorBuffer.createFixedSize(_outputShape, _outputType);
+      _probabilityProcessor = TensorProcessorBuilder()
+          .add(NormalizeOp(0, 1))
+          .add(_postProcessNormalizeOp)
+          .build();
       return;
     } catch (e) {
       throw Exception("Failed to load model");
@@ -95,20 +97,41 @@ class Classifier {
   ///   print("$labelName: ${labels[label]}%");
   /// }
   /// ```
-  Future<List<double>> predict(Object image) async {
+  ///
+  TensorImage _preProcess() {
+    return ImageProcessorBuilder()
+        .add(ResizeOp(
+            _inputShape[1], _inputShape[2], ResizeMethod.NEAREST_NEIGHBOUR))
+        .add(_preProcessNormalizeOp)
+        .build()
+        .process(_inputImage);
+  }
+
+  Future<Category> predict(Object image) async {
+    if (!isInited) await init();
     if (image is CameraImage) {
       image = ImageUtils.convertYUV420ToImage(image);
     }
     if (image is! Image) {
       throw Exception("Invalid image type");
     }
-    await loadModel();
-    TensorImage inputImage = TensorImage(_inputType);
-    inputImage.loadImage(image);
-    inputImage = preProcess(inputImage);
+    _inputImage = TensorImage(_inputType);
+    _inputImage.loadImage(image);
+    _inputImage = _preProcess();
 
-    _interpreter.run(inputImage.buffer, _outputBuffer.getBuffer());
-    return _outputBuffer.getDoubleList();
+    _interpreter.run(_inputImage.buffer, _outputBuffer.getBuffer());
+    Map<String, double> labeledProb = TensorLabel.fromList(
+            labels, _probabilityProcessor.process(_outputBuffer))
+        .getMapWithFloatValue();
+    final pred = getTopProbability(labeledProb);
+    return Category(pred.key, pred.value);
+  }
+
+  MapEntry<String, double> getTopProbability(Map<String, double> labeledProb) {
+    var pq = PriorityQueue<MapEntry<String, double>>(compare);
+    pq.addAll(labeledProb.entries);
+
+    return pq.first;
   }
 
   static Map<int, double> getLabelIndexes(List<double> predictResults) {
@@ -131,5 +154,15 @@ class Classifier {
     final result = response.body;
     final Map<String, dynamic> labels = jsonDecode(result);
     return labels[index.toString()];
+  }
+
+  int compare(MapEntry<String, double> e1, MapEntry<String, double> e2) {
+    if (e1.value > e2.value) {
+      return -1;
+    } else if (e1.value == e2.value) {
+      return 0;
+    } else {
+      return 1;
+    }
   }
 }
