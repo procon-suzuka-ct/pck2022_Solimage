@@ -60,17 +60,23 @@ class ProfileScreen extends ConsumerWidget {
                     orElse: () => const CircularProgressIndicator())
               ])),
       Card(
-          child: ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('ログアウト'),
+          child: InkWell(
+              customBorder: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: const ListTile(
+                  leading: Icon(Icons.logout), title: Text('ログアウト')),
               onTap: () => showDialog(
                   context: context,
                   builder: (context) =>
                       LogoutConfirmDialog(prefs: prefs.value)))),
       Card(
-          child: ListTile(
-              leading: const Icon(Icons.info),
-              title: const Text('アプリについて'),
+          child: InkWell(
+              customBorder: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: const ListTile(
+                  leading: Icon(Icons.info), title: Text('アプリについて')),
               onTap: () => showAppDetailDialog(context))),
       ListTile(
           title: const Text('グループ',
@@ -95,10 +101,14 @@ class ProfileScreen extends ConsumerWidget {
           data: (data) => data
               .map((group) => group != null
                   ? Card(
-                      child: ListTile(
-                          leading: const Icon(Icons.group),
-                          title: Text(group.groupName),
-                          trailing: const Icon(Icons.info),
+                      child: InkWell(
+                          customBorder: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: ListTile(
+                              leading: const Icon(Icons.group),
+                              title: Text(group.groupName),
+                              trailing: const Icon(Icons.info)),
                           onTap: () => showDialog(
                               barrierDismissible: false,
                               context: context,
