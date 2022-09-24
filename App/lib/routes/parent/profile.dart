@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -119,7 +120,31 @@ class ProfileScreen extends ConsumerWidget {
           orElse: () => const [Center(child: CircularProgressIndicator())]),
       const ListTile(
           title: Text('アクセス履歴',
-              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)))
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold))),
+      Card(
+          child: Container(
+              margin: const EdgeInsets.all(20.0),
+              constraints: const BoxConstraints(maxHeight: 200.0),
+              child: LineChart(LineChartData(
+                  lineTouchData: LineTouchData(
+                      touchTooltipData: LineTouchTooltipData(
+                          tooltipBgColor: Colors.grey.withOpacity(0.8),
+                          getTooltipItems: (touchedSpots) => touchedSpots
+                              .map((item) => LineTooltipItem(
+                                  item.y.toStringAsFixed(2),
+                                  const TextStyle(color: Colors.white)))
+                              .toList())),
+                  gridData: FlGridData(show: true),
+                  titlesData: FlTitlesData(show: false),
+                  borderData: FlBorderData(show: false),
+                  lineBarsData: [
+                    LineChartBarData(
+                        spots: List.generate(
+                            10,
+                            (index) =>
+                                FlSpot(index.toDouble(), index.toDouble())),
+                        dotData: FlDotData(show: true))
+                  ]))))
     ]);
   }
 }
