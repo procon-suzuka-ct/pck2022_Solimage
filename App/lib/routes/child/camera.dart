@@ -164,7 +164,9 @@ class StandbyDialog extends StatelessWidget {
                 final classifier = Classifier.instance;
                 await classifier.loadModel();
                 final result = await classifier.predict(decodedImage);
-                print(result.label);
+                if (kDebugMode) {
+                  print(result.label);
+                }
                 return result;
               }(),
               builder: (context, snapshot) => ChildActionButton(
