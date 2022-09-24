@@ -1,17 +1,16 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image/image.dart' as image;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:solimage/components/child/standby.dart';
 import 'package:solimage/components/child_actions.dart';
 import 'package:solimage/components/loading_overlay.dart';
 import 'package:solimage/states/camera.dart';
 import 'package:solimage/states/permission.dart';
-import 'package:solimage/utils/imageProcess/classifier.dart';
 
 final _takingPictureProvider = StateProvider<bool>((ref) => false);
 
@@ -140,43 +139,4 @@ class CameraScreen extends ConsumerWidget {
         orElse: () =>
             const Scaffold(body: Center(child: CircularProgressIndicator())));
   }
-}
-
-class StandbyDialog extends StatelessWidget {
-  const StandbyDialog(
-      {Key? key, required this.controller, required this.decodedImage})
-      : super(key: key);
-
-  final CameraController controller;
-  final image.Image decodedImage;
-
-  @override
-  Widget build(BuildContext context) => Stack(children: [
-        const AlertDialog(
-            title: Text('大人が伝えたいワード'),
-            content: Center(heightFactor: 1.0, child: Text('簡単な説明'))),
-        ChildActions(actions: [
-          ChildActionButton(
-              child: const Text('もどる'),
-              onPressed: () => Navigator.of(context).pop()),
-          FutureBuilder(
-              future: () async {
-                final classifier = Classifier.instance;
-                await classifier.loadModel();
-                final result = await classifier.predict(decodedImage);
-                if (kDebugMode) {
-                  print(result.label);
-                }
-                return result;
-              }(),
-              builder: (context, snapshot) => ChildActionButton(
-                  onPressed: snapshot.connectionState == ConnectionState.done
-                      ? () {
-                          Navigator.of(context).pop();
-                          context.push('/child/result');
-                        }
-                      : null,
-                  child: const Text('けっかをみる', textAlign: TextAlign.center)))
-        ])
-      ]);
 }
