@@ -6,7 +6,7 @@ import 'package:solimage/components/app_detail.dart';
 import 'package:solimage/components/parent/group_create.dart';
 import 'package:solimage/components/parent/group_detail.dart';
 import 'package:solimage/components/parent/group_participate.dart';
-import 'package:solimage/components/parent/logout.dart';
+import 'package:solimage/components/parent/user_logout.dart';
 import 'package:solimage/components/parent/user_name.dart';
 import 'package:solimage/states/auth.dart';
 import 'package:solimage/states/groups.dart';
@@ -70,7 +70,7 @@ class ProfileScreen extends ConsumerWidget {
                   leading: Icon(Icons.logout), title: Text('ログアウト')),
               onTap: () => showDialog(
                   context: context,
-                  builder: (context) => LogoutDialog(prefs: prefs.value)))),
+                  builder: (context) => UserLogoutDialog(prefs: prefs.value)))),
       Card(
           child: InkWell(
               customBorder: RoundedRectangleBorder(

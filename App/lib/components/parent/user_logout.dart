@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:solimage/utils/auth.dart';
 
-class LogoutDialog extends StatelessWidget {
-  const LogoutDialog({Key? key, required this.prefs}) : super(key: key);
+class UserLogoutDialog extends StatelessWidget {
+  const UserLogoutDialog({Key? key, required this.prefs}) : super(key: key);
 
   final SharedPreferences? prefs;
 
