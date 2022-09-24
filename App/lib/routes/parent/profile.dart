@@ -122,29 +122,34 @@ class ProfileScreen extends ConsumerWidget {
           title: Text('アクセス履歴',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold))),
       Card(
-          child: Container(
-              margin: const EdgeInsets.all(20.0),
-              constraints: const BoxConstraints(maxHeight: 200.0),
-              child: LineChart(LineChartData(
-                  lineTouchData: LineTouchData(
-                      touchTooltipData: LineTouchTooltipData(
-                          tooltipBgColor: Colors.grey.withOpacity(0.8),
-                          getTooltipItems: (touchedSpots) => touchedSpots
-                              .map((item) => LineTooltipItem(
-                                  item.y.toStringAsFixed(2),
-                                  const TextStyle(color: Colors.white)))
-                              .toList())),
-                  gridData: FlGridData(show: true),
-                  titlesData: FlTitlesData(show: false),
-                  borderData: FlBorderData(show: false),
-                  lineBarsData: [
-                    LineChartBarData(
-                        spots: List.generate(
-                            10,
-                            (index) =>
-                                FlSpot(index.toDouble(), index.toDouble())),
-                        dotData: FlDotData(show: true))
-                  ]))))
+          child: InkWell(
+              customBorder: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Container(
+                  margin: const EdgeInsets.all(20.0),
+                  constraints: const BoxConstraints(maxHeight: 200.0),
+                  child: LineChart(LineChartData(
+                      lineTouchData: LineTouchData(
+                          touchTooltipData: LineTouchTooltipData(
+                              tooltipBgColor: Colors.grey.withOpacity(0.8),
+                              getTooltipItems: (touchedSpots) => touchedSpots
+                                  .map((item) => LineTooltipItem(
+                                      item.y.toStringAsFixed(2),
+                                      const TextStyle(color: Colors.white)))
+                                  .toList())),
+                      gridData: FlGridData(show: true),
+                      titlesData: FlTitlesData(show: false),
+                      borderData: FlBorderData(show: false),
+                      lineBarsData: [
+                        LineChartBarData(
+                            spots: List.generate(
+                                10,
+                                (index) =>
+                                    FlSpot(index.toDouble(), index.toDouble())),
+                            dotData: FlDotData(show: true))
+                      ]))),
+              onTap: () {}))
     ]);
   }
 }

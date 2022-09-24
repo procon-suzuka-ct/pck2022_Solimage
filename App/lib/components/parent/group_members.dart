@@ -13,7 +13,13 @@ class GroupMembersDialog extends ConsumerWidget {
       title: Text('${group.groupName}のメンバー'),
       content: FutureBuilder(future: Future.wait(group.members.map((uid) async {
         final user = await AppUser.getUser(uid);
-        return Card(child: ListTile(title: Text('${user?.name}')));
+        return Card(
+            child: InkWell(
+                customBorder: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: ListTile(title: Text('${user?.name}')),
+                onTap: () {}));
       })), builder: (context, AsyncSnapshot<List<Card>> snapshot) {
         return Column(mainAxisSize: MainAxisSize.min, children: [
           if (snapshot.connectionState == ConnectionState.waiting)
