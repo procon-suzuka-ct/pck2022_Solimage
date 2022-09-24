@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -80,45 +81,14 @@ class CameraScreen extends ConsumerWidget {
                             ref.read(imagePathProvider.notifier).state = path;
                             ref.read(_takingPictureProvider.notifier).state =
                                 false;
-                            final decodedImage =
-                                image.decodeImage(File(path).readAsBytesSync());
-                            if (decodedImage != null) {
-                              /*
-                                画像を9:16にするコード
-                                final croppedImage = image.copyCrop(
-                                  decodedImage,
-                                  0,
-                                  0,
-                                  (decodedImage.height / 16 * 9).toInt(),
-                                  decodedImage.height);
-                               */
-
-                              /* これだと動かなかった
-                                final result =
-                                    Classifier.instance.predict(decodedImage);
-                               */
-
-                              // これは動いた
-                              final classifier = Classifier.instance;
-                              await classifier.loadModel();
-
-                              // classifier.predict()でクラッシュする
-                              final result =
-                                  await classifier.predict(decodedImage);
-                              print(result);
-                              //final labels = Classifier.getLabelIndexes(result);
-                              //for (var label in labels.keys) {
-                              //  final labelName =
-                              //      await Classifier.getLabel(label);
-                              //  print("$labelName: ${labels[label]}%");
-                              //}
-                            }
                             await showDialog(
                                 context: context,
                                 barrierDismissible: false,
                                 barrierColor: Colors.black.withOpacity(0.8),
-                                builder: (context) =>
-                                    StandbyDialog(controller: controller));
+                                builder: (context) => StandbyDialog(
+                                    controller: controller,
+                                    decodedImage: image.decodeImage(
+                                        File(path).readAsBytesSync())!));
                           },
                           child: const Text('さつえい')),
                       ChildActionButton(
@@ -170,9 +140,12 @@ class CameraScreen extends ConsumerWidget {
 }
 
 class StandbyDialog extends StatelessWidget {
-  const StandbyDialog({Key? key, required this.controller}) : super(key: key);
+  const StandbyDialog(
+      {Key? key, required this.controller, required this.decodedImage})
+      : super(key: key);
 
   final CameraController controller;
+  final image.Image decodedImage;
 
   @override
   Widget build(BuildContext context) => Stack(children: [
@@ -183,12 +156,22 @@ class StandbyDialog extends StatelessWidget {
           ChildActionButton(
               child: const Text('もどる'),
               onPressed: () => Navigator.of(context).pop()),
-          ChildActionButton(
-              child: const Text('けっかをみる', textAlign: TextAlign.center),
-              onPressed: () {
-                Navigator.of(context).pop();
-                context.push('/child/result');
-              })
+          FutureBuilder(
+              future: () async {
+                final classifier = Classifier.instance;
+                await classifier.loadModel();
+                final result = await classifier.predict(decodedImage);
+                print(result.label);
+                return result;
+              }(),
+              builder: (context, snapshot) => ChildActionButton(
+                  onPressed: snapshot.connectionState == ConnectionState.done
+                      ? () {
+                          Navigator.of(context).pop();
+                          context.push('/child/result');
+                        }
+                      : null,
+                  child: const Text('けっかをみる', textAlign: TextAlign.center)))
         ])
       ]);
 }
