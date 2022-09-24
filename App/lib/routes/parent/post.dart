@@ -95,6 +95,34 @@ class PostScreen extends ConsumerWidget {
 
     final steps = [
       Step(
+          title: const Text('画像'),
+          content: Column(children: [
+            if (imageUrl.isNotEmpty)
+              Container(
+                  margin: const EdgeInsets.all(10.0),
+                  child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10.0),
+                      child: imageUrl.startsWith('http')
+                          ? CachedNetworkImage(
+                              height: 500.0,
+                              imageUrl: imageUrl,
+                              placeholder: (context, url) => const Center(
+                                  child: CircularProgressIndicator()))
+                          : Image.file(File(imageUrl)))),
+            ElevatedButton.icon(
+                onPressed: () async {
+                  final path = (await ImagePicker()
+                          .pickImage(source: ImageSource.gallery))
+                      ?.path;
+
+                  if (path != null) {
+                    ref.read(_imageUrlProvider.notifier).state = path;
+                  }
+                },
+                icon: const Icon(Icons.cloud_upload),
+                label: Text('画像を${imageUrl.isEmpty ? '追加' : '変更'}'))
+          ])),
+      Step(
           title: const Text('ワード'),
           subtitle: Text(word),
           content: TreeView(
@@ -143,14 +171,16 @@ class PostScreen extends ConsumerWidget {
                     ]),
               ],
               indent: 20.0)),
-      ...textEdits.map((tile) => Step(
-          title: Text(tile['title']),
-          subtitle: Text(tile['state']),
-          content: TextFormField(
-              initialValue: tile['state'],
-              decoration: InputDecoration(labelText: tile['title']),
-              onChanged: (value) =>
-                  ref.read(tile['provider'].notifier).state = value))),
+      Step(
+          title: const Text('5W1H'),
+          content: Column(
+              children: textEdits
+                  .map((tile) => TextFormField(
+                      initialValue: tile['state'],
+                      decoration: InputDecoration(labelText: tile['title']),
+                      onChanged: (value) =>
+                          ref.read(tile['provider'].notifier).state = value))
+                  .toList()))
     ];
 
     return expData.maybeWhen(
@@ -159,66 +189,41 @@ class PostScreen extends ConsumerWidget {
                 title: const Text('投稿'),
               ),
               body: SingleChildScrollView(
-                  child: Column(children: [
-                if (imageUrl.isNotEmpty)
-                  Container(
-                      margin: const EdgeInsets.all(10.0),
-                      child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10.0),
-                          child: imageUrl.startsWith('http')
-                              ? CachedNetworkImage(
-                                  height: 300.0,
-                                  imageUrl: imageUrl,
-                                  placeholder: (context, url) => const Center(
-                                      child: CircularProgressIndicator()))
-                              : Image.file(File(imageUrl), height: 300.0))),
-                ElevatedButton.icon(
-                    onPressed: () async {
-                      final path = (await ImagePicker()
-                              .pickImage(source: ImageSource.gallery))
-                          ?.path;
-
-                      if (path != null) {
-                        ref.read(_imageUrlProvider.notifier).state = path;
-                      }
-                    },
-                    icon: const Icon(Icons.cloud_upload),
-                    label: Text('画像を${imageUrl.isEmpty ? '追加' : '変更'}')),
-                Stepper(
-                    physics: const NeverScrollableScrollPhysics(),
-                    currentStep: step,
-                    onStepCancel: step != 0
-                        ? () =>
-                            ref.read(_stepProvider.notifier).state = step - 1
-                        : null,
-                    onStepContinue: step < steps.length - 1
-                        ? () =>
-                            ref.read(_stepProvider.notifier).state = step + 1
-                        : null,
-                    onStepTapped: (index) =>
-                        ref.read(_stepProvider.notifier).state = index,
-                    steps: steps,
-                    controlsBuilder:
-                        (BuildContext context, ControlsDetails details) =>
-                            Container(
-                                width: double.infinity,
-                                margin: const EdgeInsets.all(10.0),
-                                child: Wrap(
-                                  spacing: 10.0,
-                                  children: <Widget>[
-                                    ElevatedButton(
-                                      //13
-                                      onPressed: details.onStepContinue,
-                                      child: const Text('次へ'),
-                                    ),
-                                    ElevatedButton(
-                                      //14
-                                      onPressed: details.onStepCancel,
-                                      child: const Text('戻る'),
-                                    ),
-                                  ],
-                                )))
-              ])),
+                  child: Stepper(
+                      physics: const NeverScrollableScrollPhysics(),
+                      currentStep: step,
+                      onStepCancel: step != 0
+                          ? () =>
+                              ref.read(_stepProvider.notifier).state = step - 1
+                          : null,
+                      onStepContinue: step < steps.length - 1
+                          ? () =>
+                              ref.read(_stepProvider.notifier).state = step + 1
+                          : null,
+                      onStepTapped: (index) =>
+                          ref.read(_stepProvider.notifier).state = index,
+                      steps: steps,
+                      controlsBuilder:
+                          (BuildContext context, ControlsDetails details) =>
+                              Container(
+                                  width: double.infinity,
+                                  margin: const EdgeInsets.all(10.0),
+                                  child: Wrap(
+                                    alignment: WrapAlignment.center,
+                                    spacing: 10.0,
+                                    children: <Widget>[
+                                      ElevatedButton(
+                                        //13
+                                        onPressed: details.onStepContinue,
+                                        child: const Text('次へ'),
+                                      ),
+                                      ElevatedButton(
+                                        //14
+                                        onPressed: details.onStepCancel,
+                                        child: const Text('戻る'),
+                                      ),
+                                    ],
+                                  )))),
               floatingActionButton: FloatingActionButton.extended(
                   onPressed: () async {
                     expData.value?.setData(
