@@ -26,12 +26,11 @@ class ChildActions extends StatelessWidget {
 }
 
 class ChildActionButton extends StatelessWidget {
-  const ChildActionButton(
-      {Key? key, required this.child, required this.onPressed})
+  const ChildActionButton({Key? key, required this.child, this.onPressed})
       : super(key: key);
 
   final Widget child;
-  final Function() onPressed;
+  final Function()? onPressed;
 
   @override
   Widget build(BuildContext context) => ElevatedButton(

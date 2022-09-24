@@ -54,9 +54,9 @@ class ModeSelectionDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       SimpleDialog(title: const Text('ようこそ!'), children: [
-        SimpleDialogOption(
-            onPressed: () {},
-            child: const ListTile(
+        const SimpleDialogOption(
+            onPressed: null,
+            child: ListTile(
                 title: Text('主にSolimageを使うのは誰ですか?'),
                 subtitle: Text('この設定は後から変更可能です'))),
         SimpleDialogOption(
