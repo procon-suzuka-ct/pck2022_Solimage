@@ -77,18 +77,21 @@ class CameraScreen extends ConsumerWidget {
                                 .clearMaterialBanners();
                             ref.read(_takingPictureProvider.notifier).state =
                                 true;
-                            final path = (await controller!.takePicture()).path;
-                            ref.read(imagePathProvider.notifier).state = path;
+                            if (controller != null) {
+                              final path =
+                                  (await controller.takePicture()).path;
+                              ref.read(imagePathProvider.notifier).state = path;
+                              await showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  barrierColor: Colors.black.withOpacity(0.8),
+                                  builder: (context) => StandbyDialog(
+                                      controller: controller,
+                                      decodedImage: image.decodeImage(
+                                          File(path).readAsBytesSync())!));
+                            }
                             ref.read(_takingPictureProvider.notifier).state =
                                 false;
-                            await showDialog(
-                                context: context,
-                                barrierDismissible: false,
-                                barrierColor: Colors.black.withOpacity(0.8),
-                                builder: (context) => StandbyDialog(
-                                    controller: controller,
-                                    decodedImage: image.decodeImage(
-                                        File(path).readAsBytesSync())!));
                           },
                           child: const Text('さつえい')),
                       ChildActionButton(
