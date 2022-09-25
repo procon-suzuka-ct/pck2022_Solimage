@@ -21,9 +21,13 @@ class HistoryScreen extends ConsumerWidget {
         data: (data) => ListView(
             children: data
                 .map((expData) => Card(
-                    child: ListTile(
-                        title: Text('${expData?.word}'),
-                        trailing: const Icon(Icons.edit),
+                    child: InkWell(
+                        customBorder: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        child: ListTile(
+                            title: Text('${expData?.word}'),
+                            trailing: const Icon(Icons.edit)),
                         onTap: () => context.push(
                             '/parent/post?expDataId=${expData?.dataId}'))))
                 .toList()),

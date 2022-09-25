@@ -4,8 +4,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_simple_treeview/flutter_simple_treeview.dart';
-import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:solimage/components/parent/post.dart';
 import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/expData.dart';
 
@@ -42,7 +42,6 @@ final _expDataProvider =
 
   return expData;
 });
-final _postingProvider = StateProvider.autoDispose((ref) => false);
 
 class PostScreen extends ConsumerWidget {
   const PostScreen({Key? key, this.expDataId}) : super(key: key);
@@ -96,6 +95,34 @@ class PostScreen extends ConsumerWidget {
 
     final steps = [
       Step(
+          title: const Text('画像'),
+          content: Column(children: [
+            if (imageUrl.isNotEmpty)
+              Container(
+                  margin: const EdgeInsets.all(10.0),
+                  child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10.0),
+                      child: imageUrl.startsWith('http')
+                          ? CachedNetworkImage(
+                              height: 500.0,
+                              imageUrl: imageUrl,
+                              placeholder: (context, url) => const Center(
+                                  child: CircularProgressIndicator()))
+                          : Image.file(File(imageUrl)))),
+            ElevatedButton.icon(
+                onPressed: () async {
+                  final path = (await ImagePicker()
+                          .pickImage(source: ImageSource.gallery))
+                      ?.path;
+
+                  if (path != null) {
+                    ref.read(_imageUrlProvider.notifier).state = path;
+                  }
+                },
+                icon: const Icon(Icons.cloud_upload),
+                label: Text('画像を${imageUrl.isEmpty ? '追加' : '変更'}'))
+          ])),
+      Step(
           title: const Text('ワード'),
           subtitle: Text(word),
           content: TreeView(
@@ -144,14 +171,16 @@ class PostScreen extends ConsumerWidget {
                     ]),
               ],
               indent: 20.0)),
-      ...textEdits.map((tile) => Step(
-          title: Text(tile['title']),
-          subtitle: Text(tile['state']),
-          content: TextFormField(
-              initialValue: tile['state'],
-              decoration: InputDecoration(labelText: tile['title']),
-              onChanged: (value) =>
-                  ref.read(tile['provider'].notifier).state = value))),
+      Step(
+          title: const Text('5W1H'),
+          content: Column(
+              children: textEdits
+                  .map((tile) => TextFormField(
+                      initialValue: tile['state'],
+                      decoration: InputDecoration(labelText: tile['title']),
+                      onChanged: (value) =>
+                          ref.read(tile['provider'].notifier).state = value))
+                  .toList()))
     ];
 
     return expData.maybeWhen(
@@ -160,66 +189,41 @@ class PostScreen extends ConsumerWidget {
                 title: const Text('投稿'),
               ),
               body: SingleChildScrollView(
-                  child: Column(children: [
-                if (imageUrl.isNotEmpty)
-                  Container(
-                      margin: const EdgeInsets.all(10.0),
-                      child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10.0),
-                          child: imageUrl.startsWith('http')
-                              ? CachedNetworkImage(
-                                  height: 300.0,
-                                  imageUrl: imageUrl,
-                                  placeholder: (context, url) => const Center(
-                                      child: CircularProgressIndicator()))
-                              : Image.file(File(imageUrl), height: 300.0))),
-                ElevatedButton.icon(
-                    onPressed: () async {
-                      final path = (await ImagePicker()
-                              .pickImage(source: ImageSource.gallery))
-                          ?.path;
-
-                      if (path != null) {
-                        ref.read(_imageUrlProvider.notifier).state = path;
-                      }
-                    },
-                    icon: const Icon(Icons.cloud_upload),
-                    label: Text('画像を${imageUrl.isEmpty ? '追加' : '変更'}')),
-                Stepper(
-                    physics: const NeverScrollableScrollPhysics(),
-                    currentStep: step,
-                    onStepCancel: step != 0
-                        ? () =>
-                            ref.read(_stepProvider.notifier).state = step - 1
-                        : null,
-                    onStepContinue: step < steps.length - 1
-                        ? () =>
-                            ref.read(_stepProvider.notifier).state = step + 1
-                        : null,
-                    onStepTapped: (index) =>
-                        ref.read(_stepProvider.notifier).state = index,
-                    steps: steps,
-                    controlsBuilder:
-                        (BuildContext context, ControlsDetails details) =>
-                            Container(
-                                width: double.infinity,
-                                margin: const EdgeInsets.all(10.0),
-                                child: Wrap(
-                                  spacing: 10.0,
-                                  children: <Widget>[
-                                    ElevatedButton(
-                                      //13
-                                      onPressed: details.onStepContinue,
-                                      child: const Text('次へ'),
-                                    ),
-                                    ElevatedButton(
-                                      //14
-                                      onPressed: details.onStepCancel,
-                                      child: const Text('戻る'),
-                                    ),
-                                  ],
-                                )))
-              ])),
+                  child: Stepper(
+                      physics: const NeverScrollableScrollPhysics(),
+                      currentStep: step,
+                      onStepCancel: step != 0
+                          ? () =>
+                              ref.read(_stepProvider.notifier).state = step - 1
+                          : null,
+                      onStepContinue: step < steps.length - 1
+                          ? () =>
+                              ref.read(_stepProvider.notifier).state = step + 1
+                          : null,
+                      onStepTapped: (index) =>
+                          ref.read(_stepProvider.notifier).state = index,
+                      steps: steps,
+                      controlsBuilder:
+                          (BuildContext context, ControlsDetails details) =>
+                              Container(
+                                  width: double.infinity,
+                                  margin: const EdgeInsets.all(10.0),
+                                  child: Wrap(
+                                    alignment: WrapAlignment.center,
+                                    spacing: 10.0,
+                                    children: <Widget>[
+                                      ElevatedButton(
+                                        //13
+                                        onPressed: details.onStepContinue,
+                                        child: const Text('次へ'),
+                                      ),
+                                      ElevatedButton(
+                                        //14
+                                        onPressed: details.onStepCancel,
+                                        child: const Text('戻る'),
+                                      ),
+                                    ],
+                                  )))),
               floatingActionButton: FloatingActionButton.extended(
                   onPressed: () async {
                     expData.value?.setData(
@@ -236,7 +240,7 @@ class PostScreen extends ConsumerWidget {
                         ? showDialog(
                             context: context,
                             barrierDismissible: false,
-                            builder: (context) => ConfirmDialog(
+                            builder: (context) => PostDialog(
                                 expData: expData.value!, imagePath: imageUrl))
                         : null;
                   },
@@ -245,52 +249,5 @@ class PostScreen extends ConsumerWidget {
             ),
         orElse: () =>
             const Scaffold(body: Center(child: CircularProgressIndicator())));
-  }
-}
-
-class ConfirmDialog extends ConsumerWidget {
-  final ExpData expData;
-  final String imagePath;
-
-  const ConfirmDialog(
-      {Key? key, required this.expData, required this.imagePath})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final posting = ref.watch(_postingProvider);
-
-    return AlertDialog(
-      title: Text(posting ? '投稿中' : '確認'),
-      content: posting
-          ? const Center(
-              widthFactor: 1.0,
-              heightFactor: 1.0,
-              child: CircularProgressIndicator())
-          : const Text('投稿してもよろしいでしょうか?'),
-      actions: [
-        TextButton(
-            onPressed: !posting
-                ? () async {
-                    ref.read(_postingProvider.notifier).state = true;
-
-                    if (imagePath.isNotEmpty && !imagePath.startsWith('http')) {
-                      await expData.saveImage(imagePath: imagePath);
-                    }
-
-                    expData.save().then((_) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('投稿しました')));
-                      ref.refresh(userProvider);
-                      context.go('/parent');
-                    });
-                  }
-                : null,
-            child: const Text('はい')),
-        TextButton(
-            onPressed: !posting ? () => Navigator.of(context).pop() : null,
-            child: const Text('いいえ')),
-      ],
-    );
   }
 }

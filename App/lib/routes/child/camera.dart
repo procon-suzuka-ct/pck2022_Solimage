@@ -6,11 +6,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image/image.dart' as image;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:solimage/components/child/standby.dart';
 import 'package:solimage/components/child_actions.dart';
 import 'package:solimage/components/loading_overlay.dart';
 import 'package:solimage/states/camera.dart';
 import 'package:solimage/states/permission.dart';
-import 'package:solimage/utils/imageProcess/classifier.dart';
 
 final _takingPictureProvider = StateProvider<bool>((ref) => false);
 
@@ -76,49 +76,21 @@ class CameraScreen extends ConsumerWidget {
                                 .clearMaterialBanners();
                             ref.read(_takingPictureProvider.notifier).state =
                                 true;
-                            final path = (await controller!.takePicture()).path;
-                            ref.read(imagePathProvider.notifier).state = path;
+                            if (controller != null) {
+                              final path =
+                                  (await controller.takePicture()).path;
+                              ref.read(imagePathProvider.notifier).state = path;
+                              await showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  barrierColor: Colors.black.withOpacity(0.8),
+                                  builder: (context) => StandbyDialog(
+                                      controller: controller,
+                                      decodedImage: image.decodeImage(
+                                          File(path).readAsBytesSync())!));
+                            }
                             ref.read(_takingPictureProvider.notifier).state =
                                 false;
-                            final decodedImage =
-                                image.decodeImage(File(path).readAsBytesSync());
-                            if (decodedImage != null) {
-                              /*
-                                画像を9:16にするコード
-                                final croppedImage = image.copyCrop(
-                                  decodedImage,
-                                  0,
-                                  0,
-                                  (decodedImage.height / 16 * 9).toInt(),
-                                  decodedImage.height);
-                               */
-
-                              /* これだと動かなかった
-                                final result =
-                                    Classifier.instance.predict(decodedImage);
-                               */
-
-                              // これは動いた
-                              final classifier = Classifier.instance;
-                              await classifier.loadModel();
-
-                              // classifier.predict()でクラッシュする
-                              final result =
-                                  await classifier.predict(decodedImage);
-                              print(result);
-                              //final labels = Classifier.getLabelIndexes(result);
-                              //for (var label in labels.keys) {
-                              //  final labelName =
-                              //      await Classifier.getLabel(label);
-                              //  print("$labelName: ${labels[label]}%");
-                              //}
-                            }
-                            await showDialog(
-                                context: context,
-                                barrierDismissible: false,
-                                barrierColor: Colors.black.withOpacity(0.8),
-                                builder: (context) =>
-                                    StandbyDialog(controller: controller));
                           },
                           child: const Text('さつえい')),
                       ChildActionButton(
@@ -167,28 +139,4 @@ class CameraScreen extends ConsumerWidget {
         orElse: () =>
             const Scaffold(body: Center(child: CircularProgressIndicator())));
   }
-}
-
-class StandbyDialog extends StatelessWidget {
-  const StandbyDialog({Key? key, required this.controller}) : super(key: key);
-
-  final CameraController controller;
-
-  @override
-  Widget build(BuildContext context) => Stack(children: [
-        const AlertDialog(
-            title: Text('大人が伝えたいワード'),
-            content: Center(heightFactor: 1.0, child: Text('簡単な説明'))),
-        ChildActions(actions: [
-          ChildActionButton(
-              child: const Text('もどる'),
-              onPressed: () => Navigator.of(context).pop()),
-          ChildActionButton(
-              child: const Text('けっかをみる', textAlign: TextAlign.center),
-              onPressed: () {
-                Navigator.of(context).pop();
-                context.push('/child/result');
-              })
-        ])
-      ]);
 }
