@@ -384,3 +384,96 @@ class ExpData {
     return url;
   }
 }
+
+class RecommendData extends ExpData {
+  RecommendData({
+    required String word,
+    required String meaning,
+    required String userID,
+  }) : super(
+          word: word,
+          meaning: meaning,
+          userID: userID,
+        );
+
+  @override
+  Future<int> init() async {
+    _dataId = 0;
+    return 0;
+  }
+
+  RecommendData.fromJson(Map<String, Object?> json)
+      : super(
+            meaning: json['meaning'] as String,
+            word: json['word'] as String,
+            userID: json['userID'] as String) {
+    _userId = json['userId'] as String;
+    _word = json['word'] as String;
+    _meaning = json['meaning'] as String;
+    _why = json['why'] as String?;
+    _what = json['what'] as String?;
+    _where = json['where'] as String?;
+    _when = json['when'] as String?;
+    _who = json['who'] as String?;
+    _how = json['how'] as String?;
+    _imageUrl = json['imageUrl'] as String?;
+  }
+
+  @override
+  Map<String, Object?> toJson() {
+    return {
+      'userId': _userId,
+      'word': _word,
+      'meaning': _meaning,
+      'why': _why,
+      'what': _what,
+      'where': _where,
+      'when': _when,
+      'who': _who,
+      'how': _how,
+      'imageUrl': _imageUrl,
+    };
+  }
+
+  static DocumentReference<RecommendData> _getRef(String userid) {
+    return FirebaseFirestore.instance
+        .collection('recommendData')
+        .doc(userid)
+        .withConverter<RecommendData>(
+            fromFirestore: ((snapshot, _) =>
+                RecommendData.fromJson(snapshot.data()!)),
+            toFirestore: ((data, _) => data.toJson()));
+  }
+
+  static Future<RecommendData?> getRecommendData(String userid) async {
+    final doc = await _getRef(userid).get();
+    if (doc.exists) {
+      return doc.data();
+    }
+    return null;
+  }
+
+  static Future<RecommendData?> getExpDataByWord({required String userId}) {
+    return getRecommendData(userId);
+  }
+
+  @override
+  Future<void> save() async {
+    await _getRef(_userId).set(this);
+  }
+
+  @override
+  Future<void> delete() async {
+    await _getRef(_userId).delete();
+  }
+
+  @override
+  Future<void> bad(String uid) async {
+    return;
+  }
+
+  @override
+  Future<void> good(String uid) async {
+    return;
+  }
+}
