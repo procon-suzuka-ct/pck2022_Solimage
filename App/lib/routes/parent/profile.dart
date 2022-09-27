@@ -3,6 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:solimage/components/app_detail.dart';
+import 'package:solimage/components/mode_select.dart';
 import 'package:solimage/components/parent/group_create.dart';
 import 'package:solimage/components/parent/group_detail.dart';
 import 'package:solimage/components/parent/group_participate.dart';
@@ -61,6 +62,18 @@ class ProfileScreen extends ConsumerWidget {
                         ]),
                     orElse: () => const CircularProgressIndicator())
               ])),
+      Card(
+          child: InkWell(
+              customBorder: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: const ListTile(
+                  leading: Icon(Icons.change_circle),
+                  title: Text('モード切り替え'),
+                  subtitle: Text('アプリを開いた時の動作を切り替える')),
+              onTap: () => showDialog(
+                  context: context,
+                  builder: (context) => const ModeSelectDialog()))),
       Card(
           child: InkWell(
               customBorder: RoundedRectangleBorder(
