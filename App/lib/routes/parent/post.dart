@@ -185,9 +185,7 @@ class PostScreen extends ConsumerWidget {
 
     return expData.maybeWhen(
         data: (data) => Scaffold(
-              appBar: AppBar(
-                title: const Text('投稿'),
-              ),
+              appBar: AppBar(title: const Text('投稿'), centerTitle: true),
               body: SingleChildScrollView(
                   child: Stepper(
                       physics: const NeverScrollableScrollPhysics(),
