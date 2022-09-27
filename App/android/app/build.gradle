@@ -21,6 +21,8 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+def keyPropertiesFile = rootProject.file("key.properties")
+
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.firebase-perf'
@@ -60,9 +62,21 @@ android {
         versionName flutterVersionName
     }
 
+    signingConfigs {
+        debug {
+            if (keyPropertiesFile.exists()) {
+                def keyProperties = new Properties()
+                keyProperties.load(new FileInputStream(keyPropertiesFile))
+                keyAlias keyProperties['keyAlias']
+                keyPassword keyProperties['keyPassword']
+                storeFile file(keyProperties['storeFile'])
+                storePassword keyProperties['storePassword']
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.debug
         }
