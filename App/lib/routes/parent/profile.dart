@@ -3,6 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:solimage/components/app_detail.dart';
+import 'package:solimage/components/mode_select.dart';
 import 'package:solimage/components/parent/group_create.dart';
 import 'package:solimage/components/parent/group_detail.dart';
 import 'package:solimage/components/parent/group_participate.dart';
@@ -67,6 +68,18 @@ class ProfileScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(10.0),
               ),
               child: const ListTile(
+                  leading: Icon(Icons.change_circle),
+                  title: Text('モード切り替え'),
+                  subtitle: Text('アプリを開いた時の動作を切り替える')),
+              onTap: () => showDialog(
+                  context: context,
+                  builder: (context) => const ModeSelectDialog()))),
+      Card(
+          child: InkWell(
+              customBorder: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: const ListTile(
                   leading: Icon(Icons.logout), title: Text('ログアウト')),
               onTap: () => showDialog(
                   context: context,
@@ -98,6 +111,7 @@ class ProfileScreen extends ConsumerWidget {
                     useRootNavigator: false),
                 child: const Text('参加'))
           ])),
+      // TODO: グループがないときの代わりを追加する
       ...groups.maybeWhen(
           data: (data) => data
               .map((group) => group != null
@@ -118,6 +132,7 @@ class ProfileScreen extends ConsumerWidget {
                   : const SizedBox.shrink())
               .toList(),
           orElse: () => const [Center(child: CircularProgressIndicator())]),
+      // TODO: 親しみやすいUXに改良する
       const ListTile(
           title: Text('アクセス履歴',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold))),
@@ -129,6 +144,7 @@ class ProfileScreen extends ConsumerWidget {
               child: Container(
                   margin: const EdgeInsets.all(20.0),
                   constraints: const BoxConstraints(maxHeight: 200.0),
+                  // TODO: 実際のデータに差し替える
                   child: LineChart(LineChartData(
                       lineTouchData: LineTouchData(
                           touchTooltipData: LineTouchTooltipData(

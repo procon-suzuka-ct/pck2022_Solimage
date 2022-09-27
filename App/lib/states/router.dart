@@ -16,7 +16,6 @@ import 'package:solimage/utils/stream_listenable.dart';
 final List<Map<String, dynamic>> routes = [
   {'path': '/child/camera', 'child': const CameraScreen()},
   {'path': '/child/history', 'child': const HistoryScreen()},
-  {'path': '/child/result', 'child': const ResultScreen()},
   {'path': '/parent', 'child': const ParentScreen()},
   {'path': '/', 'child': const WelcomeScreen()}
 ];
@@ -29,6 +28,11 @@ final routerProvider = Provider((ref) => GoRouter(
             name: route['path'],
             builder: (context, state) => SafeArea(child: route['child']),
           )),
+      GoRoute(
+          path: '/child/result',
+          name: '/child/result',
+          builder: (context, state) =>
+              SafeArea(child: ResultScreen(word: state.queryParams['word']!))),
       GoRoute(
           path: '/parent/post',
           name: '/parent/post',

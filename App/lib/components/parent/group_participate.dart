@@ -4,6 +4,7 @@ import 'package:solimage/states/groups.dart';
 import 'package:solimage/utils/classes/group.dart';
 import 'package:solimage/utils/classes/user.dart';
 
+// TODO: 説明を追加する
 class GroupParticipateDialog extends ConsumerWidget {
   GroupParticipateDialog(
       {Key? key, required this.parentRef, required this.user})

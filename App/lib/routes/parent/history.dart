@@ -10,6 +10,7 @@ final _expDatasProvider = FutureProvider.autoDispose((ref) async =>
             .then((value) => value?.expDatas ?? []))
         .map((expData) => ExpData.getExpData(expData))));
 
+// TODO: 投稿したイチオシ情報を最上部に追加する
 class HistoryScreen extends ConsumerWidget {
   const HistoryScreen({Key? key}) : super(key: key);
 
@@ -19,12 +20,14 @@ class HistoryScreen extends ConsumerWidget {
 
     return expDatas.maybeWhen(
         data: (data) => ListView(
+            // TODO: 投稿履歴がないときの代わりを追加する
             children: data
                 .map((expData) => Card(
                     child: InkWell(
                         customBorder: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
+                        // TODO: 詳細なデータを追加する
                         child: ListTile(
                             title: Text('${expData?.word}'),
                             trailing: const Icon(Icons.edit)),

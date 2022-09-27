@@ -43,6 +43,7 @@ final _expDataProvider =
   return expData;
 });
 
+// TODO: 必須項目の確認機能を追加する
 class PostScreen extends ConsumerWidget {
   const PostScreen({Key? key, this.expDataId}) : super(key: key);
 
@@ -122,6 +123,7 @@ class PostScreen extends ConsumerWidget {
                 icon: const Icon(Icons.cloud_upload),
                 label: Text('画像を${imageUrl.isEmpty ? '追加' : '変更'}'))
           ])),
+      // TODO: 実際のデータに差し替える
       Step(
           title: const Text('ワード'),
           subtitle: Text(word),
@@ -171,6 +173,7 @@ class PostScreen extends ConsumerWidget {
                     ]),
               ],
               indent: 20.0)),
+      // TODO: 具体例を追加する
       Step(
           title: const Text('5W1H'),
           content: Column(
@@ -185,9 +188,7 @@ class PostScreen extends ConsumerWidget {
 
     return expData.maybeWhen(
         data: (data) => Scaffold(
-              appBar: AppBar(
-                title: const Text('投稿'),
-              ),
+              appBar: AppBar(title: const Text('投稿'), centerTitle: true),
               body: SingleChildScrollView(
                   child: Stepper(
                       physics: const NeverScrollableScrollPhysics(),

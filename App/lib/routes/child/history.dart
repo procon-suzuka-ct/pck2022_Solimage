@@ -14,6 +14,7 @@ class HistoryScreen extends ConsumerWidget {
           centerTitle: true,
           title: const Text('きろく'),
         ),
+        // TODO: 一覧を表示+する
         body: ChildActions(actions: [
           ChildActionButton(
               onPressed: () => context.pop(), child: const Text('もどる'))
