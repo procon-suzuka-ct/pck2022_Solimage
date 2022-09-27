@@ -111,26 +111,45 @@ class ProfileScreen extends ConsumerWidget {
                     useRootNavigator: false),
                 child: const Text('参加'))
           ])),
-      // TODO: グループがないときの代わりを追加する
       ...groups.maybeWhen(
-          data: (data) => data
-              .map((group) => group != null
-                  ? Card(
+          data: (data) => data.isNotEmpty
+              ? data
+                  .map((group) => group != null
+                      ? Card(
+                          child: InkWell(
+                              customBorder: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              child: ListTile(
+                                  leading: const Icon(Icons.group),
+                                  title: Text(group.groupName),
+                                  trailing: const Icon(Icons.info)),
+                              onTap: () => showDialog(
+                                  barrierDismissible: false,
+                                  context: context,
+                                  builder: (context) => GroupDetailDialog(
+                                      parentRef: ref, group: group))))
+                      : const SizedBox.shrink())
+                  .toList()
+              : [
+                  Card(
                       child: InkWell(
                           customBorder: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0),
                           ),
-                          child: ListTile(
-                              leading: const Icon(Icons.group),
-                              title: Text(group.groupName),
-                              trailing: const Icon(Icons.info)),
-                          onTap: () => showDialog(
-                              barrierDismissible: false,
-                              context: context,
-                              builder: (context) => GroupDetailDialog(
-                                  parentRef: ref, group: group))))
-                  : const SizedBox.shrink())
-              .toList(),
+                          child: Container(
+                              margin: const EdgeInsets.all(20.0),
+                              child: Wrap(
+                                  direction: Axis.vertical,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  runAlignment: WrapAlignment.center,
+                                  spacing: 10.0,
+                                  children: const [
+                                    Icon(Icons.group, size: 30.0),
+                                    Text('グループに参加しましょう!')
+                                  ])),
+                          onTap: () {}))
+                ],
           orElse: () => const [Center(child: CircularProgressIndicator())]),
       // TODO: 親しみやすいUXに改良する
       const ListTile(
