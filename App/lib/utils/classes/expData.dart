@@ -13,6 +13,8 @@ class ExpData {
   int? rootId;
   List<int> childIds = [];
 
+  int _views = 0;
+
   late String _word;
   late String _meaning;
 
@@ -29,6 +31,7 @@ class ExpData {
 
   String? _imageUrl;
 
+  int get views => _views;
   int get dataId => _dataId;
   String get userId => _userId;
   String? get word => _word;
@@ -56,7 +59,8 @@ class ExpData {
   }
 
   ExpData.fromJson(Map<String, Object?> json)
-      : _dataId = json['dataId'] as int,
+      : _views = json['views'] as int,
+        _dataId = json['dataId'] as int,
         _userId = json['userId'] as String,
         rootId = json['rootId'] as int?,
         childIds = (json['childIds'] as List<dynamic>).cast<int>(),
@@ -74,6 +78,7 @@ class ExpData {
 
   Map<String, Object?> toJson() {
     return {
+      "views": _views,
       "dataId": _dataId,
       'userId': _userId,
       'rootId': rootId,
@@ -190,7 +195,8 @@ class ExpData {
         });
       } else {
         docRef.set({
-          "index": [_dataId]
+          "index": [_dataId],
+          "views": _views,
         });
       }
     });
@@ -222,15 +228,19 @@ class ExpData {
       for (final dataId in doc['index']) {
         expDataList.add(getExpData(dataId));
       }
-      final expDataListResult = await Future.wait(expDataList);
-      List<String> meanings = [];
-      List<String> whyList = [];
-      List<String> whatList = [];
-      List<String> whereList = [];
-      List<String> whenList = [];
-      List<String> whoList = [];
-      List<String> howList = [];
-      List<String> imageUrls = [];
+      final expDataListResultRaw = await Future.wait(expDataList);
+      final expDataListResult = [
+        for (final data in expDataListResultRaw)
+          if (data != null) data
+      ];
+      Map<int, String> meanings = {};
+      Map<int, String> whyList = {};
+      Map<int, String> whatList = {};
+      Map<int, String> whereList = {};
+      Map<int, String> whenList = {};
+      Map<int, String> whoList = {};
+      Map<int, String> howList = {};
+      Map<int, String> imageUrls = {};
 
       List<Group> groups = [];
       List<int> expDataIDs = [];
@@ -254,18 +264,61 @@ class ExpData {
       }
 
       for (final expData in expDataListResult) {
-        if (expData != null &&
-            (!onlyGroup ||
-                expDataIDs.contains(expData.dataId) ||
-                (expData.dataId >= 0 && expData.dataId < 1000000000))) {
-          meanings.add(expData.meaning!);
-          whyList.add(expData.why!);
-          whatList.add(expData.what!);
-          whereList.add(expData.where!);
-          whenList.add(expData.when!);
-          whoList.add(expData.who!);
-          howList.add(expData.how!);
-          imageUrls.add(expData.imageUrl!);
+        if (!onlyGroup ||
+            expDataIDs.contains(expData.dataId) ||
+            (expData.dataId >= 100000000 && expData.dataId < 999999999)) {
+          if (expData.meaning != null) {
+            meanings[expData.dataId] = expData.meaning!;
+          }
+          if (expData.why != null) whyList[expData.dataId] = expData.why!;
+          if (expData.what != null) whatList[expData.dataId] = expData.what!;
+          if (expData.where != null) whereList[expData.dataId] = expData.where!;
+          if (expData.when != null) whenList[expData.dataId] = expData.when!;
+          if (expData.who != null) whoList[expData.dataId] = expData.who!;
+          if (expData.how != null) howList[expData.dataId] = expData.how!;
+          if (expData.imageUrl != null) {
+            imageUrls[expData.dataId] = expData.imageUrl!;
+          }
+        }
+      }
+
+      for (final expData in expDataListResult) {
+        if (expData.dataId >= 100000000) {
+          continue;
+        }
+        if (meanings.isNotEmpty &&
+            whyList.isNotEmpty &&
+            whatList.isNotEmpty &&
+            whereList.isNotEmpty &&
+            whenList.isNotEmpty &&
+            whoList.isNotEmpty &&
+            howList.isNotEmpty &&
+            imageUrls.isNotEmpty) {
+          break;
+        }
+        if (meanings.isEmpty && expData.meaning != null) {
+          meanings[expData.dataId] = expData.meaning!;
+        }
+        if (whyList.isEmpty && expData.why != null) {
+          whyList[expData.dataId] = expData.why!;
+        }
+        if (whatList.isEmpty && expData.what != null) {
+          whatList[expData.dataId] = expData.what!;
+        }
+        if (whereList.isEmpty && expData.where != null) {
+          whereList[expData.dataId] = expData.where!;
+        }
+        if (whenList.isEmpty && expData.when != null) {
+          whenList[expData.dataId] = expData.when!;
+        }
+        if (whoList.isEmpty && expData.who != null) {
+          whoList[expData.dataId] = expData.who!;
+        }
+        if (howList.isEmpty && expData.how != null) {
+          howList[expData.dataId] = expData.how!;
+        }
+        if (imageUrls.isEmpty && expData.imageUrl != null) {
+          imageUrls[expData.dataId] = expData.imageUrl!;
         }
       }
 
@@ -283,20 +336,40 @@ class ExpData {
 
       ExpData data = ExpData(
         word: word,
-        meaning: meanings[meaning],
+        meaning: meanings.entries.toList()[meaning].value,
       );
       data.setData(
-        why: why != null ? whyList[why] : null,
-        what: what != null ? whatList[what] : null,
-        where: where != null ? whereList[where] : null,
-        when: when != null ? whenList[when] : null,
-        who: who != null ? whoList[who] : null,
-        how: how != null ? howList[how] : null,
-        imageUrl: imageUrl != null ? imageUrls[imageUrl] : null,
+        why: why != null ? whyList.entries.toList()[why].value : null,
+        what: what != null ? whatList.entries.toList()[what].value : null,
+        where: where != null ? whereList.entries.toList()[where].value : null,
+        when: when != null ? whenList.entries.toList()[when].value : null,
+        who: who != null ? whoList.entries.toList()[who].value : null,
+        how: how != null ? howList.entries.toList()[how].value : null,
+        imageUrl: imageUrl != null
+            ? imageUrls.entries.toList()[imageUrl].value
+            : null,
       );
+      getExpData(why!).then((value) => value!.addViews());
+      getExpData(what!).then((value) => value!.addViews());
+      getExpData(where!).then((value) => value!.addViews());
+      getExpData(when!).then((value) => value!.addViews());
+      getExpData(who!).then((value) => value!.addViews());
+      getExpData(how!).then((value) => value!.addViews());
+      getExpData(imageUrl!).then((value) => value!.addViews());
+
       return data;
     }
     return null;
+  }
+
+  Future<void> addViews() async {
+    var ref = _getRef(_dataId.toString());
+    await ref.update({'views': FieldValue.increment(1)});
+  }
+
+  Future<void> resetViews() async {
+    var ref = _getRef(_dataId.toString());
+    await ref.update({'views': 0});
   }
 
   // Firestoreからデータを削除
