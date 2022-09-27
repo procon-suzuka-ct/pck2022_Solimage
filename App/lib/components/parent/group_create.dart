@@ -4,7 +4,6 @@ import 'package:solimage/states/groups.dart';
 import 'package:solimage/utils/classes/group.dart';
 import 'package:solimage/utils/classes/user.dart';
 
-// TODO: 説明を追加する
 class GroupCreateDialog extends ConsumerWidget {
   const GroupCreateDialog(
       {Key? key, required this.parentRef, required this.user})
@@ -19,10 +18,18 @@ class GroupCreateDialog extends ConsumerWidget {
 
     return AlertDialog(
       title: const Text('グループを作成'),
-      content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(
-              labelText: 'グループ名', hintText: 'グループ名を入力してください')),
+      content: Column(mainAxisSize: MainAxisSize.min, children: [
+        SimpleDialogOption(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            onPressed: null,
+            child: ListTile(
+                title: const Text('グループを作成します'),
+                subtitle: Text('${user?.name}さんはグループの管理者になります'))),
+        TextField(
+            controller: controller,
+            decoration: const InputDecoration(
+                labelText: 'グループ名', hintText: 'グループ名を入力してください'))
+      ]),
       actions: <Widget>[
         TextButton(
             child: const Text('OK'),

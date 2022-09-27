@@ -4,7 +4,6 @@ import 'package:solimage/states/groups.dart';
 import 'package:solimage/utils/classes/group.dart';
 import 'package:solimage/utils/classes/user.dart';
 
-// TODO: 説明を追加する
 class GroupParticipateDialog extends ConsumerWidget {
   GroupParticipateDialog(
       {Key? key, required this.parentRef, required this.user})
@@ -17,11 +16,19 @@ class GroupParticipateDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) => AlertDialog(
         title: const Text('グループに参加'),
-        content: TextField(
-            controller: _controller,
-            decoration: const InputDecoration(
-                labelText: 'グループID', hintText: 'グループIDを入力してください'),
-            keyboardType: TextInputType.number),
+        content: Column(mainAxisSize: MainAxisSize.min, children: [
+          const SimpleDialogOption(
+              padding: EdgeInsets.symmetric(horizontal: 10.0),
+              onPressed: null,
+              child: ListTile(
+                  title: Text('グループに参加します'),
+                  subtitle: Text('グループIDを入力してください'))),
+          TextField(
+              controller: _controller,
+              decoration: const InputDecoration(
+                  labelText: 'グループID', hintText: 'グループIDを入力してください'),
+              keyboardType: TextInputType.number)
+        ]),
         actions: <Widget>[
           TextButton(
               child: const Text('OK'),
