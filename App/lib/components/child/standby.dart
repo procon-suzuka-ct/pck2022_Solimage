@@ -28,16 +28,13 @@ class StandbyDialog extends StatelessWidget {
                 final classifier = Classifier.instance;
                 await classifier.loadModel();
                 final result = await classifier.predict(decodedImage);
-                if (kDebugMode) {
-                  print(result.label);
-                }
-                return result;
+                return result.label;
               }(),
               builder: (context, snapshot) => ChildActionButton(
                   onPressed: snapshot.connectionState == ConnectionState.done
                       ? () {
                           Navigator.of(context).pop();
-                          context.push('/child/result');
+                          context.push('/child/result?word=${snapshot.data}');
                         }
                       : null,
                   child: const Text('けっかをみる', textAlign: TextAlign.center)))
