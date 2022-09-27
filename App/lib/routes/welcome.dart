@@ -17,6 +17,7 @@ class WelcomeScreen extends ConsumerWidget {
             Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
+                // TODO: ロゴ・紹介文を追加する
                 children: <Widget>[
                   Text("Solimageへ\nようこそ!",
                       textAlign: TextAlign.center,
