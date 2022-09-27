@@ -111,6 +111,7 @@ class ProfileScreen extends ConsumerWidget {
                     useRootNavigator: false),
                 child: const Text('参加'))
           ])),
+      // TODO: グループがないときの代わりを追加する
       ...groups.maybeWhen(
           data: (data) => data
               .map((group) => group != null
@@ -131,6 +132,7 @@ class ProfileScreen extends ConsumerWidget {
                   : const SizedBox.shrink())
               .toList(),
           orElse: () => const [Center(child: CircularProgressIndicator())]),
+      // TODO: 親しみやすいUXに改良する
       const ListTile(
           title: Text('アクセス履歴',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold))),
@@ -142,6 +144,7 @@ class ProfileScreen extends ConsumerWidget {
               child: Container(
                   margin: const EdgeInsets.all(20.0),
                   constraints: const BoxConstraints(maxHeight: 200.0),
+                  // TODO: 実際のデータに差し替える
                   child: LineChart(LineChartData(
                       lineTouchData: LineTouchData(
                           touchTooltipData: LineTouchTooltipData(

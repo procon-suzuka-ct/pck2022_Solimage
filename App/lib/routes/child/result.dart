@@ -56,6 +56,7 @@ class ResultScreen extends ConsumerWidget {
                       onPageChanged: (page) =>
                           ref.read(_currentPageProvider.notifier).state = page,
                       children: [
+                    // TODO: 画像下に簡単な説明を表示する
                     Center(
                         child: imagePath != null
                             ? Container(
@@ -112,6 +113,7 @@ class ResultScreen extends ConsumerWidget {
                                                         fontSize: 30.0,
                                                         fontWeight: FontWeight
                                                             .bold))))))))),
+                    // TODO: 画面の情報量を増やす
                     Center(
                         child: Padding(
                             padding: const EdgeInsets.all(20.0),

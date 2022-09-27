@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:solimage/utils/classes/user.dart';
 
+// TODO: 説明を追加する
 class UserNameDialog extends ConsumerWidget {
   const UserNameDialog(
       {Key? key, required this.user, required this.nameProvider})

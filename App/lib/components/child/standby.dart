@@ -6,6 +6,7 @@ import 'package:image/image.dart' as image;
 import 'package:solimage/components/child_actions.dart';
 import 'package:solimage/utils/imageProcess/classifier.dart';
 
+// TODO: 実際のデータに差し替える
 class StandbyDialog extends StatelessWidget {
   const StandbyDialog(
       {Key? key, required this.controller, required this.decodedImage})
