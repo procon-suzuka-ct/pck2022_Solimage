@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:solimage/utils/classes/user.dart';
 
-// TODO: 説明を追加する
 class UserNameDialog extends ConsumerWidget {
   const UserNameDialog(
       {Key? key, required this.user, required this.nameProvider})
@@ -18,9 +17,17 @@ class UserNameDialog extends ConsumerWidget {
 
     return AlertDialog(
       title: const Text('名前'),
-      content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(hintText: '名前を入力してください')),
+      content: Column(mainAxisSize: MainAxisSize.min, children: [
+        const SimpleDialogOption(
+            padding: EdgeInsets.symmetric(horizontal: 10.0),
+            onPressed: null,
+            child: ListTile(
+                title: Text('名前を変更します'),
+                subtitle: Text('名前はグループ内の人に公開されることがあります'))),
+        TextField(
+            controller: controller,
+            decoration: const InputDecoration(hintText: '名前を入力してください'))
+      ]),
       actions: <Widget>[
         TextButton(
             child: const Text('OK'),

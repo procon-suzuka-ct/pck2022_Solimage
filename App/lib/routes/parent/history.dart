@@ -19,21 +19,40 @@ class HistoryScreen extends ConsumerWidget {
     final expDatas = ref.watch(_expDatasProvider);
 
     return expDatas.maybeWhen(
-        data: (data) => ListView(
-            // TODO: 投稿履歴がないときの代わりを追加する
-            children: data
-                .map((expData) => Card(
+        data: (data) => data.isNotEmpty
+            ? ListView(
+                children: data
+                    .map((expData) => Card(
+                        child: InkWell(
+                            customBorder: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            // TODO: 詳細なデータを追加する
+                            child: ListTile(
+                                title: Text('${expData?.word}'),
+                                trailing: const Icon(Icons.edit)),
+                            onTap: () => context.push(
+                                '/parent/post?expDataId=${expData?.dataId}'))))
+                    .toList())
+            : Center(
+                child: Card(
                     child: InkWell(
                         customBorder: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
-                        // TODO: 詳細なデータを追加する
-                        child: ListTile(
-                            title: Text('${expData?.word}'),
-                            trailing: const Icon(Icons.edit)),
-                        onTap: () => context.push(
-                            '/parent/post?expDataId=${expData?.dataId}'))))
-                .toList()),
+                        child: Container(
+                            margin: const EdgeInsets.all(20.0),
+                            child: Wrap(
+                                direction: Axis.vertical,
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                alignment: WrapAlignment.center,
+                                runAlignment: WrapAlignment.center,
+                                spacing: 10.0,
+                                children: const [
+                                  Icon(Icons.edit, size: 30.0),
+                                  Text('知識を投稿しましょう!')
+                                ])),
+                        onTap: () {}))),
         orElse: () => const Center(child: CircularProgressIndicator()));
   }
 }

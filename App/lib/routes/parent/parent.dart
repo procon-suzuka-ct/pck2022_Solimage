@@ -6,7 +6,6 @@ import 'package:solimage/routes/parent/profile.dart';
 
 final tabIndexProvider = StateProvider.autoDispose((ref) => 0);
 
-// TODO: ルーティングを最適化する
 class ParentScreen extends ConsumerWidget {
   const ParentScreen({Key? key}) : super(key: key);
 
