@@ -62,16 +62,11 @@ class Group {
     }
   }
 
-  Future<void> save() async {
-    await FirebaseFirestore.instance
+  Future<void> save() {
+    return FirebaseFirestore.instance
         .collection('group')
         .doc(groupID.toString())
-        .set({
-      'groupID': groupID,
-      'groupName': groupName,
-      'members': members,
-      'expDatas': _expDatas,
-    });
+        .set(toJson());
   }
 
   static Future<Group?> getGroup(int groupID) async {
