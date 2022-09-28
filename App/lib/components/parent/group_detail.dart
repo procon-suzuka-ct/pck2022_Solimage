@@ -65,20 +65,22 @@ class GroupDetailDialog extends ConsumerWidget {
                   const [Center(child: CircularProgressIndicator())])),
       actionsAlignment: MainAxisAlignment.spaceBetween,
       actions: <Widget>[
-        TextButton(
-            onPressed: () {
-              if (group.members.isEmpty && group.adminId == user.value!.uid) {
-                showDialog(
-                    context: context,
-                    builder: (context) =>
-                        GroupLeaveDialog(parentRef: parentRef, group: group));
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('他にメンバーがいないグループは削除できません')));
-                Navigator.of(context).pop();
-              }
-            },
-            child: const Text('グループから抜ける')),
+        user.maybeWhen(
+            data: (user) => TextButton(
+                onPressed: () {
+                  if (group.members.isEmpty && group.adminId == user?.uid) {
+                    showDialog(
+                        context: context,
+                        builder: (context) => GroupLeaveDialog(
+                            parentRef: parentRef, group: group));
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text('他にメンバーがいないグループは削除できません')));
+                    Navigator.of(context).pop();
+                  }
+                },
+                child: const Text('グループから抜ける')),
+            orElse: () => const CircularProgressIndicator()),
         TextButton(
             child: const Text('閉じる'),
             onPressed: () => Navigator.of(context).pop())

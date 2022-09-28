@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/group.dart';
 import 'package:solimage/utils/classes/user.dart';
 
@@ -14,6 +15,7 @@ class GroupMembersDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(userProvider);
     final groupMembers = ref.watch(_groupMembersProvider(group));
 
     return AlertDialog(
@@ -27,7 +29,28 @@ class GroupMembersDialog extends ConsumerWidget {
                             customBorder: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.0),
                             ),
-                            child: ListTile(title: Text('${member?.name}')),
+                            child: ListTile(
+                                title: Text('${member?.name}'),
+                                trailing: user.maybeWhen(
+                                    data: (user) => group.adminId != member?.uid
+                                        ? IconButton(
+                                            onPressed: () async {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(SnackBar(
+                                                      content: Text(
+                                                          '${member?.name}を削除しました')));
+                                              if (member != null) {
+                                                member.groups
+                                                    .remove(group.groupID);
+                                                await member.save();
+                                                group.removeMember(member.uid);
+                                                await group.save();
+                                              }
+                                            },
+                                            icon:
+                                                const Icon(Icons.person_remove))
+                                        : null,
+                                    orElse: () => null)),
                             onTap: () {})))
                     .toList(),
                 orElse: () =>
