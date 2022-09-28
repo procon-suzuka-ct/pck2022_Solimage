@@ -14,7 +14,6 @@ import 'package:solimage/states/permission.dart';
 
 final _takingPictureProvider = StateProvider<bool>((ref) => false);
 
-// TODO: カメラの使用方法の説明を追加する
 class CameraScreen extends ConsumerWidget {
   const CameraScreen({Key? key}) : super(key: key);
 
