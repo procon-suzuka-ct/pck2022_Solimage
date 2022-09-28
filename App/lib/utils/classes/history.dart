@@ -51,7 +51,7 @@ class History {
     await _getRef(uid).doc(word).set(toJson());
   }
 
-  Future<List<History>> getHistories() async {
+  static Future<List<History>> getHistories(String uid) async {
     final snapshot = await _getRef(uid).get();
     final data = [for (var doc in snapshot.docs) History.fromJson(doc.data())];
     return data;
