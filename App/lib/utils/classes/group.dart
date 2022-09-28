@@ -7,10 +7,13 @@ class Group {
   String groupName;
   List<String> members = [];
   List<int> _expDatas = [];
+  final String _adminId;
 
+  String get adminId => _adminId;
   List<int> get expDatas => _expDatas;
 
-  Group({required this.groupName});
+  Group({required this.groupName, required String adminId})
+      : _adminId = adminId;
 
   Future<void> init() async {
     await generateId().then((value) => groupID = value);
@@ -20,7 +23,8 @@ class Group {
       : groupID = json['groupID'] as int,
         groupName = json['groupName'] as String,
         members = (json['members'] as List<dynamic>).cast<String>(),
-        _expDatas = (json['expDatas'] as List<dynamic>).cast<int>();
+        _expDatas = (json['expDatas'] as List<dynamic>).cast<int>(),
+        _adminId = json['adminId'] as String;
 
   Map<String, Object?> toJson() {
     return {
@@ -96,6 +100,14 @@ class Group {
 
   void removeMember(String uid) {
     members.remove(uid);
+    return;
+  }
+
+  Future<void> kickMember(String kickUserId, String uid) async {
+    if (uid == _adminId) {
+      members.remove(kickUserId);
+      await save();
+    }
     return;
   }
 
