@@ -33,6 +33,7 @@ class Group {
       'groupName': groupName,
       'members': members,
       'expDatas': _expDatas,
+      'adminId': _adminId,
     };
   }
 
