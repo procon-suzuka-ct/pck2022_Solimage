@@ -7,13 +7,14 @@ class Group {
   String groupName;
   List<String> members = [];
   List<int> _expDatas = [];
-  final String _adminId;
+  late String _adminId;
 
   String get adminId => _adminId;
   List<int> get expDatas => _expDatas;
 
-  Group({required this.groupName, required String adminId})
-      : _adminId = adminId;
+  Group({required this.groupName, required String adminId}) {
+    _adminId = adminId;
+  }
 
   Future<void> init() async {
     await generateId().then((value) => groupID = value);
