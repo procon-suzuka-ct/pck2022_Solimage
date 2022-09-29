@@ -85,6 +85,13 @@ class Group {
     }
   }
 
+  Stream<DocumentSnapshot> listner() {
+    return FirebaseFirestore.instance
+        .collection('group')
+        .doc(groupID.toString())
+        .snapshots();
+  }
+
   void setData(String groupName) {
     this.groupName = groupName;
     return;
