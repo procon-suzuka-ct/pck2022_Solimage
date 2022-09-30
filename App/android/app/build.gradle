@@ -63,13 +63,13 @@ android {
     }
 
     signingConfigs {
-        debug {
+        release {
             if (keyPropertiesFile.exists()) {
                 def keyProperties = new Properties()
                 keyProperties.load(new FileInputStream(keyPropertiesFile))
                 keyAlias keyProperties['keyAlias']
                 keyPassword keyProperties['keyPassword']
-                storeFile file(keyProperties['storeFile'])
+                storeFile rootProject.file(keyProperties['storeFile'])
                 storePassword keyProperties['storePassword']
             }
         }
@@ -78,7 +78,7 @@ android {
     buildTypes {
         release {
             // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
         }
     }
 }
