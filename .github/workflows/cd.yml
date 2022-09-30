@@ -26,10 +26,12 @@ jobs:
       - name: create key.properties
         run: |
           cd App/android
-          echo 'storeFile=release.jks' > key.properties
-          echo 'storePassword=${{ secrets.ANDROID_STORE_PASSWORD }}' >> key.properties
-          echo 'keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}' >> key.properties
-          echo 'keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}' >> key.properties
+          {
+            echo 'storeFile=release.jks'
+            echo 'storePassword=${{ secrets.ANDROID_STORE_PASSWORD }}'
+            echo 'keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}'
+            echo 'keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}'
+          } >> key.properties
       - name: build apk
         continue-on-error: true
         run: cd App && flutter build apk
