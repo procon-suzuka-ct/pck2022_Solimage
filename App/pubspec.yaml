@@ -37,7 +37,7 @@ dependencies:
   cloud_firestore: ^3.4.9
   firebase_auth: ^3.10.0
   firebase_core: ^1.23.0
-  firebase_crashlytics: ^2.8.11
+  firebase_crashlytics: ^2.8.12
   firebase_ml_model_downloader: ^0.1.1+8
   firebase_storage: ^10.3.9
   flutter_launcher_icons: ^0.10.0
