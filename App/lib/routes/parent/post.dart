@@ -202,7 +202,9 @@ class PostScreen extends ConsumerWidget {
                                   showDialog(
                                       context: context,
                                       builder: (context) => DataDeleteDialog(
-                                          user: user, expData: data));
+                                          parentRef: ref,
+                                          user: user,
+                                          expData: data));
                                 }
                               },
                               icon: const Icon(Icons.delete),
