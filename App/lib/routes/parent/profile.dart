@@ -15,9 +15,9 @@ import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/group.dart';
 
 final _photoURLProvider = FutureProvider(
-    (ref) => ref.watch(authProvider.future).then((auth) => auth?.photoURL));
+    (ref) => ref.watch(authProvider.selectAsync((data) => data?.photoURL)));
 final _nameProvider = FutureProvider(
-    (ref) => ref.watch(userProvider.future).then((user) => user?.name));
+    (ref) => ref.watch(userProvider.selectAsync((data) => data?.name)));
 
 final _groupsProvider = FutureProvider((ref) async => await Future.wait(
     (await ref.watch(userProvider.future).then((user) => user?.groups ?? []))

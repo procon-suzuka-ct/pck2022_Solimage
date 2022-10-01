@@ -6,10 +6,9 @@ import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/history.dart';
 import 'package:solimage/utils/theme.dart';
 
-final historiesProvider = FutureProvider.autoDispose((ref) async {
-  final user = await ref.watch(userProvider.future);
-  return History.getHistories(user!.uid);
-});
+final historiesProvider = FutureProvider.autoDispose((ref) async =>
+    History.getHistories(
+        await ref.watch(userProvider.selectAsync((data) => data!.uid))));
 
 class HistoryScreen extends ConsumerWidget {
   const HistoryScreen({Key? key}) : super(key: key);

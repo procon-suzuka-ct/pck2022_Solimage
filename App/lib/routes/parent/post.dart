@@ -52,6 +52,7 @@ class PostScreen extends ConsumerWidget {
     final word = ref.watch(_wordProvider);
     final imageUrl = ref.watch(_imageUrlProvider);
     final expData = ref.watch(_expDataProvider(expDataId));
+    final user = ref.watch(userProvider.future);
 
     final List<Map<String, dynamic>> textEdits = [
       {
@@ -196,13 +197,12 @@ class PostScreen extends ConsumerWidget {
                           title: const Text('既に投稿済みです'),
                           trailing: ElevatedButton.icon(
                               onPressed: () async {
-                                final user =
-                                    await ref.watch(userProvider.future);
-                                if (user != null) {
+                                final awaitedUser = await user;
+                                if (awaitedUser != null) {
                                   showDialog(
                                       context: context,
                                       builder: (context) => DataDeleteDialog(
-                                          user: user, expData: data));
+                                          user: awaitedUser, expData: data));
                                 }
                               },
                               icon: const Icon(Icons.delete),
@@ -250,9 +250,8 @@ class PostScreen extends ConsumerWidget {
                     if (data != null) {
                       expData = data;
                     } else {
-                      final user = await ref.read(userProvider.future);
-                      expData =
-                          ExpData(word: '', meaning: '', userID: user!.uid);
+                      expData = ExpData(
+                          word: '', meaning: '', userID: (await user)!.uid);
                       await expData.init();
                     }
 

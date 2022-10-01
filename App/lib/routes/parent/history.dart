@@ -5,9 +5,7 @@ import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/expData.dart';
 
 final _expDatasProvider = FutureProvider((ref) async => await Future.wait(
-    (await ref
-            .watch(userProvider.future)
-            .then((value) => value?.expDatas ?? []))
+    (await ref.watch(userProvider.selectAsync((data) => data?.expDatas ?? [])))
         .map((expData) => ExpData.getExpData(expData))));
 
 // TODO: 投稿したイチオシ情報を最上部に追加する
