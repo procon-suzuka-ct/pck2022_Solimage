@@ -250,7 +250,7 @@ class PostScreen extends ConsumerWidget {
                     if (data != null) {
                       expData = data;
                     } else {
-                      final user = await ref.watch(userProvider.future);
+                      final user = await ref.read(userProvider.future);
                       expData =
                           ExpData(word: '', meaning: '', userID: user!.uid);
                       await expData.init();
@@ -266,7 +266,7 @@ class PostScreen extends ConsumerWidget {
                         who: ref.read(_whoProvider),
                         how: ref.read(_howProvider));
 
-                    return showDialog(
+                    showDialog(
                         context: context,
                         barrierDismissible: false,
                         builder: (context) => DataPostDialog(
