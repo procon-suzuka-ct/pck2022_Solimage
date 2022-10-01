@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:solimage/utils/classes/expData.dart';
+import 'package:solimage/utils/classes/group.dart';
 import 'package:solimage/utils/classes/user.dart';
 
 class DataDeleteDialog extends StatelessWidget {
@@ -20,10 +22,15 @@ class DataDeleteDialog extends StatelessWidget {
                 expData.delete().then((_) async {
                   user.expDatas.remove(expData.dataId);
                   await user.save();
+                  await Future.wait(user.groups.map(
+                      (groupId) => Group.getGroup(groupId).then((group) async {
+                            group?.removeExpData(expData.dataId);
+                            await group?.update();
+                          })));
                 });
                 ScaffoldMessenger.of(context)
                     .showSnackBar(const SnackBar(content: Text('投稿を削除しました')));
-                Navigator.of(context).pop();
+                context.go('/parent');
               }),
           TextButton(
               child: const Text('いいえ'),
