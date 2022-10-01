@@ -40,43 +40,27 @@ final routerProvider = Provider((ref) => GoRouter(
               child: PostScreen(expDataId: state.queryParams['expDataId']))),
     ],
     observers: [SystemUiObserver()],
-    redirect: (context, state) {
-      final auth = ref.read(authProvider);
-      final prefs = ref.read(prefsProvider);
+    redirect: (context, state) async {
+      final auth = await ref.read(authProvider.future);
+      final prefs = await ref.read(prefsProvider.future);
 
-      return auth.maybeWhen(data: (data) {
-        if (data == null) {
-          if (state.subloc != '/') {
-            return '/';
-          } else {
-            WidgetsBinding.instance
-                .addPostFrameCallback((_) => FlutterNativeSplash.remove());
-          }
-        } else if (state.subloc == '/') {
-          return prefs.maybeWhen(data: (data) {
-            final mode = data.getInt('mode');
-            if (mode != null) {
-              WidgetsBinding.instance
-                  .addPostFrameCallback((_) => FlutterNativeSplash.remove());
-              if (mode == 0) {
-                return '/parent';
-              } else if (mode == 1) {
-                return '/child/camera';
-              }
-            }
-            FlutterNativeSplash.remove();
-            return null;
-          }, orElse: () {
-            return null;
-          });
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => FlutterNativeSplash.remove());
+
+      if (auth == null) {
+        if (state.subloc != '/') {
+          return '/';
         }
-        return null;
-      }, orElse: () {
-        return null;
-      });
+      } else if (state.subloc == '/') {
+        final mode = prefs.getInt('mode');
+        if (mode == 0) {
+          return '/parent';
+        } else if (mode == 1) {
+          return '/child/camera';
+        }
+      }
+      return null;
     },
-    refreshListenable: Listenable.merge([
-      StreamListenable(ref.watch(authProvider.stream)),
-      StreamListenable(ref.watch(prefsProvider.stream))
-    ]),
+    refreshListenable:
+        Listenable.merge([StreamListenable(ref.watch(authProvider.stream))]),
     debugLogDiagnostics: true));
