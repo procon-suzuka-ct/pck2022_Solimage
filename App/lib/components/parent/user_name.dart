@@ -8,7 +8,7 @@ class UserNameDialog extends ConsumerWidget {
       : super(key: key);
 
   final AppUser? user;
-  final AutoDisposeFutureProvider<String?> nameProvider;
+  final FutureProvider<String?> nameProvider;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

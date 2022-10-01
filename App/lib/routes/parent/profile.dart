@@ -14,15 +14,13 @@ import 'package:solimage/states/preferences.dart';
 import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/group.dart';
 
-final _photoURLProvider = FutureProvider.autoDispose(
+final _photoURLProvider = FutureProvider(
     (ref) => ref.watch(authProvider.future).then((auth) => auth?.photoURL));
-final _nameProvider = FutureProvider.autoDispose(
+final _nameProvider = FutureProvider(
     (ref) => ref.watch(userProvider.future).then((user) => user?.name));
 
-final _groupsProvider = FutureProvider.autoDispose((ref) async =>
-    await Future.wait((await ref
-            .watch(userProvider.future)
-            .then((user) => user?.groups ?? []))
+final _groupsProvider = FutureProvider((ref) async => await Future.wait(
+    (await ref.watch(userProvider.future).then((user) => user?.groups ?? []))
         .map((groupID) => Group.getGroup(groupID))));
 
 class ProfileScreen extends ConsumerWidget {
