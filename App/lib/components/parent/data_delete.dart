@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:solimage/utils/classes/expData.dart';
+import 'package:solimage/utils/classes/user.dart';
 
 class DataDeleteDialog extends StatelessWidget {
-  const DataDeleteDialog({Key? key, required this.expData}) : super(key: key);
+  const DataDeleteDialog({Key? key, required this.user, required this.expData})
+      : super(key: key);
 
+  final AppUser user;
   final ExpData expData;
 
   @override
@@ -14,9 +17,13 @@ class DataDeleteDialog extends StatelessWidget {
           TextButton(
               child: const Text('はい'),
               onPressed: () {
-                expData.delete();
+                expData.delete().then((_) async {
+                  user.expDatas.remove(expData.dataId);
+                  await user.save();
+                });
                 ScaffoldMessenger.of(context)
                     .showSnackBar(const SnackBar(content: Text('投稿を削除しました')));
+                Navigator.of(context).pop();
               }),
           TextButton(
               child: const Text('いいえ'),

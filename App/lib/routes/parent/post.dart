@@ -195,10 +195,16 @@ class PostScreen extends ConsumerWidget {
                           leading: const Icon(Icons.info),
                           title: const Text('既に投稿済みです'),
                           trailing: ElevatedButton.icon(
-                              onPressed: () => showDialog(
-                                  context: context,
-                                  builder: (context) =>
-                                      DataDeleteDialog(expData: data)),
+                              onPressed: () async {
+                                final user =
+                                    await ref.watch(userProvider.future);
+                                if (user != null) {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => DataDeleteDialog(
+                                          user: user, expData: data));
+                                }
+                              },
                               icon: const Icon(Icons.delete),
                               label: const Text('削除')))),
                 Stepper(
