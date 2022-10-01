@@ -488,7 +488,7 @@ packages:
       name: flutter_riverpod
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.4"
+    version: "2.0.0"
   flutter_simple_treeview:
     dependency: "direct main"
     description:
@@ -526,7 +526,7 @@ packages:
       name: go_router
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.0.3"
+    version: "5.0.5"
   google_sign_in:
     dependency: "direct main"
     description:
@@ -897,7 +897,7 @@ packages:
       name: riverpod
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.3"
+    version: "2.0.0"
   rxdart:
     dependency: transitive
     description:
