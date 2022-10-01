@@ -23,16 +23,19 @@ class GroupLeaveDialog extends ConsumerWidget {
         TextButton(
             child: const Text('はい'),
             onPressed: () async {
-              Navigator.of(context).pop();
-              ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('${group.groupName}を脱退しました')));
               if (user != null) {
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('${group.groupName}を脱退しました')));
                 user.groups.remove(group.groupID);
                 await user.save();
                 group.removeMember(user.uid);
+                for (var expData in user.expDatas) {
+                  group.removeExpData(expData);
+                }
+                await group.update();
+                parentRef.refresh(groupsProvider);
               }
-              await group.save();
-              parentRef.refresh(groupsProvider);
             }),
         TextButton(
             child: const Text('いいえ'),

@@ -44,6 +44,7 @@ class GroupCreateDialog extends ConsumerWidget {
                 user!.groups.add(group.groupID);
                 await user!.save();
                 group.addMember(user!.uid);
+                user!.expDatas.map((expData) => group.addExpData(expData));
                 await group.save();
                 parentRef.refresh(groupsProvider);
               } else {

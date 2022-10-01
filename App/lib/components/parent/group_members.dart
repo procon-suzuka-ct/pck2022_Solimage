@@ -44,7 +44,11 @@ class GroupMembersDialog extends ConsumerWidget {
                                                     .remove(group.groupID);
                                                 await member.save();
                                                 group.removeMember(member.uid);
-                                                await group.save();
+                                                for (var expData
+                                                    in member.expDatas) {
+                                                  group.removeExpData(expData);
+                                                }
+                                                await group.update();
                                               }
                                             },
                                             icon:

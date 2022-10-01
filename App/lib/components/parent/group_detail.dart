@@ -67,9 +67,10 @@ class GroupDetailDialog extends ConsumerWidget {
       actions: <Widget>[
         user.maybeWhen(
             data: (user) => TextButton(
-                onPressed: () {
-                  if (group.members.isEmpty && group.adminId == user?.uid) {
-                    showDialog(
+                onPressed: () async {
+                  if (group.members.length != 1 && group.adminId != user?.uid) {
+                    Navigator.of(context).pop();
+                    await showDialog(
                         context: context,
                         builder: (context) => GroupLeaveDialog(
                             parentRef: parentRef, group: group));

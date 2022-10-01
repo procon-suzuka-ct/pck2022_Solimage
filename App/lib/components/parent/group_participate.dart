@@ -37,20 +37,23 @@ class GroupParticipateDialog extends ConsumerWidget {
                   final id = int.tryParse(_controller.text);
                   if (id != null) {
                     final group = Group.getGroup(id);
-                    group.then((value) async {
-                      if (user != null && value != null) {
-                        if (user!.groups.contains(value.groupID)) {
+                    group.then((group) async {
+                      if (user != null && group != null) {
+                        if (user!.groups.contains(group.groupID)) {
                           ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('既に参加しているグループです')));
                           Navigator.of(context).pop();
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text('${value.groupName}に参加しました')));
+                              content: Text('${group.groupName}に参加しました')));
                           Navigator.of(context).pop();
-                          user!.groups.add(value.groupID);
+                          user!.groups.add(group.groupID);
                           await user!.save();
-                          value.addMember(user!.uid);
-                          await value.save();
+                          group.addMember(user!.uid);
+                          for (var expData in user!.expDatas) {
+                            group.addExpData(expData);
+                          }
+                          await group.update();
                           parentRef.refresh(groupsProvider);
                         }
                       } else {
