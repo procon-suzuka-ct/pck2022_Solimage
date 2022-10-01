@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:solimage/states/expdata.dart';
+import 'package:solimage/states/user.dart';
+import 'package:solimage/utils/classes/expData.dart';
+
+final _expDatasProvider = FutureProvider((ref) async => await Future.wait(
+    (await ref
+            .watch(userProvider.future)
+            .then((value) => value?.expDatas ?? []))
+        .map((expData) => ExpData.getExpData(expData))));
 
 // TODO: 投稿したイチオシ情報を最上部に追加する
 class HistoryScreen extends ConsumerWidget {
@@ -9,7 +16,7 @@ class HistoryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final expDatas = ref.watch(expDatasProvider);
+    final expDatas = ref.watch(_expDatasProvider);
 
     return expDatas.maybeWhen(
         data: (data) => data.isNotEmpty
