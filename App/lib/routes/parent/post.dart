@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_simple_treeview/flutter_simple_treeview.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:solimage/components/parent/data_delete.dart';
-import 'package:solimage/components/parent/post.dart';
+import 'package:solimage/components/parent/data_post.dart';
 import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/expData.dart';
 
@@ -52,6 +52,7 @@ class PostScreen extends ConsumerWidget {
     final word = ref.watch(_wordProvider);
     final imageUrl = ref.watch(_imageUrlProvider);
     final expData = ref.watch(_expDataProvider(expDataId));
+    final user = ref.watch(userProvider.future);
 
     final List<Map<String, dynamic>> textEdits = [
       {
@@ -195,10 +196,15 @@ class PostScreen extends ConsumerWidget {
                           leading: const Icon(Icons.info),
                           title: const Text('既に投稿済みです'),
                           trailing: ElevatedButton.icon(
-                              onPressed: () => showDialog(
-                                  context: context,
-                                  builder: (context) =>
-                                      DataDeleteDialog(expData: data)),
+                              onPressed: () async {
+                                final awaitedUser = await user;
+                                if (awaitedUser != null) {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => DataDeleteDialog(
+                                          user: awaitedUser, expData: data));
+                                }
+                              },
                               icon: const Icon(Icons.delete),
                               label: const Text('削除')))),
                 Stepper(
@@ -244,9 +250,8 @@ class PostScreen extends ConsumerWidget {
                     if (data != null) {
                       expData = data;
                     } else {
-                      final user = await ref.watch(userProvider.future);
-                      expData =
-                          ExpData(word: '', meaning: '', userID: user!.uid);
+                      expData = ExpData(
+                          word: '', meaning: '', userID: (await user)!.uid);
                       await expData.init();
                     }
 
@@ -260,11 +265,11 @@ class PostScreen extends ConsumerWidget {
                         who: ref.read(_whoProvider),
                         how: ref.read(_howProvider));
 
-                    return showDialog(
+                    showDialog(
                         context: context,
                         barrierDismissible: false,
-                        builder: (context) =>
-                            PostDialog(expData: expData, imagePath: imageUrl));
+                        builder: (context) => DataPostDialog(
+                            expData: expData, imagePath: imageUrl));
                   },
                   icon: const Icon(Icons.check),
                   label: const Text('投稿')),

@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:solimage/states/groups.dart';
+import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/group.dart';
 import 'package:solimage/utils/classes/user.dart';
 
 class GroupCreateDialog extends ConsumerWidget {
-  const GroupCreateDialog(
-      {Key? key, required this.parentRef, required this.user})
-      : super(key: key);
+  const GroupCreateDialog({Key? key, required this.user}) : super(key: key);
 
-  final WidgetRef parentRef;
   final AppUser? user;
 
   @override
@@ -33,19 +30,25 @@ class GroupCreateDialog extends ConsumerWidget {
       actions: <Widget>[
         TextButton(
             child: const Text('OK'),
-            onPressed: () async {
+            onPressed: () {
               if (user != null && controller.text.isNotEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('${controller.text}を作成しました')));
-                Navigator.of(context).pop();
                 final group =
                     Group(groupName: controller.text, adminId: user!.uid);
-                await group.init();
                 user!.groups.add(group.groupID);
-                await user!.save();
                 group.addMember(user!.uid);
-                await group.save();
-                parentRef.refresh(groupsProvider);
+                user!.expDatas.map((expData) => group.addExpData(expData));
+                group
+                    .init()
+                    .then((_) => Future.wait([
+                          user!.save(),
+                          group.save(),
+                          ref.refresh(userProvider.future)
+                        ]))
+                    .then((_) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('${controller.text}を作成しました')));
+                  Navigator.of(context).pop();
+                });
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('グループ名を入力してください')));

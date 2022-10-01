@@ -7,11 +7,8 @@ import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/group.dart';
 
 class GroupDetailDialog extends ConsumerWidget {
-  const GroupDetailDialog(
-      {Key? key, required this.parentRef, required this.group})
-      : super(key: key);
+  const GroupDetailDialog({Key? key, required this.group}) : super(key: key);
 
-  final WidgetRef parentRef;
   final Group group;
 
   @override
@@ -67,12 +64,12 @@ class GroupDetailDialog extends ConsumerWidget {
       actions: <Widget>[
         user.maybeWhen(
             data: (user) => TextButton(
-                onPressed: () {
-                  if (group.members.isEmpty && group.adminId == user?.uid) {
-                    showDialog(
+                onPressed: () async {
+                  if (group.members.length != 1 && group.adminId != user?.uid) {
+                    Navigator.of(context).pop();
+                    await showDialog(
                         context: context,
-                        builder: (context) => GroupLeaveDialog(
-                            parentRef: parentRef, group: group));
+                        builder: (context) => GroupLeaveDialog(group: group));
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                         content: Text('他にメンバーがいないグループは削除できません')));

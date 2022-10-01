@@ -10,9 +10,10 @@ import 'package:solimage/components/child/standby.dart';
 import 'package:solimage/components/child_actions.dart';
 import 'package:solimage/components/loading_overlay.dart';
 import 'package:solimage/states/camera.dart';
-import 'package:solimage/states/permission.dart';
 import 'package:solimage/utils/theme.dart';
 
+final _cameraPermissionProvider =
+    FutureProvider((ref) => Permission.camera.request());
 final _takingPictureProvider = StateProvider<bool>((ref) => false);
 
 class CameraScreen extends ConsumerWidget {
@@ -20,7 +21,7 @@ class CameraScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final cameraPermission = ref.watch(cameraPermissionProvider);
+    final cameraPermission = ref.watch(_cameraPermissionProvider);
 
     return Theme(
         data: lightTheme,
@@ -132,14 +133,14 @@ class CameraScreen extends ConsumerWidget {
                       ElevatedButton(
                           onPressed: () {
                             final cameraPermission =
-                                ref.watch(cameraPermissionProvider);
+                                ref.watch(_cameraPermissionProvider);
 
                             cameraPermission.maybeWhen(
                                 data: (data) async {
                                   if (data == PermissionStatus.granted) {
                                     ref.refresh(controllerProvider);
                                   } else {
-                                    ref.refresh(cameraPermissionProvider);
+                                    ref.refresh(_cameraPermissionProvider);
                                     await openAppSettings();
                                   }
                                 },
