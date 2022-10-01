@@ -7,14 +7,9 @@ import 'package:solimage/utils/classes/group.dart';
 import 'package:solimage/utils/classes/user.dart';
 
 class DataDeleteDialog extends ConsumerWidget {
-  const DataDeleteDialog(
-      {Key? key,
-      required this.parentRef,
-      required this.user,
-      required this.expData})
+  const DataDeleteDialog({Key? key, required this.user, required this.expData})
       : super(key: key);
 
-  final WidgetRef parentRef;
   final AppUser user;
   final ExpData expData;
 

@@ -10,14 +10,20 @@ import 'package:solimage/components/parent/group_participate.dart';
 import 'package:solimage/components/parent/user_logout.dart';
 import 'package:solimage/components/parent/user_name.dart';
 import 'package:solimage/states/auth.dart';
-import 'package:solimage/states/groups.dart';
 import 'package:solimage/states/preferences.dart';
 import 'package:solimage/states/user.dart';
+import 'package:solimage/utils/classes/group.dart';
 
 final _photoURLProvider = FutureProvider.autoDispose(
     (ref) => ref.watch(authProvider.future).then((auth) => auth?.photoURL));
 final _nameProvider = FutureProvider.autoDispose(
     (ref) => ref.watch(userProvider.future).then((user) => user?.name));
+
+final _groupsProvider = FutureProvider.autoDispose((ref) async =>
+    await Future.wait((await ref
+            .watch(userProvider.future)
+            .then((user) => user?.groups ?? []))
+        .map((groupID) => Group.getGroup(groupID))));
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -26,7 +32,7 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final photoURL = ref.watch(_photoURLProvider);
     final name = ref.watch(_nameProvider);
-    final groups = ref.watch(groupsProvider);
+    final groups = ref.watch(_groupsProvider);
     final prefs = ref.watch(prefsProvider);
     final user = ref.watch(userProvider);
 
@@ -99,15 +105,14 @@ class ProfileScreen extends ConsumerWidget {
             ElevatedButton(
                 onPressed: () => showDialog(
                     context: context,
-                    builder: (context) =>
-                        GroupCreateDialog(parentRef: ref, user: user.value),
+                    builder: (context) => GroupCreateDialog(user: user.value),
                     useRootNavigator: false),
                 child: const Text('作成')),
             ElevatedButton(
                 onPressed: () => showDialog(
                     context: context,
-                    builder: (context) => GroupParticipateDialog(
-                        parentRef: ref, user: user.value),
+                    builder: (context) =>
+                        GroupParticipateDialog(user: user.value),
                     useRootNavigator: false),
                 child: const Text('参加'))
           ])),
@@ -127,8 +132,8 @@ class ProfileScreen extends ConsumerWidget {
                               onTap: () => showDialog(
                                   barrierDismissible: false,
                                   context: context,
-                                  builder: (context) => GroupDetailDialog(
-                                      parentRef: ref, group: group))))
+                                  builder: (context) =>
+                                      GroupDetailDialog(group: group))))
                       : const SizedBox.shrink())
                   .toList()
               : [
