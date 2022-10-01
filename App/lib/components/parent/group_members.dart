@@ -32,7 +32,9 @@ class GroupMembersDialog extends ConsumerWidget {
                             child: ListTile(
                                 title: Text('${member?.name}'),
                                 trailing: user.maybeWhen(
-                                    data: (user) => group.adminId != member?.uid
+                                    data: (user) => (group.adminId ==
+                                                user?.uid &&
+                                            group.adminId != member?.uid)
                                         ? IconButton(
                                             onPressed: () async {
                                               ScaffoldMessenger.of(context)
