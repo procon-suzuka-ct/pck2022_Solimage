@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_simple_treeview/flutter_simple_treeview.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:solimage/components/parent/data_delete.dart';
-import 'package:solimage/components/parent/post.dart';
+import 'package:solimage/components/parent/data_post.dart';
 import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/expData.dart';
 
@@ -269,8 +269,8 @@ class PostScreen extends ConsumerWidget {
                     return showDialog(
                         context: context,
                         barrierDismissible: false,
-                        builder: (context) =>
-                            PostDialog(expData: expData, imagePath: imageUrl));
+                        builder: (context) => DataPostDialog(
+                            expData: expData, imagePath: imageUrl));
                   },
                   icon: const Icon(Icons.check),
                   label: const Text('投稿')),
