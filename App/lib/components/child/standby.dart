@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image/image.dart' as image;
 import 'package:solimage/components/child_actions.dart';
 import 'package:solimage/utils/imageProcess/classifier.dart';
+import 'package:solimage/utils/theme.dart';
 
 // TODO: 実際のデータに差し替える
 class StandbyDialog extends StatelessWidget {
@@ -15,7 +16,9 @@ class StandbyDialog extends StatelessWidget {
   final image.Image decodedImage;
 
   @override
-  Widget build(BuildContext context) => Stack(children: [
+  Widget build(BuildContext context) => Theme(
+      data: lightTheme,
+      child: Stack(children: [
         const AlertDialog(
             title: Text('大人が伝えたいワード'),
             content: Center(heightFactor: 1.0, child: Text('簡単な説明'))),
@@ -39,5 +42,5 @@ class StandbyDialog extends StatelessWidget {
                       : null,
                   child: const Text('けっかをみる', textAlign: TextAlign.center)))
         ])
-      ]);
+      ]));
 }

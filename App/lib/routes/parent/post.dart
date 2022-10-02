@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_simple_treeview/flutter_simple_treeview.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:solimage/components/parent/post.dart';
+import 'package:solimage/components/parent/data_delete.dart';
+import 'package:solimage/components/parent/data_post.dart';
 import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/expData.dart';
 
@@ -19,11 +20,10 @@ final _whenProvider = StateProvider.autoDispose((ref) => '');
 final _whoProvider = StateProvider.autoDispose((ref) => '');
 final _howProvider = StateProvider.autoDispose((ref) => '');
 final _imageUrlProvider = StateProvider.autoDispose((ref) => '');
-final _expDataProvider =
-    FutureProvider.autoDispose.family<ExpData, String?>((ref, expDataId) async {
+final _expDataProvider = FutureProvider.autoDispose
+    .family<ExpData?, String?>((ref, expDataId) async {
   var expData =
       expDataId != null ? await ExpData.getExpData(int.parse(expDataId)) : null;
-  final user = await ref.watch(userProvider.future);
 
   if (expData != null) {
     ref.read(_wordProvider.notifier).state = expData.word ?? '';
@@ -35,9 +35,6 @@ final _expDataProvider =
     ref.read(_whoProvider.notifier).state = expData.who ?? '';
     ref.read(_howProvider.notifier).state = expData.how ?? '';
     ref.read(_imageUrlProvider.notifier).state = expData.imageUrl ?? '';
-  } else {
-    expData = ExpData(word: '', meaning: '', userID: user!.uid);
-    await expData.init();
   }
 
   return expData;
@@ -55,6 +52,7 @@ class PostScreen extends ConsumerWidget {
     final word = ref.watch(_wordProvider);
     final imageUrl = ref.watch(_imageUrlProvider);
     final expData = ref.watch(_expDataProvider(expDataId));
+    final user = ref.watch(userProvider.future);
 
     final List<Map<String, dynamic>> textEdits = [
       {
@@ -190,44 +188,74 @@ class PostScreen extends ConsumerWidget {
         data: (data) => Scaffold(
               appBar: AppBar(title: const Text('投稿'), centerTitle: true),
               body: SingleChildScrollView(
-                  child: Stepper(
-                      physics: const NeverScrollableScrollPhysics(),
-                      currentStep: step,
-                      onStepCancel: step != 0
-                          ? () =>
-                              ref.read(_stepProvider.notifier).state = step - 1
-                          : null,
-                      onStepContinue: step < steps.length - 1
-                          ? () =>
-                              ref.read(_stepProvider.notifier).state = step + 1
-                          : null,
-                      onStepTapped: (index) =>
-                          ref.read(_stepProvider.notifier).state = index,
-                      steps: steps,
-                      controlsBuilder:
-                          (BuildContext context, ControlsDetails details) =>
-                              Container(
-                                  width: double.infinity,
-                                  margin: const EdgeInsets.all(10.0),
-                                  child: Wrap(
-                                    alignment: WrapAlignment.center,
-                                    spacing: 10.0,
-                                    children: <Widget>[
-                                      ElevatedButton(
-                                        //13
-                                        onPressed: details.onStepContinue,
-                                        child: const Text('次へ'),
-                                      ),
-                                      ElevatedButton(
-                                        //14
-                                        onPressed: details.onStepCancel,
-                                        child: const Text('戻る'),
-                                      ),
-                                    ],
-                                  )))),
+                  child: Column(children: [
+                if (data != null)
+                  Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: ListTile(
+                          leading: const Icon(Icons.info),
+                          title: const Text('既に投稿済みです'),
+                          trailing: ElevatedButton.icon(
+                              onPressed: () async {
+                                final awaitedUser = await user;
+                                if (awaitedUser != null) {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => DataDeleteDialog(
+                                          user: awaitedUser, expData: data));
+                                }
+                              },
+                              icon: const Icon(Icons.delete),
+                              label: const Text('削除')))),
+                Stepper(
+                    physics: const NeverScrollableScrollPhysics(),
+                    currentStep: step,
+                    onStepCancel: step != 0
+                        ? () =>
+                            ref.read(_stepProvider.notifier).state = step - 1
+                        : null,
+                    onStepContinue: step < steps.length - 1
+                        ? () =>
+                            ref.read(_stepProvider.notifier).state = step + 1
+                        : null,
+                    onStepTapped: (index) =>
+                        ref.read(_stepProvider.notifier).state = index,
+                    steps: steps,
+                    controlsBuilder:
+                        (BuildContext context, ControlsDetails details) =>
+                            Container(
+                                width: double.infinity,
+                                margin: const EdgeInsets.all(10.0),
+                                child: Wrap(
+                                  alignment: WrapAlignment.center,
+                                  spacing: 10.0,
+                                  children: <Widget>[
+                                    ElevatedButton(
+                                      //13
+                                      onPressed: details.onStepContinue,
+                                      child: const Text('次へ'),
+                                    ),
+                                    ElevatedButton(
+                                      //14
+                                      onPressed: details.onStepCancel,
+                                      child: const Text('戻る'),
+                                    ),
+                                  ],
+                                )))
+              ])),
               floatingActionButton: FloatingActionButton.extended(
                   onPressed: () async {
-                    expData.value?.setData(
+                    ExpData expData;
+
+                    if (data != null) {
+                      expData = data;
+                    } else {
+                      expData = ExpData(
+                          word: '', meaning: '', userID: (await user)!.uid);
+                      await expData.init();
+                    }
+
+                    expData.setData(
                         word: word,
                         meaning: ref.read(_meaningProvider),
                         why: ref.read(_whyProvider),
@@ -237,13 +265,11 @@ class PostScreen extends ConsumerWidget {
                         who: ref.read(_whoProvider),
                         how: ref.read(_howProvider));
 
-                    return expData.value != null
-                        ? showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (context) => PostDialog(
-                                expData: expData.value!, imagePath: imageUrl))
-                        : null;
+                    showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) => DataPostDialog(
+                            expData: expData, imagePath: imageUrl));
                   },
                   icon: const Icon(Icons.check),
                   label: const Text('投稿')),

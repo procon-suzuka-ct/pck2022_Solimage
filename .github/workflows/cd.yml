@@ -21,6 +21,17 @@ jobs:
       - name: install dependencies
         continue-on-error: true
         run: cd App && flutter pub get
+      - name: create release.jks
+        run: echo -n ${{ secrets.ANDROID_KEY_JKS }} | base64 -d > App/android/release.jks
+      - name: create key.properties
+        run: |
+          cd App/android
+          {
+            echo 'storeFile=release.jks'
+            echo 'storePassword=${{ secrets.ANDROID_STORE_PASSWORD }}'
+            echo 'keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}'
+            echo 'keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}'
+          } >> key.properties
       - name: build apk
         continue-on-error: true
         run: cd App && flutter build apk

@@ -6,11 +6,12 @@ import 'package:solimage/utils/classes/expData.dart';
 
 final _postingProvider = StateProvider.autoDispose((ref) => false);
 
-class PostDialog extends ConsumerWidget {
+class DataPostDialog extends ConsumerWidget {
   final ExpData expData;
   final String imagePath;
 
-  const PostDialog({Key? key, required this.expData, required this.imagePath})
+  const DataPostDialog(
+      {Key? key, required this.expData, required this.imagePath})
       : super(key: key);
 
   @override

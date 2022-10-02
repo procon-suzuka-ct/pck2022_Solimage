@@ -10,14 +10,18 @@ import 'package:solimage/components/parent/group_participate.dart';
 import 'package:solimage/components/parent/user_logout.dart';
 import 'package:solimage/components/parent/user_name.dart';
 import 'package:solimage/states/auth.dart';
-import 'package:solimage/states/groups.dart';
 import 'package:solimage/states/preferences.dart';
 import 'package:solimage/states/user.dart';
+import 'package:solimage/utils/classes/group.dart';
 
-final _photoURLProvider = FutureProvider.autoDispose(
-    (ref) => ref.watch(authProvider.future).then((auth) => auth?.photoURL));
-final _nameProvider = FutureProvider.autoDispose(
-    (ref) => ref.watch(userProvider.future).then((user) => user?.name));
+final _photoURLProvider = FutureProvider(
+    (ref) => ref.watch(authProvider.selectAsync((data) => data?.photoURL)));
+final _nameProvider = FutureProvider(
+    (ref) => ref.watch(userProvider.selectAsync((data) => data?.name)));
+
+final _groupsProvider = FutureProvider((ref) async => await Future.wait(
+    (await ref.watch(userProvider.future).then((user) => user?.groups ?? []))
+        .map((groupID) => Group.getGroup(groupID))));
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -26,7 +30,7 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final photoURL = ref.watch(_photoURLProvider);
     final name = ref.watch(_nameProvider);
-    final groups = ref.watch(groupsProvider);
+    final groups = ref.watch(_groupsProvider);
     final prefs = ref.watch(prefsProvider);
     final user = ref.watch(userProvider);
 
@@ -99,38 +103,56 @@ class ProfileScreen extends ConsumerWidget {
             ElevatedButton(
                 onPressed: () => showDialog(
                     context: context,
-                    builder: (context) =>
-                        GroupCreateDialog(parentRef: ref, user: user.value),
+                    builder: (context) => GroupCreateDialog(user: user.value),
                     useRootNavigator: false),
                 child: const Text('作成')),
             ElevatedButton(
                 onPressed: () => showDialog(
                     context: context,
-                    builder: (context) => GroupParticipateDialog(
-                        parentRef: ref, user: user.value),
+                    builder: (context) =>
+                        GroupParticipateDialog(user: user.value),
                     useRootNavigator: false),
                 child: const Text('参加'))
           ])),
-      // TODO: グループがないときの代わりを追加する
       ...groups.maybeWhen(
-          data: (data) => data
-              .map((group) => group != null
-                  ? Card(
+          data: (data) => data.isNotEmpty
+              ? data
+                  .map((group) => group != null
+                      ? Card(
+                          child: InkWell(
+                              customBorder: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              child: ListTile(
+                                  leading: const Icon(Icons.group),
+                                  title: Text(group.groupName),
+                                  trailing: const Icon(Icons.info)),
+                              onTap: () => showDialog(
+                                  barrierDismissible: false,
+                                  context: context,
+                                  builder: (context) =>
+                                      GroupDetailDialog(group: group))))
+                      : const SizedBox.shrink())
+                  .toList()
+              : [
+                  Card(
                       child: InkWell(
                           customBorder: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0),
                           ),
-                          child: ListTile(
-                              leading: const Icon(Icons.group),
-                              title: Text(group.groupName),
-                              trailing: const Icon(Icons.info)),
-                          onTap: () => showDialog(
-                              barrierDismissible: false,
-                              context: context,
-                              builder: (context) => GroupDetailDialog(
-                                  parentRef: ref, group: group))))
-                  : const SizedBox.shrink())
-              .toList(),
+                          child: Container(
+                              margin: const EdgeInsets.all(20.0),
+                              child: Wrap(
+                                  direction: Axis.vertical,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  runAlignment: WrapAlignment.center,
+                                  spacing: 10.0,
+                                  children: const [
+                                    Icon(Icons.group, size: 30.0),
+                                    Text('グループに参加しましょう!')
+                                  ])),
+                          onTap: () {}))
+                ],
           orElse: () => const [Center(child: CircularProgressIndicator())]),
       // TODO: 親しみやすいUXに改良する
       const ListTile(
