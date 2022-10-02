@@ -36,8 +36,8 @@ final routerProvider = Provider((ref) => GoRouter(
       GoRoute(
           path: '/parent/post',
           name: '/parent/post',
-          builder: (context, state) => SafeArea(
-              child: PostScreen(expDataId: state.queryParams['expDataId']))),
+          builder: (context, state) =>
+              SafeArea(child: PostScreen(dataId: state.queryParams['dataId']))),
     ],
     observers: [SystemUiObserver()],
     redirect: (context, state) async {
