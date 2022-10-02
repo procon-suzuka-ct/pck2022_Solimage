@@ -479,7 +479,7 @@ class RecommendData extends ExpData {
       : super(
             meaning: json['meaning'] as String,
             word: json['word'] as String,
-            userID: json['userID'] as String) {
+            userID: json['userId'] as String) {
     _userId = json['userId'] as String;
     _word = json['word'] as String;
     _meaning = json['meaning'] as String;
