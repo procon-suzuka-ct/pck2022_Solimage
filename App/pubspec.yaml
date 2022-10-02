@@ -58,8 +58,8 @@ dependencies:
   http: ^0.13.5
   collection: ^1.16.0
   fl_chart: ^0.55.2
-  package_info: ^2.0.2
   vibration: ^1.7.6
+  package_info_plus: ^1.4.2
 
 dev_dependencies:
   flutter_test:
