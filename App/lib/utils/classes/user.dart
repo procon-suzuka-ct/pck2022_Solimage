@@ -76,6 +76,10 @@ class AppUser {
     return;
   }
 
+  Stream<DocumentSnapshot> listner() {
+    return _getRef(uid).snapshots();
+  }
+
   //ユーザー情報をFirestoreから取得する
   static Future<AppUser?> getUser(String uid) async {
     final doc = await _getRef(uid).get();
