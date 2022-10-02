@@ -20,10 +20,15 @@ final _whenProvider = StateProvider.autoDispose((ref) => '');
 final _whoProvider = StateProvider.autoDispose((ref) => '');
 final _howProvider = StateProvider.autoDispose((ref) => '');
 final _imageUrlProvider = StateProvider.autoDispose((ref) => '');
-final _expDataProvider = FutureProvider.autoDispose
-    .family<ExpData?, String?>((ref, expDataId) async {
-  var expData =
-      expDataId != null ? await ExpData.getExpData(int.parse(expDataId)) : null;
+final _isRecommendDataProvider = StateProvider.autoDispose((ref) => false);
+final _dataProvider =
+    FutureProvider.autoDispose.family<ExpData?, String?>((ref, dataId) async {
+  final uid = await ref.watch(userProvider.selectAsync((data) => data?.uid));
+  var expData = dataId != null
+      ? dataId != uid
+          ? await ExpData.getExpData(int.parse(dataId))
+          : await RecommendData.getRecommendData(dataId)
+      : null;
 
   if (expData != null) {
     ref.read(_wordProvider.notifier).state = expData.word ?? '';
@@ -35,6 +40,10 @@ final _expDataProvider = FutureProvider.autoDispose
     ref.read(_whoProvider.notifier).state = expData.who ?? '';
     ref.read(_howProvider.notifier).state = expData.how ?? '';
     ref.read(_imageUrlProvider.notifier).state = expData.imageUrl ?? '';
+
+    if (expData.runtimeType == RecommendData) {
+      ref.read(_isRecommendDataProvider.notifier).state = true;
+    }
   }
 
   return expData;
@@ -42,17 +51,18 @@ final _expDataProvider = FutureProvider.autoDispose
 
 // TODO: 必須項目の確認機能を追加する
 class PostScreen extends ConsumerWidget {
-  const PostScreen({Key? key, this.expDataId}) : super(key: key);
+  const PostScreen({Key? key, this.dataId}) : super(key: key);
 
-  final String? expDataId;
+  final String? dataId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final step = ref.watch(_stepProvider);
     final word = ref.watch(_wordProvider);
     final imageUrl = ref.watch(_imageUrlProvider);
-    final expData = ref.watch(_expDataProvider(expDataId));
+    final expData = ref.watch(_dataProvider(dataId));
     final user = ref.watch(userProvider.future);
+    final isRecommendData = ref.watch(_isRecommendDataProvider);
 
     final List<Map<String, dynamic>> textEdits = [
       {
@@ -181,7 +191,18 @@ class PostScreen extends ConsumerWidget {
                       decoration: InputDecoration(labelText: tile['title']),
                       onChanged: (value) =>
                           ref.read(tile['provider'].notifier).state = value))
-                  .toList()))
+                  .toList())),
+      Step(
+        title: const Text('オススメ'),
+        content: Checkbox(
+            value: isRecommendData,
+            onChanged: expData.value.runtimeType != RecommendData
+                ? (value) {
+                    ref.read(_isRecommendDataProvider.notifier).state =
+                        value ?? false;
+                  }
+                : null),
+      )
     ];
 
     return expData.maybeWhen(
@@ -247,12 +268,17 @@ class PostScreen extends ConsumerWidget {
                   onPressed: () async {
                     ExpData expData;
 
-                    if (data != null) {
-                      expData = data;
+                    if (!isRecommendData) {
+                      if (data != null) {
+                        expData = data;
+                      } else {
+                        expData = ExpData(
+                            word: '', meaning: '', userID: (await user)!.uid);
+                        await expData.init();
+                      }
                     } else {
-                      expData = ExpData(
+                      expData = RecommendData(
                           word: '', meaning: '', userID: (await user)!.uid);
-                      await expData.init();
                     }
 
                     expData.setData(

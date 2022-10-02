@@ -48,7 +48,7 @@ dependencies:
   google_sign_in: ^5.4.2
   tflite_flutter_helper: ^0.2.1
   image: ^3.2.0
-  flutter_riverpod: ^2.0.0
+  flutter_riverpod: ^2.0.1
   shared_preferences: ^2.0.15
   flutter_simple_treeview: ^3.0.1
   animations: ^2.0.5
@@ -58,8 +58,8 @@ dependencies:
   http: ^0.13.5
   collection: ^1.16.0
   fl_chart: ^0.55.2
-  package_info: ^2.0.2
   vibration: ^1.7.6
+  package_info_plus: ^1.4.2
 
 dev_dependencies:
   flutter_test:
