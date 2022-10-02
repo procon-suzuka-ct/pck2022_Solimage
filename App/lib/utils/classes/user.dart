@@ -76,7 +76,7 @@ class AppUser {
     return;
   }
 
-  Stream<DocumentSnapshot> listner() {
+  Stream<DocumentSnapshot> listener() {
     return _getRef(uid).snapshots();
   }
 
