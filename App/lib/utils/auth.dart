@@ -14,7 +14,6 @@ class Auth {
   Future<User?> signIn() async {
     final googleSignin = GoogleSignIn(scopes: [
       'email',
-      'https://www.googleapis.com/auth/contacts.readonly',
     ]);
     GoogleSignInAccount? googleUser;
     GoogleSignInAuthentication googleAuth;

@@ -75,7 +75,6 @@ class Classifier {
       _outputType = _interpreter.getOutputTensor(0).type;
       _outputBuffer = TensorBuffer.createFixedSize(_outputShape, _outputType);
       _probabilityProcessor = TensorProcessorBuilder()
-          .add(NormalizeOp(0, 1))
           .add(_postProcessNormalizeOp)
           .build();
       return;
@@ -164,5 +163,9 @@ class Classifier {
     } else {
       return 1;
     }
+  }
+
+  List<int> getPicShape(){
+    return [_inputShape[1], _inputShape[2]];
   }
 }
