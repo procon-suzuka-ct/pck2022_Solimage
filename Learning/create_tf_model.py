@@ -4,6 +4,7 @@ from statistics import mode
 #機械学習
 from keras.models import Model
 from keras.layers import Dense, Dropout, GlobalAveragePooling2D
+import numpy as np
 import tensorflow_addons as tfa
 from keras.applications.vgg16 import VGG16
 from keras.applications.mobilenet_v2 import MobileNetV2
@@ -69,7 +70,8 @@ for layer in base_model.layers:
   layer.trainable = False
 
 #最適化アルゴリズムのimportと設定
-clr = tfa.optimizers.CyclicalLearningRate(initial_learning_rate=1e-5, maximal_learning_rate=1e-3, step_size=32, scale_fn=lambda x: 1 / (2.0 ** (x - 1)), scale_mode='cycle')
+scale_fn = lambda x: tf.math.abs(tf.math.cos(x * np.pi / 6) - tf.math.sin(x * np.pi / 12)) / (tf.math.sqrt(tf.math.log(x + 1)) + tf.math.log(x + 1) + tf.math.abs(tf.sin(x * np.pi / 6)))
+clr = tfa.optimizers.CyclicalLearningRate(initial_learning_rate=1e-5, maximal_learning_rate=1e-3, step_size=512, scale_fn=scale_fn, scale_mode='cycle')
 opt = adam_v2.Adam(clr)
 
 #モデルのコンパイルと詳細出力
