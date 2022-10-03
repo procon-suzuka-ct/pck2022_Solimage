@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'dart:math';
 
 import 'package:camera/camera.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -9,6 +11,7 @@ import 'package:solimage/utils/imageProcess/imageUtil.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
 import 'package:collection/collection.dart';
+import 'package:firebase_ml_model_downloader/firebase_ml_model_downloader.dart';
 
 class Classifier {
   //singleton
@@ -32,6 +35,7 @@ class Classifier {
   late TfLiteType _inputType;
   late TfLiteType _outputType;
   late TensorImage _inputImage;
+  late File _modelFile;
 
   NormalizeOp get _preProcessNormalizeOp => NormalizeOp(127.5, 127.5);
   NormalizeOp get _postProcessNormalizeOp => NormalizeOp(0, 1);
@@ -55,28 +59,27 @@ class Classifier {
   Future<void> loadModel() async {
     try {
       // 量子化したモデルは動かすとクラッシュするのでfirebaseは使わない
-      //_modelFile = await FirebaseModelDownloader.instance
-      //    .getModel(
-      //        "solimage-special",
-      //        FirebaseModelDownloadType.localModel,
-      //        FirebaseModelDownloadConditions(
-      //          iosAllowsCellularAccess: true,
-      //          iosAllowsBackgroundDownloading: false,
-      //          androidChargingRequired: false,
-      //          androidWifiRequired: false,
-      //          androidDeviceIdleRequired: false,
-      //        ))
-      //    .then((value) => value.file);
-      _interpreter = await Interpreter.fromAsset("model.tflite",
-          options: _interpreterOptions);
+      _modelFile = await FirebaseModelDownloader.instance
+          .getModel(
+              "solimage-special",
+              FirebaseModelDownloadType.localModel,
+              FirebaseModelDownloadConditions(
+                iosAllowsCellularAccess: true,
+                iosAllowsBackgroundDownloading: false,
+                androidChargingRequired: false,
+                androidWifiRequired: false,
+                androidDeviceIdleRequired: false,
+              ))
+          .then((value) => value.file);
+      _interpreter =
+          Interpreter.fromFile(_modelFile, options: _interpreterOptions);
       _inputShape = _interpreter.getInputTensor(0).shape;
       _inputType = _interpreter.getInputTensor(0).type;
       _outputShape = _interpreter.getOutputTensor(0).shape;
       _outputType = _interpreter.getOutputTensor(0).type;
       _outputBuffer = TensorBuffer.createFixedSize(_outputShape, _outputType);
-      _probabilityProcessor = TensorProcessorBuilder()
-          .add(_postProcessNormalizeOp)
-          .build();
+      _probabilityProcessor =
+          TensorProcessorBuilder().add(_postProcessNormalizeOp).build();
       return;
     } catch (e) {
       throw Exception("Failed to load model");
@@ -90,15 +93,13 @@ class Classifier {
   /// usage:
   /// ```dart
   /// final result = await Classifier.instance.predict(image);
-  /// final labels = Classifier.getLabelIndexes(result);
-  /// for (var label in labels.keys) {
-  ///   final labelName = await Classifier.getLabel(label);
-  ///   print("$labelName: ${labels[label]}%");
-  /// }
+  /// final label = result.label;
   /// ```
   ///
   TensorImage _preProcess() {
+    int cropSize = min(_inputImage.height, _inputImage.width);
     return ImageProcessorBuilder()
+        .add(ResizeWithCropOrPadOp(cropSize, cropSize))
         .add(ResizeOp(
             _inputShape[1], _inputShape[2], ResizeMethod.NEAREST_NEIGHBOUR))
         .add(_preProcessNormalizeOp)
@@ -165,7 +166,7 @@ class Classifier {
     }
   }
 
-  List<int> getPicShape(){
+  List<int> getPicShape() {
     return [_inputShape[1], _inputShape[2]];
   }
 }
