@@ -1,4 +1,5 @@
 import os, json
+from statistics import mode
 
 #機械学習
 from keras.models import Model
@@ -36,29 +37,27 @@ json_file = open("./tmp/labels.json", "w")
 json.dump(labels, json_file)
 json_file.close()
 json_file = open("./tmp/labels_reverse.json", "w")
-lebels_reverse = zip(labels.values(), labels.keys())
-json.dump(dict(lebels_reverse), json_file)
+lebels_reverse = dict(zip(labels.values(), labels.keys()))
+json.dump(lebels_reverse, json_file)
 json_file.close()
 
 #layer構築
-base_model = tf.keras.applications.EfficientNetV2L(
-    include_top=True,
-    weights="imagenet",
-    input_tensor=None,
-    input_shape=None,
-    pooling=None,
-    classes=1000,
-    classifier_activation="softmax",
-    include_preprocessing=True,
-)
-#base_model = MobileNet(include_top=False, weights='imagenet')
+#base_model = tf.keras.applications.EfficientNetV2L(
+#    include_top=True,
+#    weights="imagenet",
+#    input_tensor=None,
+#    input_shape=None,
+#    pooling=None,
+#    classes=1000,
+#    classifier_activation="softmax",
+#    include_preprocessing=True,
+#)
+base_model = VGG16(include_top=False, weights='imagenet')
 x = base_model.output
 
-#x = GlobalAveragePooling2D()(x)
+x = GlobalAveragePooling2D()(x)
 x = Dropout(0.5)(x)
 x = Dense(512, activation = tfa.activations.rrelu)(x)
-x = Dropout(0.5)(x)
-x = Dense(1024, activation = tfa.activations.rrelu)(x)
 # 空間的なグローバルプーリング層を追加する
 #x = GlobalAveragePooling2D()(x)
 # 全結合層を追加する
@@ -75,14 +74,14 @@ opt = adam_v2.Adam(clr)
 
 #モデルのコンパイルと詳細出力
 model = Model(inputs = base_model.input, outputs = predictions)
-model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
+model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=["accuracy"])
 model.summary()
 
-early_stopping = EarlyStopping(monitor = "loss", patience = 10, min_delta = 1e-4)
-check_point = ModelCheckpoint("./tmp/model/model.h5", monitor = "loss", save_best_only = True)
+early_stopping = EarlyStopping(monitor = "loss", patience = 5, min_delta = 1e-4)
+check_point = ModelCheckpoint("./tmp/model/model.h5", save_best_only = True, mode="min", monitor='loss')
 
 #学習
-history = model.fit(trainGenerator, epochs = 50, callbacks = [early_stopping, check_point])
+history = model.fit(trainGenerator, epochs = 65, callbacks = [early_stopping, check_point])
 
 del model
 
