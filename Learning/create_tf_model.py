@@ -81,7 +81,7 @@ def scale_fn(x): return tf.math.abs(tf.math.cos(x * np.pi / 6) - (tf.math.sin(x 
 
 
 clr = tfa.optimizers.CyclicalLearningRate(
-    initial_learning_rate=1e-5, maximal_learning_rate=1e-3, step_size=512, scale_fn=scale_fn, scale_mode='cycle')
+    initial_learning_rate=1e-4, maximal_learning_rate=1e-2, step_size=1024, scale_fn=scale_fn, scale_mode='cycle')
 opt = adam_v2.Adam(clr)
 
 # モデルのコンパイルと詳細出力
@@ -90,7 +90,7 @@ model.compile(optimizer=opt, loss='categorical_crossentropy',
               metrics=["accuracy"])
 model.summary()
 
-early_stopping = EarlyStopping(monitor="loss", patience=5, min_delta=1e-4)
+early_stopping = EarlyStopping(monitor="loss", patience=15, min_delta=1e-4)
 check_point = ModelCheckpoint(
     "./tmp/model/model.h5", save_best_only=True, mode="min", monitor='loss')
 
