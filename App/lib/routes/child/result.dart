@@ -73,6 +73,7 @@ class ResultScreen extends ConsumerWidget {
                                             image: FileImage(File(imagePath)),
                                             fit: BoxFit.cover)))
                                 : const CircularProgressIndicator()),
+                        // TODO: カードだけダークモードになっているのを修正する
                         GridView.count(
                             crossAxisCount: 2,
                             crossAxisSpacing: 10.0,

@@ -7,7 +7,7 @@ import 'package:solimage/utils/classes/expData.dart';
 final _expDatasProvider = FutureProvider((ref) async => await Future.wait(
     (await ref.watch(userProvider.selectAsync((data) => data?.expDatas ?? [])))
         .map((expData) => ExpData.getExpData(expData))));
-final _recommendDataProvider = FutureProvider.autoDispose((ref) async {
+final recommendDataProvider = FutureProvider((ref) async {
   final uid = await ref.watch(userProvider.selectAsync((data) => data?.uid));
   return uid != null ? await RecommendData.getRecommendData(uid) : null;
 });
@@ -18,7 +18,7 @@ class HistoryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final expDatas = ref.watch(_expDatasProvider);
-    final recommendData = ref.watch(_recommendDataProvider);
+    final recommendData = ref.watch(recommendDataProvider);
 
     return expDatas.maybeWhen(
         data: (expDatas) => expDatas.isNotEmpty

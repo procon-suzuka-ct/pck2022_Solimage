@@ -138,47 +138,37 @@ class PostScreen extends ConsumerWidget {
           content: TreeView(
               treeController: TreeController(allNodesExpanded: false),
               nodes: [
-                TreeNode(
-                    content: ElevatedButton(
-                        onPressed: () {
-                          ref.read(_wordProvider.notifier).state = '生物';
-                          ref.read(_stepProvider.notifier).state = step + 1;
-                        },
-                        child: const Text('生物')),
-                    children: [
-                      TreeNode(
-                          content: ElevatedButton(
-                              onPressed: () {
-                                ref.read(_wordProvider.notifier).state = '虫';
-                                ref.read(_stepProvider.notifier).state =
-                                    step + 1;
-                              },
-                              child: const Text('虫')),
-                          children: [
-                            TreeNode(
-                                content: ElevatedButton(
-                                    onPressed: () {
-                                      ref.read(_wordProvider.notifier).state =
-                                          'かまきり';
-                                      ref.read(_stepProvider.notifier).state =
-                                          step + 1;
-                                    },
-                                    child: const Text('かまきり')),
-                                children: [
-                                  TreeNode(
-                                      content: ElevatedButton(
-                                          onPressed: () {
-                                            ref
-                                                .read(_wordProvider.notifier)
-                                                .state = '触角';
-                                            ref
-                                                .read(_stepProvider.notifier)
-                                                .state = step + 1;
-                                          },
-                                          child: const Text('触角')))
-                                ])
-                          ])
-                    ]),
+                TreeNode(content: const Text('生物'), children: [
+                  TreeNode(
+                      content: ElevatedButton(
+                          onPressed: () {
+                            ref.read(_wordProvider.notifier).state = '虫';
+                            ref.read(_stepProvider.notifier).state = step + 1;
+                          },
+                          child: const Text('虫')),
+                      children: [
+                        TreeNode(
+                            content: ElevatedButton(
+                                onPressed: () {
+                                  ref.read(_wordProvider.notifier).state =
+                                      'かまきり';
+                                  ref.read(_stepProvider.notifier).state =
+                                      step + 1;
+                                },
+                                child: const Text('かまきり')),
+                            children: [
+                              TreeNode(
+                                  content: ElevatedButton(
+                                      onPressed: () {
+                                        ref.read(_wordProvider.notifier).state =
+                                            '触角';
+                                        ref.read(_stepProvider.notifier).state =
+                                            step + 1;
+                                      },
+                                      child: const Text('触角')))
+                            ])
+                      ])
+                ]),
               ],
               indent: 20.0)),
       // TODO: 具体例を追加する
