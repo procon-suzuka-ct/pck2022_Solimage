@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 scale_fn = \
-    lambda x: tf.math.abs(tf.math.cos(x * np.pi / 6) - (tf.math.sin(x * np.pi / 24) * 0.5) + 1) /\
+    lambda x: (tf.math.abs(tf.math.cos(x * np.pi / 6) - (tf.math.sin(x * np.pi / 24) * 0.5)) + 1) /\
     (tf.math.sqrt(tf.math.sqrt(tf.math.log(x + 1))) +
      tf.math.sqrt(tf.math.log(x + 1)) + tf.math.abs(tf.sin(x * np.pi / 6)))
 
