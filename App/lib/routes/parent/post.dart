@@ -41,7 +41,7 @@ final _dataProvider =
     ref.read(_howProvider.notifier).state = expData.how ?? '';
     ref.read(_imageUrlProvider.notifier).state = expData.imageUrl ?? '';
 
-    if (expData.runtimeType == RecommendData) {
+    if (expData is RecommendData) {
       ref.read(_isRecommendDataProvider.notifier).state = true;
     }
   }
@@ -201,7 +201,7 @@ class PostScreen extends ConsumerWidget {
         title: const Text('オススメ'),
         content: Checkbox(
             value: isRecommendData,
-            onChanged: expData.value.runtimeType != RecommendData
+            onChanged: expData.value is RecommendData
                 ? (value) {
                     ref.read(_isRecommendDataProvider.notifier).state =
                         value ?? false;
