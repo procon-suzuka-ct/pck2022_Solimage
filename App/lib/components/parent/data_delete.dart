@@ -21,7 +21,7 @@ class DataDeleteDialog extends ConsumerWidget {
           TextButton(
               child: const Text('はい'),
               onPressed: () => expData.delete().then((_) async {
-                    if (expData.runtimeType != RecommendData) {
+                    if (expData is! RecommendData) {
                       user.expDatas.remove(expData.dataId);
                       await user.save();
                       await Future.wait(user.groups.map((groupId) =>
@@ -29,8 +29,8 @@ class DataDeleteDialog extends ConsumerWidget {
                             group?.removeExpData(expData.dataId);
                             await group?.update();
                           })));
-                      ref.refresh(recommendDataProvider);
                     }
+                    ref.refresh(recommendDataProvider);
                   }).then((_) {
                     ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('投稿を削除しました')));

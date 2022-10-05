@@ -40,7 +40,7 @@ class DataPostDialog extends ConsumerWidget {
                     expData.save().then((_) {
                       ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('投稿しました')));
-                      if (expData.runtimeType == RecommendData) {
+                      if (expData is RecommendData) {
                         ref.refresh(recommendDataProvider);
                       }
                       ref.refresh(userProvider);

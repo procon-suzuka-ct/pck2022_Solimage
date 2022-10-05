@@ -10,7 +10,6 @@ import 'package:solimage/components/child/standby.dart';
 import 'package:solimage/components/child_actions.dart';
 import 'package:solimage/components/loading_overlay.dart';
 import 'package:solimage/states/camera.dart';
-import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/theme.dart';
 
 final _cameraPermissionProvider =
@@ -23,7 +22,6 @@ class CameraScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cameraPermission = ref.watch(_cameraPermissionProvider);
-    final user = ref.watch(userProvider);
 
     return Theme(
         data: lightTheme,
@@ -83,43 +81,29 @@ class CameraScreen extends ConsumerWidget {
                         ChildActions(actions: [
                           ChildActionButton(
                               onPressed: () async {
-                                if (user.value?.groups.isEmpty == true) {
-                                  ScaffoldMessenger.of(context)
-                                      .showMaterialBanner(MaterialBanner(
-                                          content: const Text('グループに参加してください'),
-                                          actions: [
-                                        TextButton(
-                                            onPressed: () =>
-                                                ScaffoldMessenger.of(context)
-                                                    .clearMaterialBanners(),
-                                            child: const Text('了解'))
-                                      ]));
-                                } else {
-                                  ScaffoldMessenger.of(context)
-                                      .clearMaterialBanners();
-                                  ref
-                                      .read(_takingPictureProvider.notifier)
-                                      .state = true;
-                                  if (controller != null) {
-                                    final path =
-                                        (await controller.takePicture()).path;
-                                    ref.read(imagePathProvider.notifier).state =
-                                        path;
-                                    await showDialog(
-                                        context: context,
-                                        barrierDismissible: false,
-                                        barrierColor:
-                                            Colors.black.withOpacity(0.8),
-                                        builder: (context) => StandbyDialog(
-                                            controller: controller,
-                                            decodedImage: image.decodeImage(
-                                                File(path)
-                                                    .readAsBytesSync())!));
-                                  }
-                                  ref
-                                      .read(_takingPictureProvider.notifier)
-                                      .state = false;
+                                ScaffoldMessenger.of(context)
+                                    .clearMaterialBanners();
+                                ref
+                                    .read(_takingPictureProvider.notifier)
+                                    .state = true;
+                                if (controller != null) {
+                                  final path =
+                                      (await controller.takePicture()).path;
+                                  ref.read(imagePathProvider.notifier).state =
+                                      path;
+                                  await showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      barrierColor:
+                                          Colors.black.withOpacity(0.8),
+                                      builder: (context) => StandbyDialog(
+                                          controller: controller,
+                                          decodedImage: image.decodeImage(
+                                              File(path).readAsBytesSync())!));
                                 }
+                                ref
+                                    .read(_takingPictureProvider.notifier)
+                                    .state = false;
                               },
                               child: const Text('さつえい')),
                           ChildActionButton(
