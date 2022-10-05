@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -24,7 +25,7 @@ class HistoryScreen extends ConsumerWidget {
         data: (expDatas) => expDatas.isNotEmpty
             ? ListView(children: [
                 const ListTile(
-                    title: Text('オススメ情報',
+                    title: Text('オススメ中の投稿',
                         style: TextStyle(
                             fontSize: 25, fontWeight: FontWeight.bold))),
                 Card(
@@ -38,26 +39,22 @@ class HistoryScreen extends ConsumerWidget {
                             : () {},
                         child: recommendData.maybeWhen(
                             data: (recommendData) => recommendData != null
-                                ? Column(children: [
-                                    ListTile(
-                                        title: Text('${recommendData.word}'),
-                                        trailing: const Icon(Icons.edit))
-                                  ])
-                                : Container(
-                                    margin: const EdgeInsets.all(20.0),
-                                    child: Wrap(
-                                        direction: Axis.vertical,
-                                        crossAxisAlignment: WrapCrossAlignment.center,
-                                        runAlignment: WrapAlignment.center,
-                                        spacing: 10.0,
-                                        children: const [
-                                          Icon(Icons.message, size: 30.0),
-                                          Text('オススメ情報を投稿してみましょう!')
-                                        ])),
-                            orElse: () => Container(
-                                margin: const EdgeInsets.all(20.0),
-                                child: const Center(
-                                    child: CircularProgressIndicator()))))),
+                                ? ListTile(
+                                    leading: recommendData.imageUrl != null
+                                        ? Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 10.0),
+                                            child: AspectRatio(
+                                                aspectRatio: 1.0,
+                                                child: ClipRRect(
+                                                    borderRadius: const BorderRadius.all(
+                                                        Radius.circular(10.0)),
+                                                    child: CachedNetworkImage(fit: BoxFit.cover, imageUrl: recommendData.imageUrl!))))
+                                        : null,
+                                    title: Text('${recommendData.word}'),
+                                    trailing: const Icon(Icons.edit))
+                                : Container(margin: const EdgeInsets.all(20.0), child: Wrap(direction: Axis.vertical, crossAxisAlignment: WrapCrossAlignment.center, runAlignment: WrapAlignment.center, spacing: 10.0, children: const [Icon(Icons.message, size: 30.0), Text('オススメ情報を投稿してみましょう!')])),
+                            orElse: () => Container(margin: const EdgeInsets.all(20.0), child: const Center(child: CircularProgressIndicator()))))),
                 const ListTile(
                     title: Text('過去の投稿',
                         style: TextStyle(
@@ -68,8 +65,22 @@ class HistoryScreen extends ConsumerWidget {
                             customBorder: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.0),
                             ),
-                            // TODO: 詳細なデータを追加する
                             child: ListTile(
+                                leading: expData?.imageUrl != null
+                                    ? Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 10.0),
+                                        child: AspectRatio(
+                                            aspectRatio: 1.0,
+                                            child: ClipRRect(
+                                                borderRadius:
+                                                    const BorderRadius.all(
+                                                        Radius.circular(10.0)),
+                                                child: CachedNetworkImage(
+                                                    fit: BoxFit.cover,
+                                                    imageUrl:
+                                                        expData!.imageUrl!))))
+                                    : null,
                                 title: Text('${expData?.word}'),
                                 trailing: const Icon(Icons.edit)),
                             onTap: () => context.push(

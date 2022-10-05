@@ -59,17 +59,13 @@ class PostScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final step = ref.watch(_stepProvider);
     final word = ref.watch(_wordProvider);
+    final meaning = ref.watch(_meaningProvider);
     final imageUrl = ref.watch(_imageUrlProvider);
     final expData = ref.watch(_dataProvider(dataId));
     final user = ref.watch(userProvider.future);
     final isRecommendData = ref.watch(_isRecommendDataProvider);
 
     final List<Map<String, dynamic>> textEdits = [
-      {
-        'title': '簡単な説明',
-        'provider': _meaningProvider,
-        'state': ref.watch(_meaningProvider)
-      },
       {
         'title': 'なぜ',
         'provider': _whyProvider,
@@ -103,34 +99,6 @@ class PostScreen extends ConsumerWidget {
     ];
 
     final steps = [
-      Step(
-          title: const Text('画像'),
-          content: Column(children: [
-            if (imageUrl.isNotEmpty)
-              Container(
-                  margin: const EdgeInsets.all(10.0),
-                  child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10.0),
-                      child: imageUrl.startsWith('http')
-                          ? CachedNetworkImage(
-                              height: 500.0,
-                              imageUrl: imageUrl,
-                              placeholder: (context, url) => const Center(
-                                  child: CircularProgressIndicator()))
-                          : Image.file(File(imageUrl)))),
-            ElevatedButton.icon(
-                onPressed: () async {
-                  final path = (await ImagePicker()
-                          .pickImage(source: ImageSource.gallery))
-                      ?.path;
-
-                  if (path != null) {
-                    ref.read(_imageUrlProvider.notifier).state = path;
-                  }
-                },
-                icon: const Icon(Icons.cloud_upload),
-                label: Text('画像を${imageUrl.isEmpty ? '追加' : '変更'}'))
-          ])),
       // TODO: 実際のデータに差し替える
       Step(
           title: const Text('ワード'),
@@ -171,6 +139,14 @@ class PostScreen extends ConsumerWidget {
                 ]),
               ],
               indent: 20.0)),
+      Step(
+          title: const Text('簡単な説明'),
+          subtitle: Text(meaning),
+          content: TextFormField(
+              initialValue: meaning,
+              decoration: const InputDecoration(labelText: '簡単な説明'),
+              onChanged: (value) =>
+                  ref.read(_meaningProvider.notifier).state = value)),
       // TODO: 具体例を追加する
       Step(
           title: const Text('5W1H'),
@@ -182,6 +158,34 @@ class PostScreen extends ConsumerWidget {
                       onChanged: (value) =>
                           ref.read(tile['provider'].notifier).state = value))
                   .toList())),
+      Step(
+          title: const Text('画像'),
+          content: Column(children: [
+            if (imageUrl.isNotEmpty)
+              Container(
+                  margin: const EdgeInsets.all(10.0),
+                  child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10.0),
+                      child: imageUrl.startsWith('http')
+                          ? CachedNetworkImage(
+                              height: 500.0,
+                              imageUrl: imageUrl,
+                              placeholder: (context, url) => const Center(
+                                  child: CircularProgressIndicator()))
+                          : Image.file(File(imageUrl)))),
+            ElevatedButton.icon(
+                onPressed: () async {
+                  final path = (await ImagePicker()
+                          .pickImage(source: ImageSource.gallery))
+                      ?.path;
+
+                  if (path != null) {
+                    ref.read(_imageUrlProvider.notifier).state = path;
+                  }
+                },
+                icon: const Icon(Icons.cloud_upload),
+                label: Text('画像を${imageUrl.isEmpty ? '追加' : '変更'}'))
+          ])),
       Step(
         title: const Text('オススメ'),
         content: Checkbox(
@@ -256,6 +260,18 @@ class PostScreen extends ConsumerWidget {
               ])),
               floatingActionButton: FloatingActionButton.extended(
                   onPressed: () async {
+                    if (word.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('ワードが選択されていません')));
+                      return;
+                    }
+
+                    if (meaning.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('簡単な説明が入力されていません')));
+                      return;
+                    }
+
                     ExpData expData;
 
                     if (!isRecommendData) {
