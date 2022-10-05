@@ -49,7 +49,6 @@ final _dataProvider =
   return expData;
 });
 
-// TODO: 必須項目の確認機能を追加する
 class PostScreen extends ConsumerWidget {
   const PostScreen({Key? key, this.dataId}) : super(key: key);
 
@@ -173,6 +172,18 @@ class PostScreen extends ConsumerWidget {
                               placeholder: (context, url) => const Center(
                                   child: CircularProgressIndicator()))
                           : Image.file(File(imageUrl)))),
+            ElevatedButton.icon(
+                onPressed: () async {
+                  final path = (await ImagePicker()
+                          .pickImage(source: ImageSource.camera))
+                      ?.path;
+
+                  if (path != null) {
+                    ref.read(_imageUrlProvider.notifier).state = path;
+                  }
+                },
+                icon: const Icon(Icons.camera_alt),
+                label: Text('画像を${imageUrl.isEmpty ? '撮影' : '変更'}')),
             ElevatedButton.icon(
                 onPressed: () async {
                   final path = (await ImagePicker()
