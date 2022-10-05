@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Group {
-  late int groupID;
+  int groupID = 0;
   String groupName;
   List<String> members = [];
   List<int> _expDatas = [];
@@ -44,22 +44,16 @@ class Group {
     for (final doc in docs) {
       ids.add(doc.id);
     }
-    while (true) {
+    int num = 0;
+    bool isExist = true;
+    while (isExist) {
       const max = 999999999;
       const min = 100000000;
-      final num = Random().nextInt(max - min) + min;
+      num = Random().nextInt(max - min) + min;
       final numString = num.toString();
-      bool isExist = false;
-      for (final id in ids) {
-        if (id == numString) {
-          isExist = true;
-          break;
-        }
-      }
-      if (!isExist) {
-        return num;
-      }
+      isExist = ids.contains(numString);
     }
+    return num;
   }
 
   Future<void> save() {
