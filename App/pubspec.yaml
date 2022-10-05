@@ -43,7 +43,7 @@ dependencies:
   flutter_launcher_icons: ^0.10.0
   flutter_native_splash: ^2.2.10+1
   go_router: ^5.0.5
-  permission_handler: ^10.0.2
+  permission_handler: ^10.1.0
   tflite_flutter: ^0.9.0
   google_sign_in: ^5.4.2
   tflite_flutter_helper: ^0.2.1
@@ -51,7 +51,7 @@ dependencies:
   flutter_riverpod: ^2.0.2
   shared_preferences: ^2.0.15
   flutter_simple_treeview: ^3.0.1
-  animations: ^2.0.5
+  animations: ^2.0.6
   firebase_performance: ^0.8.3+2
   cached_network_image: ^3.2.2
   image_picker: ^0.8.5+3
