@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solimage/routes/parent/history.dart';
 import 'package:solimage/routes/parent/profile.dart';
+import 'package:solimage/states/user.dart';
 
 final _tabIndexProvider = StateProvider.autoDispose((ref) => 0);
 
@@ -27,6 +28,7 @@ class ParentScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tabIndex = ref.watch(_tabIndexProvider);
+    final user = ref.watch(userProvider);
 
     return Scaffold(
         appBar: AppBar(
@@ -48,21 +50,26 @@ class ParentScreen extends ConsumerWidget {
             onDestinationSelected: (index) {
               ref.read(_tabIndexProvider.notifier).state = index;
             }),
-        floatingActionButton: Wrap(
-            spacing: 10.0,
-            children: tabIndex == 0
-                ? [
-                    FloatingActionButton.extended(
-                        onPressed: () => context.go('/child/camera'),
-                        icon: const Icon(Icons.photo_camera),
-                        label: const Text('カメラ'),
-                        heroTag: 'camera'),
-                    FloatingActionButton.extended(
-                        onPressed: () => context.push('/parent/post'),
-                        icon: const Icon(Icons.add),
-                        label: const Text('投稿'),
-                        heroTag: 'post')
-                  ]
-                : []));
+        floatingActionButton: Wrap(spacing: 10.0, children: [
+          if (tabIndex == 0)
+            FloatingActionButton.extended(
+                onPressed: () => context.go('/child/camera'),
+                icon: const Icon(Icons.photo_camera),
+                label: const Text('カメラ'),
+                heroTag: 'camera'),
+          if (tabIndex == 0)
+            FloatingActionButton.extended(
+                onPressed: () {
+                  if (user.value?.groups.isEmpty == true) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('グループに参加してください')));
+                  } else {
+                    context.push('/parent/post');
+                  }
+                },
+                icon: const Icon(Icons.add),
+                label: const Text('投稿'),
+                heroTag: 'post')
+        ]));
   }
 }
