@@ -49,7 +49,6 @@ final _dataProvider =
   return expData;
 });
 
-// TODO: 必須項目の確認機能を追加する
 class PostScreen extends ConsumerWidget {
   const PostScreen({Key? key, this.dataId}) : super(key: key);
 
