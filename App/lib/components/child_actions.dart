@@ -35,10 +35,12 @@ class ChildActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ElevatedButton(
-      onPressed: () {
-        HapticFeedback.heavyImpact();
-        if (onPressed != null) onPressed!();
-      },
+      onPressed: onPressed != null
+          ? () {
+              HapticFeedback.heavyImpact();
+              onPressed!();
+            }
+          : null,
       style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.all(10.0),
           textStyle:
