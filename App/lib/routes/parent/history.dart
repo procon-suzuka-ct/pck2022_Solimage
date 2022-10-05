@@ -24,11 +24,11 @@ class HistoryScreen extends ConsumerWidget {
     return expDatas.maybeWhen(
         data: (expDatas) => expDatas.isNotEmpty
             ? ListView(children: [
-          const ListTile(
-              title: Text('オススメ中の投稿',
+                const ListTile(
+                    title: Text('オススメ中の投稿',
                         style: TextStyle(
                             fontSize: 25, fontWeight: FontWeight.bold))),
-          Card(
+                Card(
                     child: InkWell(
                         customBorder: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0),
@@ -83,29 +83,29 @@ class HistoryScreen extends ConsumerWidget {
                                     : null,
                                 title: Text('${expData?.word}'),
                                 trailing: const Icon(Icons.edit)),
-                      onTap: () => context.push(
-                          '/parent/post?dataId=${expData?.dataId}'))))
-              .toList()
-        ])
+                            onTap: () => context.push(
+                                '/parent/post?dataId=${expData?.dataId}'))))
+                    .toList()
+              ])
             : Center(
-            child: Card(
-                child: InkWell(
-                    customBorder: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: Container(
-                        margin: const EdgeInsets.all(20.0),
-                        child: Wrap(
-                            direction: Axis.vertical,
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            alignment: WrapAlignment.center,
-                            runAlignment: WrapAlignment.center,
-                            spacing: 10.0,
-                            children: const [
-                              Icon(Icons.edit, size: 30.0),
-                              Text('知識を投稿しましょう!')
-                            ])),
-                    onTap: () {}))),
+                child: Card(
+                    child: InkWell(
+                        customBorder: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        child: Container(
+                            margin: const EdgeInsets.all(20.0),
+                            child: Wrap(
+                                direction: Axis.vertical,
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                alignment: WrapAlignment.center,
+                                runAlignment: WrapAlignment.center,
+                                spacing: 10.0,
+                                children: const [
+                                  Icon(Icons.edit, size: 30.0),
+                                  Text('知識を投稿しましょう!')
+                                ])),
+                        onTap: () {}))),
         orElse: () => const Center(child: CircularProgressIndicator()));
   }
 }
