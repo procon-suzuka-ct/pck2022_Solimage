@@ -68,7 +68,7 @@ x = Dense(512, activation=tfa.activations.rrelu)(x)
 predictions = Dense(len(labels), activation="softmax")(x)
 
 # 15層目までは再学習しないよう固定する
-for layer in base_model.layers:
+for layer in base_model.layers[:15]:
     layer.trainable = False
 
 # 最適化アルゴリズムのimportと設定
