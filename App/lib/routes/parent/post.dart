@@ -176,6 +176,18 @@ class PostScreen extends ConsumerWidget {
             ElevatedButton.icon(
                 onPressed: () async {
                   final path = (await ImagePicker()
+                          .pickImage(source: ImageSource.camera))
+                      ?.path;
+
+                  if (path != null) {
+                    ref.read(_imageUrlProvider.notifier).state = path;
+                  }
+                },
+                icon: const Icon(Icons.camera_alt),
+                label: Text('画像を${imageUrl.isEmpty ? '撮影' : '変更'}')),
+            ElevatedButton.icon(
+                onPressed: () async {
+                  final path = (await ImagePicker()
                           .pickImage(source: ImageSource.gallery))
                       ?.path;
 
