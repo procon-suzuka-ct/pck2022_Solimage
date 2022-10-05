@@ -30,8 +30,7 @@ dataPath = os.path.join(basePath, dataPath)
 train = ImageDataGenerator(rescale=1./255,  # 255で割ることで正規化
                            zoom_range=0.2,  # ランダムにズーム
                            horizontal_flip=True,  # 水平反転
-                           rotation_range=40,  # ランダムに回転
-                           vertical_flip=True)  # 垂直反転
+                           rotation_range=40)  # ランダムに回転
 trainGenerator = train.flow_from_directory(dataPath, target_size=(
     384, 216), batch_size=16, class_mode="categorical", shuffle=True)
 
@@ -81,7 +80,7 @@ def scale_fn(x): return tf.math.abs(tf.math.cos(x * np.pi / 6) - (tf.math.sin(x 
 
 
 clr = tfa.optimizers.CyclicalLearningRate(
-    initial_learning_rate=1e-5, maximal_learning_rate=1e-3, step_size=512, scale_fn=scale_fn, scale_mode='cycle')
+    initial_learning_rate=1e-4, maximal_learning_rate=1e-2, step_size=256, scale_fn=scale_fn, scale_mode='cycle')
 opt = adam_v2.Adam(clr)
 
 # モデルのコンパイルと詳細出力
