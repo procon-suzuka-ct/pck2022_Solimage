@@ -37,7 +37,7 @@ class Classifier {
   late TensorImage _inputImage;
   late File _modelFile;
 
-  NormalizeOp get _preProcessNormalizeOp => NormalizeOp(127.5, 127.5);
+  DequantizeOp get _preProcessNormalizeOp => DequantizeOp(0, 255);
   NormalizeOp get _postProcessNormalizeOp => NormalizeOp(0, 1);
 
   late List<String> labels;

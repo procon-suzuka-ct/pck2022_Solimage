@@ -30,8 +30,7 @@ dataPath = os.path.join(basePath, dataPath)
 train = ImageDataGenerator(rescale=1./255,  # 255で割ることで正規化
                            zoom_range=0.2,  # ランダムにズーム
                            horizontal_flip=True,  # 水平反転
-                           rotation_range=40,  # ランダムに回転
-                           vertical_flip=True)  # 垂直反転
+                           rotation_range=40)  # ランダムに回転
 trainGenerator = train.flow_from_directory(dataPath, target_size=(
     384, 216), batch_size=16, class_mode="categorical", shuffle=True)
 
