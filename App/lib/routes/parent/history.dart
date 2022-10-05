@@ -21,91 +21,91 @@ class HistoryScreen extends ConsumerWidget {
     final expDatas = ref.watch(_expDatasProvider);
     final recommendData = ref.watch(recommendDataProvider);
 
-    return expDatas.maybeWhen(
-        data: (expDatas) => expDatas.isNotEmpty
-            ? ListView(children: [
-                const ListTile(
-                    title: Text('オススメ中の投稿',
-                        style: TextStyle(
-                            fontSize: 25, fontWeight: FontWeight.bold))),
-                Card(
-                    child: InkWell(
-                        customBorder: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        onTap: recommendData.value != null
-                            ? () => context.push(
-                                '/parent/post?dataId=${recommendData.value!.userId}')
-                            : () {},
-                        child: recommendData.maybeWhen(
-                            data: (recommendData) => recommendData != null
-                                ? ListTile(
-                                    leading: recommendData.imageUrl != null
-                                        ? Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 10.0),
-                                            child: AspectRatio(
-                                                aspectRatio: 1.0,
-                                                child: ClipRRect(
-                                                    borderRadius: const BorderRadius.all(
-                                                        Radius.circular(10.0)),
-                                                    child: CachedNetworkImage(fit: BoxFit.cover, imageUrl: recommendData.imageUrl!))))
-                                        : null,
-                                    title: Text('${recommendData.word}'),
-                                    trailing: const Icon(Icons.edit))
-                                : Container(margin: const EdgeInsets.all(20.0), child: Wrap(direction: Axis.vertical, crossAxisAlignment: WrapCrossAlignment.center, runAlignment: WrapAlignment.center, spacing: 10.0, children: const [Icon(Icons.message, size: 30.0), Text('オススメ情報を投稿してみましょう!')])),
-                            orElse: () => Container(margin: const EdgeInsets.all(20.0), child: const Center(child: CircularProgressIndicator()))))),
-                const ListTile(
-                    title: Text('過去の投稿',
-                        style: TextStyle(
-                            fontSize: 25, fontWeight: FontWeight.bold))),
-                ...expDatas
-                    .map((expData) => Card(
-                        child: InkWell(
-                            customBorder: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: ListTile(
-                                leading: expData?.imageUrl != null
-                                    ? Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 10.0),
-                                        child: AspectRatio(
-                                            aspectRatio: 1.0,
-                                            child: ClipRRect(
-                                                borderRadius:
-                                                    const BorderRadius.all(
-                                                        Radius.circular(10.0)),
-                                                child: CachedNetworkImage(
-                                                    fit: BoxFit.cover,
-                                                    imageUrl:
-                                                        expData!.imageUrl!))))
-                                    : null,
-                                title: Text('${expData?.word}'),
-                                trailing: const Icon(Icons.edit)),
-                            onTap: () => context.push(
-                                '/parent/post?dataId=${expData?.dataId}'))))
-                    .toList()
-              ])
-            : Center(
-                child: Card(
-                    child: InkWell(
-                        customBorder: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        child: Container(
-                            margin: const EdgeInsets.all(20.0),
-                            child: Wrap(
-                                direction: Axis.vertical,
-                                crossAxisAlignment: WrapCrossAlignment.center,
-                                alignment: WrapAlignment.center,
-                                runAlignment: WrapAlignment.center,
-                                spacing: 10.0,
-                                children: const [
-                                  Icon(Icons.edit, size: 30.0),
-                                  Text('知識を投稿しましょう!')
-                                ])),
-                        onTap: () {}))),
-        orElse: () => const Center(child: CircularProgressIndicator()));
+    return ListView(children: [
+      const ListTile(
+          title: Text('オススメ中の投稿',
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold))),
+      Card(
+          child: InkWell(
+              customBorder: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              onTap: recommendData.value != null
+                  ? () => context.push(
+                      '/parent/post?dataId=${recommendData.value!.userId}')
+                  : () {},
+              child: recommendData.maybeWhen(
+                  data: (recommendData) => recommendData != null
+                      ? ListTile(
+                          leading: recommendData.imageUrl != null
+                              ? Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10.0),
+                                  child: AspectRatio(
+                                      aspectRatio: 1.0,
+                                      child: ClipRRect(
+                                          borderRadius: const BorderRadius.all(
+                                              Radius.circular(10.0)),
+                                          child:
+                                              CachedNetworkImage(fit: BoxFit.cover, imageUrl: recommendData.imageUrl!))))
+                              : null,
+                          title: Text('${recommendData.word}'),
+                          trailing: const Icon(Icons.edit))
+                      : Container(margin: const EdgeInsets.all(20.0), child: Wrap(direction: Axis.vertical, crossAxisAlignment: WrapCrossAlignment.center, runAlignment: WrapAlignment.center, spacing: 10.0, children: const [Icon(Icons.message, size: 30.0), Text('オススメ情報を投稿してみましょう!')])),
+                  orElse: () => Container(margin: const EdgeInsets.all(20.0), child: const Center(child: CircularProgressIndicator()))))),
+      const ListTile(
+          title: Text('過去の投稿',
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold))),
+      ...expDatas.maybeWhen(
+          data: (expDatas) => expDatas.isNotEmpty
+              ? expDatas
+                  .map((expData) => Card(
+                      child: InkWell(
+                          customBorder: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: ListTile(
+                              leading: expData?.imageUrl != null
+                                  ? Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 10.0),
+                                      child: AspectRatio(
+                                          aspectRatio: 1.0,
+                                          child: ClipRRect(
+                                              borderRadius:
+                                                  const BorderRadius.all(
+                                                      Radius.circular(10.0)),
+                                              child: CachedNetworkImage(
+                                                  fit: BoxFit.cover,
+                                                  imageUrl:
+                                                      expData!.imageUrl!))))
+                                  : null,
+                              title: Text('${expData?.word}'),
+                              trailing: const Icon(Icons.edit)),
+                          onTap: () => context
+                              .push('/parent/post?dataId=${expData?.dataId}'))))
+                  .toList()
+              : [
+                  Card(
+                      child: InkWell(
+                          customBorder: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: Container(
+                              margin: const EdgeInsets.all(20.0),
+                              child: Wrap(
+                                  direction: Axis.vertical,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  alignment: WrapAlignment.center,
+                                  runAlignment: WrapAlignment.center,
+                                  spacing: 10.0,
+                                  children: const [
+                                    Icon(Icons.edit, size: 30.0),
+                                    Text('知識を投稿しましょう!')
+                                  ])),
+                          onTap: () {}))
+                ],
+          orElse: () => const [Center(child: CircularProgressIndicator())])
+    ]);
   }
 }
