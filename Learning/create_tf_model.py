@@ -5,7 +5,7 @@ from statistics import mode
 
 # 機械学習
 from keras.models import Model
-from keras.layers import Dense, Dropout, GlobalAveragePooling2D
+from keras.layers import Dense, Dropout, Flatten, Input
 import numpy as np
 import tensorflow_addons as tfa
 from keras.applications.vgg16 import VGG16
@@ -30,9 +30,12 @@ dataPath = os.path.join(basePath, dataPath)
 train = ImageDataGenerator(rescale=1./255,  # 255で割ることで正規化
                            zoom_range=0.2,  # ランダムにズーム
                            horizontal_flip=True,  # 水平反転
-                           rotation_range=40)  # ランダムに回転
+                           rotation_range=40, # ランダムに回転
+                           validation_split=0.1)  # 検証用データの割合
 trainGenerator = train.flow_from_directory(dataPath, target_size=(
-    384, 216), batch_size=16, class_mode="categorical", shuffle=True)
+    384, 216), batch_size=16, class_mode="categorical", shuffle=True, subset="training")
+valGenerator = train.flow_from_directory(dataPath, target_size=(
+    384, 216), batch_size=16, class_mode="categorical", shuffle=True, subset="validation")
 
 labels = trainGenerator.class_indices
 os.makedirs("./tmp/model", exist_ok=True)
@@ -55,11 +58,11 @@ json_file.close()
 #    classifier_activation="softmax",
 #    include_preprocessing=True,
 # )
-base_model = VGG16(include_top=False, weights='imagenet')
+base_model = VGG16(input_tensor=Input(shape=(384, 216, 3)),include_top=False, weights='imagenet',)
 x = base_model.output
 
-x = GlobalAveragePooling2D()(x)
 x = Dropout(0.5)(x)
+x = Flatten()(x)
 x = Dense(512, activation=tfa.activations.rrelu)(x)
 # 空間的なグローバルプーリング層を追加する
 #x = GlobalAveragePooling2D()(x)
@@ -81,7 +84,7 @@ def scale_fn(x): return tf.math.abs(tf.math.cos(x * np.pi / 6) - (tf.math.sin(x 
 
 clr = tfa.optimizers.CyclicalLearningRate(
     initial_learning_rate=1e-4, maximal_learning_rate=1e-2, step_size=1024, scale_fn=scale_fn, scale_mode='cycle')
-opt = adam_v2.Adam(clr)
+opt = adam_v2.Adam(lr=1e-4)
 
 # モデルのコンパイルと詳細出力
 model = Model(inputs=base_model.input, outputs=predictions)
@@ -89,12 +92,12 @@ model.compile(optimizer=opt, loss='categorical_crossentropy',
               metrics=["accuracy"])
 model.summary()
 
-early_stopping = EarlyStopping(monitor="loss", patience=15, min_delta=1e-4)
+early_stopping = EarlyStopping(monitor="val_loss", patience=2, min_delta=0)
 check_point = ModelCheckpoint(
-    "./tmp/model/model.h5", save_best_only=True, mode="min", monitor='loss')
+    "./tmp/model/model.h5", save_best_only=True, mode="min", monitor='val_loss')
 
 # 学習
-history = model.fit(trainGenerator, epochs=65, callbacks=[
+history = model.fit(trainGenerator, validation_data=valGenerator,epochs=50, callbacks=[
                     early_stopping, check_point])
 
 del model
