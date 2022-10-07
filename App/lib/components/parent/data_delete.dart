@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:solimage/states/user.dart';
+import 'package:solimage/routes/parent/history.dart';
 import 'package:solimage/utils/classes/expData.dart';
 import 'package:solimage/utils/classes/group.dart';
 import 'package:solimage/utils/classes/user.dart';
@@ -21,14 +21,16 @@ class DataDeleteDialog extends ConsumerWidget {
           TextButton(
               child: const Text('はい'),
               onPressed: () => expData.delete().then((_) async {
-                    user.expDatas.remove(expData.dataId);
-                    await user.save();
-                    await Future.wait(user.groups.map((groupId) =>
-                        Group.getGroup(groupId).then((group) async {
-                          group?.removeExpData(expData.dataId);
-                          await group?.update();
-                        })));
-                    await ref.refresh(userProvider.future);
+                    if (expData is! RecommendData) {
+                      user.expDatas.remove(expData.dataId);
+                      await user.save();
+                      await Future.wait(user.groups.map((groupId) =>
+                          Group.getGroup(groupId).then((group) async {
+                            group?.removeExpData(expData.dataId);
+                            await group?.update();
+                          })));
+                    }
+                    ref.refresh(recommendDataProvider);
                   }).then((_) {
                     ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('投稿を削除しました')));

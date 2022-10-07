@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:solimage/utils/classes/hapticFeedback.dart';
 
 class ChildActions extends StatelessWidget {
   const ChildActions({Key? key, required this.actions, this.height = 100.0})
@@ -34,7 +35,12 @@ class ChildActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ElevatedButton(
-      onPressed: onPressed,
+      onPressed: onPressed != null
+          ? () {
+              HapticFeedback.heavyImpact();
+              onPressed!();
+            }
+          : null,
       style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.all(10.0),
           textStyle:

@@ -20,7 +20,7 @@ final _nameProvider = FutureProvider(
     (ref) => ref.watch(userProvider.selectAsync((data) => data?.name)));
 
 final _groupsProvider = FutureProvider((ref) async => await Future.wait(
-    (await ref.watch(userProvider.future).then((user) => user?.groups ?? []))
+    (await ref.watch(userProvider.selectAsync((data) => data?.groups ?? [])))
         .map((groupID) => Group.getGroup(groupID))));
 
 class ProfileScreen extends ConsumerWidget {

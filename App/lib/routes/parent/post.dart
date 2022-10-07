@@ -20,10 +20,15 @@ final _whenProvider = StateProvider.autoDispose((ref) => '');
 final _whoProvider = StateProvider.autoDispose((ref) => '');
 final _howProvider = StateProvider.autoDispose((ref) => '');
 final _imageUrlProvider = StateProvider.autoDispose((ref) => '');
-final _expDataProvider = FutureProvider.autoDispose
-    .family<ExpData?, String?>((ref, expDataId) async {
-  var expData =
-      expDataId != null ? await ExpData.getExpData(int.parse(expDataId)) : null;
+final _isRecommendDataProvider = StateProvider.autoDispose((ref) => false);
+final _dataProvider =
+    FutureProvider.autoDispose.family<ExpData?, String?>((ref, dataId) async {
+  final uid = await ref.watch(userProvider.selectAsync((data) => data?.uid));
+  var expData = dataId != null
+      ? dataId != uid
+          ? await ExpData.getExpData(int.parse(dataId))
+          : await RecommendData.getRecommendData(dataId)
+      : null;
 
   if (expData != null) {
     ref.read(_wordProvider.notifier).state = expData.word ?? '';
@@ -35,31 +40,31 @@ final _expDataProvider = FutureProvider.autoDispose
     ref.read(_whoProvider.notifier).state = expData.who ?? '';
     ref.read(_howProvider.notifier).state = expData.how ?? '';
     ref.read(_imageUrlProvider.notifier).state = expData.imageUrl ?? '';
+
+    if (expData is RecommendData) {
+      ref.read(_isRecommendDataProvider.notifier).state = true;
+    }
   }
 
   return expData;
 });
 
-// TODO: 必須項目の確認機能を追加する
 class PostScreen extends ConsumerWidget {
-  const PostScreen({Key? key, this.expDataId}) : super(key: key);
+  const PostScreen({Key? key, this.dataId}) : super(key: key);
 
-  final String? expDataId;
+  final String? dataId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final step = ref.watch(_stepProvider);
     final word = ref.watch(_wordProvider);
+    final meaning = ref.watch(_meaningProvider);
     final imageUrl = ref.watch(_imageUrlProvider);
-    final expData = ref.watch(_expDataProvider(expDataId));
+    final expData = ref.watch(_dataProvider(dataId));
     final user = ref.watch(userProvider.future);
+    final isRecommendData = ref.watch(_isRecommendDataProvider);
 
     final List<Map<String, dynamic>> textEdits = [
-      {
-        'title': '簡単な説明',
-        'provider': _meaningProvider,
-        'state': ref.watch(_meaningProvider)
-      },
       {
         'title': 'なぜ',
         'provider': _whyProvider,
@@ -93,6 +98,65 @@ class PostScreen extends ConsumerWidget {
     ];
 
     final steps = [
+      // TODO: 実際のデータに差し替える
+      Step(
+          title: const Text('ワード'),
+          subtitle: Text(word),
+          content: TreeView(
+              treeController: TreeController(allNodesExpanded: false),
+              nodes: [
+                TreeNode(content: const Text('生物'), children: [
+                  TreeNode(
+                      content: ElevatedButton(
+                          onPressed: () {
+                            ref.read(_wordProvider.notifier).state = '虫';
+                            ref.read(_stepProvider.notifier).state = step + 1;
+                          },
+                          child: const Text('虫')),
+                      children: [
+                        TreeNode(
+                            content: ElevatedButton(
+                                onPressed: () {
+                                  ref.read(_wordProvider.notifier).state =
+                                      'かまきり';
+                                  ref.read(_stepProvider.notifier).state =
+                                      step + 1;
+                                },
+                                child: const Text('かまきり')),
+                            children: [
+                              TreeNode(
+                                  content: ElevatedButton(
+                                      onPressed: () {
+                                        ref.read(_wordProvider.notifier).state =
+                                            '触角';
+                                        ref.read(_stepProvider.notifier).state =
+                                            step + 1;
+                                      },
+                                      child: const Text('触角')))
+                            ])
+                      ])
+                ]),
+              ],
+              indent: 20.0)),
+      Step(
+          title: const Text('簡単な説明'),
+          subtitle: Text(meaning),
+          content: TextFormField(
+              initialValue: meaning,
+              decoration: const InputDecoration(labelText: '簡単な説明'),
+              onChanged: (value) =>
+                  ref.read(_meaningProvider.notifier).state = value)),
+      // TODO: 具体例を追加する
+      Step(
+          title: const Text('5W1H'),
+          content: Column(
+              children: textEdits
+                  .map((tile) => TextFormField(
+                      initialValue: tile['state'],
+                      decoration: InputDecoration(labelText: tile['title']),
+                      onChanged: (value) =>
+                          ref.read(tile['provider'].notifier).state = value))
+                  .toList())),
       Step(
           title: const Text('画像'),
           content: Column(children: [
@@ -111,6 +175,18 @@ class PostScreen extends ConsumerWidget {
             ElevatedButton.icon(
                 onPressed: () async {
                   final path = (await ImagePicker()
+                          .pickImage(source: ImageSource.camera))
+                      ?.path;
+
+                  if (path != null) {
+                    ref.read(_imageUrlProvider.notifier).state = path;
+                  }
+                },
+                icon: const Icon(Icons.camera_alt),
+                label: Text('画像を${imageUrl.isEmpty ? '撮影' : '変更'}')),
+            ElevatedButton.icon(
+                onPressed: () async {
+                  final path = (await ImagePicker()
                           .pickImage(source: ImageSource.gallery))
                       ?.path;
 
@@ -121,67 +197,17 @@ class PostScreen extends ConsumerWidget {
                 icon: const Icon(Icons.cloud_upload),
                 label: Text('画像を${imageUrl.isEmpty ? '追加' : '変更'}'))
           ])),
-      // TODO: 実際のデータに差し替える
       Step(
-          title: const Text('ワード'),
-          subtitle: Text(word),
-          content: TreeView(
-              treeController: TreeController(allNodesExpanded: false),
-              nodes: [
-                TreeNode(
-                    content: ElevatedButton(
-                        onPressed: () {
-                          ref.read(_wordProvider.notifier).state = '生物';
-                          ref.read(_stepProvider.notifier).state = step + 1;
-                        },
-                        child: const Text('生物')),
-                    children: [
-                      TreeNode(
-                          content: ElevatedButton(
-                              onPressed: () {
-                                ref.read(_wordProvider.notifier).state = '虫';
-                                ref.read(_stepProvider.notifier).state =
-                                    step + 1;
-                              },
-                              child: const Text('虫')),
-                          children: [
-                            TreeNode(
-                                content: ElevatedButton(
-                                    onPressed: () {
-                                      ref.read(_wordProvider.notifier).state =
-                                          'かまきり';
-                                      ref.read(_stepProvider.notifier).state =
-                                          step + 1;
-                                    },
-                                    child: const Text('かまきり')),
-                                children: [
-                                  TreeNode(
-                                      content: ElevatedButton(
-                                          onPressed: () {
-                                            ref
-                                                .read(_wordProvider.notifier)
-                                                .state = '触角';
-                                            ref
-                                                .read(_stepProvider.notifier)
-                                                .state = step + 1;
-                                          },
-                                          child: const Text('触角')))
-                                ])
-                          ])
-                    ]),
-              ],
-              indent: 20.0)),
-      // TODO: 具体例を追加する
-      Step(
-          title: const Text('5W1H'),
-          content: Column(
-              children: textEdits
-                  .map((tile) => TextFormField(
-                      initialValue: tile['state'],
-                      decoration: InputDecoration(labelText: tile['title']),
-                      onChanged: (value) =>
-                          ref.read(tile['provider'].notifier).state = value))
-                  .toList()))
+        title: const Text('オススメ'),
+        content: Checkbox(
+            value: isRecommendData,
+            onChanged: expData.value is RecommendData
+                ? (value) {
+                    ref.read(_isRecommendDataProvider.notifier).state =
+                        value ?? false;
+                  }
+                : null),
+      )
     ];
 
     return expData.maybeWhen(
@@ -245,14 +271,31 @@ class PostScreen extends ConsumerWidget {
               ])),
               floatingActionButton: FloatingActionButton.extended(
                   onPressed: () async {
+                    if (word.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('ワードが選択されていません')));
+                      return;
+                    }
+
+                    if (meaning.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('簡単な説明が入力されていません')));
+                      return;
+                    }
+
                     ExpData expData;
 
-                    if (data != null) {
-                      expData = data;
+                    if (!isRecommendData) {
+                      if (data != null) {
+                        expData = data;
+                      } else {
+                        expData = ExpData(
+                            word: '', meaning: '', userID: (await user)!.uid);
+                        await expData.init();
+                      }
                     } else {
-                      expData = ExpData(
+                      expData = RecommendData(
                           word: '', meaning: '', userID: (await user)!.uid);
-                      await expData.init();
                     }
 
                     expData.setData(

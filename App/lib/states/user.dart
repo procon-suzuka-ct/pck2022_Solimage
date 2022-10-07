@@ -4,16 +4,13 @@ import 'package:solimage/utils/classes/user.dart';
 
 final userProvider = StreamProvider((ref) async* {
   final auth = await ref.watch(authProvider.future);
+  var user = auth?.uid != null ? await AppUser.getUser(auth!.uid) : null;
 
-  if (auth != null) {
-    var user = await AppUser.getUser(auth.uid);
-
-    if (user == null) {
-      user = AppUser(uid: auth.uid, name: auth.displayName ?? '');
-      await user.save();
-    }
+  if (user != null) {
+    yield* user.listener().map((snapshot) => snapshot.data() as AppUser?);
+  } else if (auth != null) {
+    user = AppUser(uid: auth.uid, name: auth.displayName ?? '');
+    await user.save();
     yield user;
-  } else {
-    yield null;
   }
 });

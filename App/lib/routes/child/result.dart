@@ -44,10 +44,10 @@ class ResultScreen extends ConsumerWidget {
                   centerTitle: true,
                   title: Container(
                       margin: const EdgeInsets.all(10.0),
-                      child: FittedBox(
+                      child: const FittedBox(
                           fit: BoxFit.contain,
-                          child: Text(data?.word ?? word,
-                              style: const TextStyle(
+                          child: Text('けっか',
+                              style: TextStyle(
                                   fontSize: 30.0,
                                   fontWeight: FontWeight.bold)))),
                   automaticallyImplyLeading: false,
@@ -73,6 +73,7 @@ class ResultScreen extends ConsumerWidget {
                                             image: FileImage(File(imagePath)),
                                             fit: BoxFit.cover)))
                                 : const CircularProgressIndicator()),
+                        // TODO: カードだけダークモードになっているのを修正する
                         GridView.count(
                             crossAxisCount: 2,
                             crossAxisSpacing: 10.0,

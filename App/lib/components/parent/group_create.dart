@@ -34,17 +34,16 @@ class GroupCreateDialog extends ConsumerWidget {
               if (user != null && controller.text.isNotEmpty) {
                 final group =
                     Group(groupName: controller.text, adminId: user!.uid);
-                user!.groups.add(group.groupID);
                 group.addMember(user!.uid);
                 user!.expDatas.map((expData) => group.addExpData(expData));
-                group
-                    .init()
-                    .then((_) => Future.wait([
-                          user!.save(),
-                          group.save(),
-                          ref.refresh(userProvider.future)
-                        ]))
-                    .then((_) {
+                group.init().then((_) {
+                  user!.groups.add(group.groupID);
+                  return Future.wait([
+                    user!.save(),
+                    group.save(),
+                    ref.refresh(userProvider.future)
+                  ]);
+                }).then((_) {
                   ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('${controller.text}を作成しました')));
                   Navigator.of(context).pop();
