@@ -1,4 +1,7 @@
-import matplotlib.pyplot as plt, os, json, numpy as np
+import matplotlib.pyplot as plt
+import os
+import json
+import numpy as np
 
 # 機械学習
 from keras.models import Model
@@ -17,7 +20,7 @@ dataPath = os.path.join(basePath, dataPath)
 train = ImageDataGenerator(rescale=1./255,  # 255で割ることで正規化
                            zoom_range=0.2,  # ランダムにズーム
                            horizontal_flip=True,  # 水平反転
-                           rotation_range=40, # ランダムに回転
+                           rotation_range=40,  # ランダムに回転
                            validation_split=0.1)  # 検証用データの割合
 trainGenerator = train.flow_from_directory(dataPath, target_size=(
     384, 216), batch_size=16, class_mode="categorical", shuffle=True, subset="training")
@@ -38,12 +41,11 @@ json_file.close()
 # VGG16をベースにsigmoidを使って多ラベル分類
 baseModel = VGG16(weights="imagenet",
                   include_top=False,
-                  input_tensor=Input(shape=(216, 384, 3)),
-                  classifier_activation='sigmoid',)
+                  input_tensor=Input(shape=(216, 384, 3)),)
 
 # 15層目まで重みを固定
 for layer in baseModel.layers[:15]:
-  layer.trainable = False
+    layer.trainable = False
 
 # 出力層
 x = baseModel.output
@@ -64,7 +66,7 @@ check_point = ModelCheckpoint(
     "./tmp/model/model.h5", save_best_only=True, mode="min", monitor='val_loss')
 
 # 学習
-history = model.fit(trainGenerator, validation_data=valGenerator,epochs=50, callbacks=[
+history = model.fit(trainGenerator, validation_data=valGenerator, epochs=50, callbacks=[
                     early_stopping, check_point])
 
 del model
