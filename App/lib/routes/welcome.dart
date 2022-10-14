@@ -22,7 +22,8 @@ class WelcomeScreen extends ConsumerWidget {
                   Text("Solimageへ\nようこそ!",
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontSize: 40, fontWeight: FontWeight.bold)),
+                          fontSize: 36, fontWeight: FontWeight.bold)),
+                  Image.asset('assets/solimage.png', width: 240, height: 240),
                   ElevatedButton(
                       onPressed: () {
                         final auth = Auth().signIn();
