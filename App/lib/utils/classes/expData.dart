@@ -526,6 +526,29 @@ class RecommendData extends ExpData {
     return null;
   }
 
+  static Future<RecommendData?> getRecommendDataByCurrentUid(
+      String currentUser) async {
+    final user = await AppUser.getUser(currentUser);
+    if (user == null) {
+      return null;
+    }
+
+    final groups = user.groups;
+    List<String> userIDs = [];
+    for (var groupID in groups) {
+      final group = await Group.getGroup(groupID);
+      if (group == null) {
+        continue;
+      }
+      userIDs.addAll(group.members);
+    }
+    final random = Random();
+    final randomIndex = random.nextInt(userIDs.length);
+    final randomUserID = userIDs[randomIndex];
+    final recommendData = await getRecommendData(randomUserID);
+    return recommendData;
+  }
+
   static Future<RecommendData?> getExpDataByWord({required String userId}) {
     return getRecommendData(userId);
   }
