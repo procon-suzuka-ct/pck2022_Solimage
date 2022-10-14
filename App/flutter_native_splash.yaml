@@ -56,7 +56,7 @@ flutter_native_splash:
     #color: "#42a5f5"
 
     # App icon background color.
-    icon_background_color: "#111111"
+    icon_background_color: "#42a5f5"
 
     # The branding property allows you to specify an image used as branding in the splash screen.
     #branding: assets/dart.png
@@ -66,7 +66,7 @@ flutter_native_splash:
     # parameters from above.
     image_dark: assets/splash_android12.png
     #color_dark: "#042a49"
-    icon_background_color_dark: "#eeeeee"
+    icon_background_color_dark: "#042a49"
 
   # The android, ios and web parameters can be used to disable generating a splash screen on a given
   # platform.
