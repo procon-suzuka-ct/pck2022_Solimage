@@ -1,10 +1,7 @@
-import 'dart:io';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image/image.dart' as image;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:solimage/components/child/standby.dart';
 import 'package:solimage/components/child_actions.dart';
@@ -86,20 +83,19 @@ class CameraScreen extends ConsumerWidget {
                                 ref
                                     .read(_takingPictureProvider.notifier)
                                     .state = true;
+                                ref.read(imagePathProvider.notifier).state = '';
                                 if (controller != null) {
-                                  final path =
-                                      (await controller.takePicture()).path;
-                                  ref.read(imagePathProvider.notifier).state =
-                                      path;
-                                  await showDialog(
+                                  showDialog(
                                       context: context,
                                       barrierDismissible: false,
                                       barrierColor:
                                           Colors.black.withOpacity(0.8),
-                                      builder: (context) => StandbyDialog(
-                                          controller: controller,
-                                          decodedImage: image.decodeImage(
-                                              File(path).readAsBytesSync())!));
+                                      builder: (context) =>
+                                          const StandbyDialog());
+                                  final path =
+                                      (await controller.takePicture()).path;
+                                  ref.read(imagePathProvider.notifier).state =
+                                      path;
                                 }
                                 ref
                                     .read(_takingPictureProvider.notifier)

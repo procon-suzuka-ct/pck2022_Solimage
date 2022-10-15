@@ -201,7 +201,7 @@ class PostScreen extends ConsumerWidget {
         title: const Text('オススメ'),
         content: Checkbox(
             value: isRecommendData,
-            onChanged: expData.value is RecommendData
+            onChanged: expData.value is! RecommendData
                 ? (value) {
                     ref.read(_isRecommendDataProvider.notifier).state =
                         value ?? false;
