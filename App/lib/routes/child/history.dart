@@ -49,7 +49,7 @@ class HistoryScreen extends ConsumerWidget {
                               alignment: Alignment.center,
                               fit: BoxFit.contain,
                               child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
+                                  padding: const EdgeInsets.all(30.0),
                                   child: Card(
                                       child: InkWell(
                                           customBorder: RoundedRectangleBorder(
@@ -69,11 +69,9 @@ class HistoryScreen extends ConsumerWidget {
                                                       WrapAlignment.center,
                                                   spacing: 10.0,
                                                   children: const [
-                                                    Icon(Icons.camera_alt,
-                                                        size: 50.0),
+                                                    Icon(Icons.camera_alt),
                                                     Text('さつえいしてみよう!',
                                                         style: TextStyle(
-                                                            fontSize: 30.0,
                                                             fontWeight:
                                                                 FontWeight
                                                                     .bold))
