@@ -48,6 +48,8 @@ final _dataProvider =
 
   return expData;
 });
+final exampleDataProvider =
+    FutureProvider.autoDispose((ref) => ExpData.getExpData(1));
 
 class PostScreen extends ConsumerWidget {
   const PostScreen({Key? key, this.dataId}) : super(key: key);
@@ -61,6 +63,7 @@ class PostScreen extends ConsumerWidget {
     final meaning = ref.watch(_meaningProvider);
     final imageUrl = ref.watch(_imageUrlProvider);
     final expData = ref.watch(_dataProvider(dataId));
+    final exampleData = ref.watch(exampleDataProvider);
     final user = ref.watch(userProvider.future);
     final isRecommendData = ref.watch(_isRecommendDataProvider);
 
@@ -204,13 +207,19 @@ class PostScreen extends ConsumerWidget {
       // TODO: 具体例を追加する
       Step(
           title: const Text('5W1H'),
-          content: Column(
+          content: Wrap(
+              spacing: 10.0,
               children: textEdits
-                  .map((tile) => TextFormField(
-                      initialValue: tile['state'],
-                      decoration: InputDecoration(labelText: tile['title']),
-                      onChanged: (value) =>
-                          ref.read(tile['provider'].notifier).state = value))
+                  .map((tile) => Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: TextFormField(
+                          initialValue: tile['state'],
+                          decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: tile['title']),
+                          onChanged: (value) => ref
+                              .read(tile['provider'].notifier)
+                              .state = value)))
                   .toList()))
     ];
 
