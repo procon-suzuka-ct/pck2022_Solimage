@@ -48,7 +48,15 @@ class StandbyDialog extends ConsumerWidget {
                       ? 'ちょっとまってね!'
                       : 'けっかをみてみよう!'),
               content: data != null
-                  ? CachedNetworkImage(imageUrl: data.imageUrl!, height: 300)
+                  ? Container(
+                      constraints: const BoxConstraints.tightFor(
+                          width: 300, height: 300),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20.0),
+                          image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image:
+                                  CachedNetworkImageProvider(data.imageUrl!))))
                   : null),
           orElse: () => const AlertDialog(
               content: Center(
