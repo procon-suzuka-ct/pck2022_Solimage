@@ -6,12 +6,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solimage/components/child_actions.dart';
 import 'package:solimage/states/camera.dart';
-import 'package:solimage/utils/classes/word.dart';
+import 'package:solimage/utils/classes/expData.dart';
 import 'package:solimage/utils/theme.dart';
 
 final _currentPageProvider = StateProvider.autoDispose((ref) => 0);
-final _wordDataProviderFamily = FutureProvider.autoDispose
-    .family<Word?, String>((ref, word) => Word.getWord(word));
+final _expDataProviderFamily = FutureProvider.autoDispose
+    .family<ExpData?, String>(
+        (ref, word) => ExpData.getExpDataByWord(word: word));
 final List<String> cardLabels = [
   'なんで',
   'なに',
@@ -30,7 +31,7 @@ class ResultScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final imagePath = ref.watch(imagePathProvider);
     final currentPage = ref.watch(_currentPageProvider);
-    final wordData = ref.watch(_wordDataProviderFamily(word));
+    final expData = ref.watch(_expDataProviderFamily(word));
     final controller = PageController();
     var size = MediaQuery.of(context).size;
     final itemHeight = (size.height - 56 - 120) / 3;
@@ -38,16 +39,16 @@ class ResultScreen extends ConsumerWidget {
 
     return Theme(
         data: lightTheme,
-        child: wordData.maybeWhen(
+        child: expData.maybeWhen(
             data: (data) => Scaffold(
                 appBar: AppBar(
                   centerTitle: true,
                   title: Container(
                       margin: const EdgeInsets.all(10.0),
-                      child: const FittedBox(
+                      child: FittedBox(
                           fit: BoxFit.contain,
-                          child: Text('けっか',
-                              style: TextStyle(
+                          child: Text(data?.word ?? word,
+                              style: const TextStyle(
                                   fontSize: 30.0,
                                   fontWeight: FontWeight.bold)))),
                   automaticallyImplyLeading: false,
