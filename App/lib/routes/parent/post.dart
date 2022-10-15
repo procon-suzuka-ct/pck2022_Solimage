@@ -98,10 +98,21 @@ class PostScreen extends ConsumerWidget {
     ];
 
     final steps = [
-      // TODO: 実際のデータに差し替える
+      Step(
+          title: const Text('オススメ'),
+          subtitle: const Text('有効にすると、より多くの人に見てもらえます'),
+          content: Checkbox(
+              value: isRecommendData,
+              onChanged: expData.value is! RecommendData
+                  ? (value) {
+                      ref.read(_isRecommendDataProvider.notifier).state =
+                          value ?? false;
+                    }
+                  : null)),
+      // 実際のデータに差し替える
       Step(
           title: const Text('ワード'),
-          subtitle: Text(word),
+          subtitle: Text(word.isEmpty ? '未入力' : word),
           content: TreeView(
               treeController: TreeController(allNodesExpanded: false),
               nodes: [
@@ -140,25 +151,18 @@ class PostScreen extends ConsumerWidget {
               indent: 20.0)),
       Step(
           title: const Text('簡単な説明'),
-          subtitle: Text(meaning),
+          subtitle: Text(meaning.isEmpty ? '未入力' : meaning),
           content: TextFormField(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              validator: (value) =>
+                  value == null || value.isEmpty ? '入力してください' : null,
               initialValue: meaning,
               decoration: const InputDecoration(labelText: '簡単な説明'),
               onChanged: (value) =>
                   ref.read(_meaningProvider.notifier).state = value)),
-      // TODO: 具体例を追加する
-      Step(
-          title: const Text('5W1H'),
-          content: Column(
-              children: textEdits
-                  .map((tile) => TextFormField(
-                      initialValue: tile['state'],
-                      decoration: InputDecoration(labelText: tile['title']),
-                      onChanged: (value) =>
-                          ref.read(tile['provider'].notifier).state = value))
-                  .toList())),
       Step(
           title: const Text('画像'),
+          subtitle: const Text('オススメする場合は必須です'),
           content: Column(children: [
             if (imageUrl.isNotEmpty)
               Container(
@@ -197,17 +201,17 @@ class PostScreen extends ConsumerWidget {
                 icon: const Icon(Icons.cloud_upload),
                 label: Text('画像を${imageUrl.isEmpty ? '追加' : '変更'}'))
           ])),
+      // TODO: 具体例を追加する
       Step(
-        title: const Text('オススメ'),
-        content: Checkbox(
-            value: isRecommendData,
-            onChanged: expData.value is! RecommendData
-                ? (value) {
-                    ref.read(_isRecommendDataProvider.notifier).state =
-                        value ?? false;
-                  }
-                : null),
-      )
+          title: const Text('5W1H'),
+          content: Column(
+              children: textEdits
+                  .map((tile) => TextFormField(
+                      initialValue: tile['state'],
+                      decoration: InputDecoration(labelText: tile['title']),
+                      onChanged: (value) =>
+                          ref.read(tile['provider'].notifier).state = value))
+                  .toList()))
     ];
 
     return expData.maybeWhen(
@@ -271,6 +275,8 @@ class PostScreen extends ConsumerWidget {
               ])),
               floatingActionButton: FloatingActionButton.extended(
                   onPressed: () async {
+                    ScaffoldMessenger.of(context).clearSnackBars();
+
                     if (word.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('ワードが選択されていません')));
@@ -280,6 +286,12 @@ class PostScreen extends ConsumerWidget {
                     if (meaning.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('簡単な説明が入力されていません')));
+                      return;
+                    }
+
+                    if (isRecommendData && imageUrl.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('画像を追加してください')));
                       return;
                     }
 
