@@ -49,7 +49,7 @@ class ProfileScreen extends ConsumerWidget {
                         ? Container(
                             margin: const EdgeInsets.all(10.0),
                             child: CircleAvatar(
-                                radius: 64.0,
+                                radius: 80.0,
                                 backgroundImage:
                                     CachedNetworkImageProvider(data)))
                         : const SizedBox.shrink(),
@@ -58,7 +58,7 @@ class ProfileScreen extends ConsumerWidget {
                     data: (data) =>
                         Row(mainAxisSize: MainAxisSize.min, children: [
                           Text('$dataさん',
-                              style: const TextStyle(fontSize: 20.0)),
+                              style: Theme.of(context).textTheme.titleLarge),
                           IconButton(
                               icon: const Icon(Icons.edit),
                               onPressed: () => showDialog(
