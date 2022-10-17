@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:solimage/components/tentative_card.dart';
 import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/expData.dart';
 
@@ -25,18 +26,16 @@ class HistoryScreen extends ConsumerWidget {
       const ListTile(
           title: Text('オススメ中の投稿',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold))),
-      Card(
-          child: InkWell(
-              customBorder: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              onTap: recommendData.value != null
-                  ? () => context.push(
-                      '/parent/post?dataId=${recommendData.value!.userId}')
-                  : () {},
-              child: recommendData.maybeWhen(
-                  data: (recommendData) => recommendData != null
-                      ? ListTile(
+      recommendData.maybeWhen(
+          data: (recommendData) => recommendData != null
+              ? Card(
+                  child: InkWell(
+                      customBorder: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      onTap: () => context
+                          .push('/parent/post?dataId=${recommendData.userId}'),
+                      child: ListTile(
                           leading: recommendData.imageUrl != null
                               ? Padding(
                                   padding: const EdgeInsets.symmetric(
@@ -46,13 +45,19 @@ class HistoryScreen extends ConsumerWidget {
                                       child: ClipRRect(
                                           borderRadius: const BorderRadius.all(
                                               Radius.circular(10.0)),
-                                          child:
-                                              CachedNetworkImage(fit: BoxFit.cover, imageUrl: recommendData.imageUrl!))))
+                                          child: CachedNetworkImage(
+                                              fit: BoxFit.cover,
+                                              imageUrl:
+                                                  recommendData.imageUrl!))))
                               : null,
                           title: Text('${recommendData.word}'),
-                          trailing: const Icon(Icons.edit))
-                      : Container(margin: const EdgeInsets.all(20.0), child: Wrap(direction: Axis.vertical, crossAxisAlignment: WrapCrossAlignment.center, runAlignment: WrapAlignment.center, spacing: 10.0, children: const [Icon(Icons.message, size: 30.0), Text('オススメ情報を投稿してみましょう!')])),
-                  orElse: () => Container(margin: const EdgeInsets.all(20.0), child: const Center(child: CircularProgressIndicator()))))),
+                          trailing: const Icon(Icons.edit))))
+              : const TentativeCard(
+                  icon: Icon(Icons.message, size: 30.0),
+                  label: Text('オススメ情報を投稿してみましょう!')),
+          orElse: () => Container(
+              margin: const EdgeInsets.all(20.0),
+              child: const Center(child: CircularProgressIndicator()))),
       const ListTile(
           title: Text('過去の投稿',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold))),
@@ -86,24 +91,9 @@ class HistoryScreen extends ConsumerWidget {
                               .push('/parent/post?dataId=${expData?.dataId}'))))
                   .toList()
               : [
-                  Card(
-                      child: InkWell(
-                          customBorder: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          child: Container(
-                              margin: const EdgeInsets.all(20.0),
-                              child: Wrap(
-                                  direction: Axis.vertical,
-                                  crossAxisAlignment: WrapCrossAlignment.center,
-                                  alignment: WrapAlignment.center,
-                                  runAlignment: WrapAlignment.center,
-                                  spacing: 10.0,
-                                  children: const [
-                                    Icon(Icons.edit, size: 30.0),
-                                    Text('知識を投稿しましょう!')
-                                  ])),
-                          onTap: () {}))
+                  const TentativeCard(
+                      icon: Icon(Icons.edit, size: 30.0),
+                      label: Text('知識を投稿しましょう!'))
                 ],
           orElse: () => const [Center(child: CircularProgressIndicator())])
     ]);

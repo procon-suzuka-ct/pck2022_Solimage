@@ -9,6 +9,7 @@ import 'package:solimage/components/parent/group_detail.dart';
 import 'package:solimage/components/parent/group_participate.dart';
 import 'package:solimage/components/parent/user_logout.dart';
 import 'package:solimage/components/parent/user_name.dart';
+import 'package:solimage/components/tentative_card.dart';
 import 'package:solimage/states/auth.dart';
 import 'package:solimage/states/preferences.dart';
 import 'package:solimage/states/user.dart';
@@ -135,23 +136,9 @@ class ProfileScreen extends ConsumerWidget {
                       : const SizedBox.shrink())
                   .toList()
               : [
-                  Card(
-                      child: InkWell(
-                          customBorder: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          child: Container(
-                              margin: const EdgeInsets.all(20.0),
-                              child: Wrap(
-                                  direction: Axis.vertical,
-                                  crossAxisAlignment: WrapCrossAlignment.center,
-                                  runAlignment: WrapAlignment.center,
-                                  spacing: 10.0,
-                                  children: const [
-                                    Icon(Icons.group, size: 30.0),
-                                    Text('グループに参加しましょう!')
-                                  ])),
-                          onTap: () {}))
+                  const TentativeCard(
+                      icon: Icon(Icons.group, size: 30.0),
+                      label: Text('グループに参加しましょう!'))
                 ],
           orElse: () => const [Center(child: CircularProgressIndicator())]),
       // TODO: 親しみやすいUXに改良する
