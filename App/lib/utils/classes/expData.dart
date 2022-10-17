@@ -59,7 +59,7 @@ class ExpData {
   }
 
   ExpData.fromJson(Map<String, Object?> json)
-      : _views = json['views'] as int,
+      : _views = (json['views'] ?? 0) as int,
         _dataId = json['dataId'] as int,
         _userId = json['userId'] as String,
         rootId = json['rootId'] as int?,
