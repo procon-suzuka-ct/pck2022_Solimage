@@ -8,6 +8,7 @@ import 'package:solimage/components/mode_select.dart';
 import 'package:solimage/components/parent/group_create.dart';
 import 'package:solimage/components/parent/group_detail.dart';
 import 'package:solimage/components/parent/group_participate.dart';
+import 'package:solimage/components/parent/heading_tile.dart';
 import 'package:solimage/components/parent/user_logout.dart';
 import 'package:solimage/components/parent/user_name.dart';
 import 'package:solimage/components/tentative_card.dart';
@@ -86,9 +87,7 @@ class ProfileScreen extends ConsumerWidget {
           child:
               const ListTile(leading: Icon(Icons.info), title: Text('アプリについて')),
           onTap: () => showAppDetailDialog(context)),
-      ListTile(
-          title: const Text('グループ',
-              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
+      HeadingTile('グループ',
           trailing: Wrap(spacing: 10.0, children: [
             ElevatedButton(
                 onPressed: () => showDialog(
@@ -127,9 +126,7 @@ class ProfileScreen extends ConsumerWidget {
                 ],
           orElse: () => const [Center(child: CircularProgressIndicator())]),
       // TODO: 親しみやすいUXに改良する
-      const ListTile(
-          title: Text('閲覧数',
-              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold))),
+      const HeadingTile('閲覧数'),
       CardTile(
           padding: const EdgeInsets.all(30.0),
           child: ConstrainedBox(

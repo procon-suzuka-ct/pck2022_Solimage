@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solimage/components/card_tile.dart';
+import 'package:solimage/components/parent/heading_tile.dart';
 import 'package:solimage/components/tentative_card.dart';
 import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/expData.dart';
@@ -24,9 +25,7 @@ class HistoryScreen extends ConsumerWidget {
     final recommendData = ref.watch(recommendDataProvider);
 
     return ListView(children: [
-      const ListTile(
-          title: Text('オススメ中の投稿',
-              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold))),
+      const HeadingTile('オススメ中の投稿'),
       recommendData.maybeWhen(
           data: (recommendData) => recommendData != null
               ? CardTile(
@@ -53,9 +52,7 @@ class HistoryScreen extends ConsumerWidget {
                   label: Text('オススメ情報を投稿してみましょう!')),
           orElse: () =>
               Container(margin: const EdgeInsets.all(20.0), child: const Center(child: CircularProgressIndicator()))),
-      const ListTile(
-          title: Text('過去の投稿',
-              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold))),
+      const HeadingTile('過去の投稿'),
       ...expDatas.maybeWhen(
           data: (expDatas) => expDatas.isNotEmpty
               ? expDatas
