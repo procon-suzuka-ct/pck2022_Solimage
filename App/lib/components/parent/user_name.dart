@@ -26,7 +26,8 @@ class UserNameDialog extends ConsumerWidget {
                 subtitle: Text('名前はグループ内の人に公開されることがあります'))),
         TextField(
             controller: controller,
-            decoration: const InputDecoration(hintText: '名前を入力してください'))
+            decoration: const InputDecoration(
+                border: OutlineInputBorder(), hintText: '名前を入力してください'))
       ]),
       actions: <Widget>[
         TextButton(

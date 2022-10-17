@@ -23,7 +23,9 @@ class GroupParticipateDialog extends ConsumerWidget {
           TextField(
               controller: _controller,
               decoration: const InputDecoration(
-                  labelText: 'グループID', hintText: 'グループIDを入力してください'),
+                  border: OutlineInputBorder(),
+                  labelText: 'グループID',
+                  hintText: 'グループIDを入力してください'),
               keyboardType: TextInputType.number)
         ]),
         actions: <Widget>[
