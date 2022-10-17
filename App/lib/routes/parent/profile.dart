@@ -46,12 +46,15 @@ class ProfileScreen extends ConsumerWidget {
               children: [
                 photoURL.maybeWhen(
                     data: (data) => data != null
-                        ? Container(
-                            margin: const EdgeInsets.all(10.0),
-                            child: CircleAvatar(
-                                radius: 80.0,
-                                backgroundImage:
-                                    CachedNetworkImageProvider(data)))
+                        ? Card(
+                            elevation: 8.0,
+                            shape: const CircleBorder(),
+                            clipBehavior: Clip.antiAlias,
+                            child: CachedNetworkImage(
+                                imageUrl: data,
+                                width: 160.0,
+                                height: 160.0,
+                                fit: BoxFit.contain))
                         : const SizedBox.shrink(),
                     orElse: () => const CircularProgressIndicator()),
                 name.maybeWhen(
