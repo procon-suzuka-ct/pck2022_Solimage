@@ -20,52 +20,57 @@ class GroupMembersDialog extends ConsumerWidget {
     final groupMembers = ref.watch(_groupMembersProvider(group));
 
     return AlertDialog(
-        title: Text('${group.groupName}のメンバー'),
-        content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: groupMembers.maybeWhen(
-                data: (members) => members
-                    .map((member) => FutureBuilder(
-                        future: uid,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          } else if (snapshot.connectionState ==
-                              ConnectionState.done) {
-                            return CardTile(
-                                padding: const EdgeInsets.all(0),
-                                child: ListTile(
-                                    title: Text('${member?.name}'),
-                                    trailing: (group.adminId == snapshot.data &&
-                                            group.adminId != member?.uid)
-                                        ? IconButton(
-                                            onPressed: () async {
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(SnackBar(
-                                                      content: Text(
-                                                          '${member?.name}を削除しました')));
-                                              if (member != null) {
-                                                member.groups
-                                                    .remove(group.groupID);
-                                                await member.save();
-                                                group.removeMember(member.uid);
-                                                for (var expData
-                                                    in member.expDatas) {
-                                                  group.removeExpData(expData);
-                                                }
-                                                await group.update();
+      title: Text('${group.groupName}のメンバー'),
+      content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: groupMembers.maybeWhen(
+              data: (members) => members
+                  .map((member) => FutureBuilder(
+                      future: uid,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else if (snapshot.connectionState ==
+                            ConnectionState.done) {
+                          return CardTile(
+                              padding: const EdgeInsets.all(0),
+                              child: ListTile(
+                                  title: Text('${member?.name}'),
+                                  trailing: (group.adminId == snapshot.data &&
+                                          group.adminId != member?.uid)
+                                      ? IconButton(
+                                          onPressed: () async {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(SnackBar(
+                                                    content: Text(
+                                                        '${member?.name}を削除しました')));
+                                            if (member != null) {
+                                              member.groups
+                                                  .remove(group.groupID);
+                                              await member.save();
+                                              group.removeMember(member.uid);
+                                              for (var expData
+                                                  in member.expDatas) {
+                                                group.removeExpData(expData);
                                               }
-                                            },
-                                            icon:
-                                                const Icon(Icons.person_remove))
-                                        : null));
-                          }
-                          return const SizedBox.shrink();
-                        }))
-                    .toList(),
-                orElse: () =>
-                    const [Center(child: CircularProgressIndicator())])));
+                                              await group.update();
+                                            }
+                                          },
+                                          icon: const Icon(Icons.person_remove))
+                                      : null));
+                        }
+                        return const SizedBox.shrink();
+                      }))
+                  .toList(),
+              orElse: () =>
+                  const [Center(child: CircularProgressIndicator())])),
+      actions: [
+        TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('閉じる'))
+      ],
+    );
   }
 }
