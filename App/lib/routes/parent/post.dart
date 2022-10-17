@@ -50,9 +50,6 @@ final _dataProvider =
   return expData;
 });
 final _exampleDataProvider = FutureProvider((ref) => ExpData.getExpData(6));
-final _statesProviderFamily =
-    StateProvider.family<List<MaterialStatesController>, int>((ref, length) =>
-        List.generate(length, (_) => MaterialStatesController()));
 
 class PostScreen extends ConsumerWidget {
   const PostScreen({Key? key, this.dataId}) : super(key: key);
@@ -85,7 +82,7 @@ class PostScreen extends ConsumerWidget {
       // 実際のデータに差し替える
       Step(
           title: const Text('ワード'),
-          subtitle: Text(word.isEmpty ? '未入力' : word),
+          subtitle: const Text('必須です'),
           content: TreeView(
               treeController: TreeController(allNodesExpanded: false),
               nodes: [
@@ -127,7 +124,7 @@ class PostScreen extends ConsumerWidget {
               : StepState.indexed),
       Step(
           title: const Text('簡単な説明'),
-          subtitle: Text(meaning.isEmpty ? '未入力' : meaning),
+          subtitle: const Text('必須です'),
           content: exampleData.maybeWhen(
               data: (data) => Column(children: [
                     TextFormField(
@@ -191,6 +188,7 @@ class PostScreen extends ConsumerWidget {
               : StepState.indexed),
       Step(
           title: const Text('5W1H'),
+          subtitle: const Text('可能な限り入力してください'),
           content: exampleData.maybeWhen(
               data: (data) => Wrap(spacing: 10.0, children: [
                     Padding(
