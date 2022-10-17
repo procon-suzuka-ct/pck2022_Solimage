@@ -73,8 +73,8 @@ class ExpData {
         _who = json['who'] as String?,
         _how = json['how'] as String?,
         _imageUrl = json['imageUrl'] as String?,
-        _goodUsers = (json['goodUsers'] as List<dynamic>).cast<int>(),
-        _badUsers = (json['badUsers'] as List<dynamic>).cast<int>();
+        _goodUsers = ((json['goodUsers'] ?? []) as List<dynamic>).cast<int>(),
+        _badUsers = ((json['badUsers'] ?? []) as List<dynamic>).cast<int>();
 
   Map<String, Object?> toJson() {
     return {
