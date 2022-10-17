@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:solimage/components/card_tile.dart';
 import 'package:solimage/components/parent/group_leave.dart';
 import 'package:solimage/components/parent/group_members.dart';
 import 'package:solimage/states/user.dart';
@@ -28,21 +29,17 @@ class GroupDetailDialog extends ConsumerWidget {
                           child: ListTile(
                               title: const Text('グループを管理します'),
                               subtitle: Text('${user?.name}さんはグループの管理者です'))),
-                    Card(
-                        child: InkWell(
-                            customBorder: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: const ListTile(
-                                leading: Icon(Icons.person),
-                                title: Text('メンバー一覧')),
-                            onTap: () {
-                              Navigator.of(context).pop();
-                              showDialog(
-                                  context: context,
-                                  builder: (context) =>
-                                      GroupMembersDialog(group: group));
-                            })),
+                    CardTile(
+                        padding: const EdgeInsets.all(0),
+                        child: const ListTile(
+                            leading: Icon(Icons.person), title: Text('メンバー一覧')),
+                        onTap: () {
+                          showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) =>
+                                  GroupMembersDialog(group: group));
+                        }),
                     Card(
                         child: InkWell(
                             customBorder: RoundedRectangleBorder(

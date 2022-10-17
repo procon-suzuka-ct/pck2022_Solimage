@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solimage/components/child_actions.dart';
+import 'package:solimage/components/tentative_card.dart';
 import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/history.dart';
 import 'package:solimage/utils/theme.dart';
@@ -45,40 +46,16 @@ class HistoryScreen extends ConsumerWidget {
                                                 '${history.year}/${history.month}/${history.day}'),
                                             onTap: () {})));
                               })
-                          : FittedBox(
-                              alignment: Alignment.center,
-                              fit: BoxFit.contain,
-                              child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Card(
-                                      child: InkWell(
-                                          customBorder: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10.0),
-                                          ),
-                                          child: Container(
-                                              margin:
-                                                  const EdgeInsets.all(20.0),
-                                              child: Wrap(
-                                                  direction: Axis.vertical,
-                                                  crossAxisAlignment:
-                                                      WrapCrossAlignment.center,
-                                                  alignment:
-                                                      WrapAlignment.center,
-                                                  runAlignment:
-                                                      WrapAlignment.center,
-                                                  spacing: 10.0,
-                                                  children: const [
-                                                    Icon(Icons.camera_alt,
-                                                        size: 50.0),
-                                                    Text('さつえいしてみよう!',
-                                                        style: TextStyle(
-                                                            fontSize: 30.0,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold))
-                                                  ])),
-                                          onTap: () {})))),
+                          : const Padding(
+                              padding: EdgeInsets.all(30.0),
+                              child: FittedBox(
+                                  fit: BoxFit.fitWidth,
+                                  child: TentativeCard(
+                                      padding: EdgeInsets.all(20.0),
+                                      icon: Icon(Icons.camera_alt),
+                                      label: Text('さつえいしてみよう!',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold))))),
                       orElse: () =>
                           const Center(child: CircularProgressIndicator()))),
               ChildActions(actions: [
