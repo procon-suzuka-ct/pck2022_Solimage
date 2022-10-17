@@ -174,13 +174,13 @@ class ResultScreen extends ConsumerWidget {
                                 curve: Curves.easeInOut)
                             : () => context.pop(),
                         child: const Text('もどる')),
-                    ChildActionButton(
-                        onPressed: currentPage != 2
-                            ? () => controller.nextPage(
+                    currentPage != 2
+                        ? ChildActionButton(
+                            onPressed: () => controller.nextPage(
                                 duration: const Duration(milliseconds: 200),
-                                curve: Curves.easeInOut)
-                            : null,
-                        child: const Text('くわしく'))
+                                curve: Curves.easeInOut),
+                            child: const Text('くわしく'))
+                        : const SizedBox()
                   ])
                 ])),
             orElse: () => const Scaffold(
