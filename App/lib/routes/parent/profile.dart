@@ -63,6 +63,7 @@ class ProfileScreen extends ConsumerWidget {
                               icon: const Icon(Icons.edit),
                               onPressed: () => showDialog(
                                   context: context,
+                                  barrierDismissible: false,
                                   builder: (context) => UserNameDialog(
                                       user: user.value,
                                       nameProvider: _nameProvider)))
@@ -83,6 +84,7 @@ class ProfileScreen extends ConsumerWidget {
               const ListTile(leading: Icon(Icons.logout), title: Text('ログアウト')),
           onTap: () => showDialog(
               context: context,
+              barrierDismissible: false,
               builder: (context) => UserLogoutDialog(prefs: prefs.value))),
       CardTile(
           child:
@@ -93,15 +95,15 @@ class ProfileScreen extends ConsumerWidget {
             ElevatedButton(
                 onPressed: () => showDialog(
                     context: context,
-                    builder: (context) => GroupCreateDialog(user: user.value),
-                    useRootNavigator: false),
+                    barrierDismissible: false,
+                    builder: (context) => GroupCreateDialog(user: user.value)),
                 child: const Text('作成')),
             ElevatedButton(
                 onPressed: () => showDialog(
                     context: context,
+                    barrierDismissible: false,
                     builder: (context) =>
-                        GroupParticipateDialog(user: user.value),
-                    useRootNavigator: false),
+                        GroupParticipateDialog(user: user.value)),
                 child: const Text('参加'))
           ])),
       ...groups.maybeWhen(
@@ -114,8 +116,8 @@ class ProfileScreen extends ConsumerWidget {
                               title: Text(group.groupName),
                               trailing: const Icon(Icons.info)),
                           onTap: () => showDialog(
-                              barrierDismissible: false,
                               context: context,
+                              barrierDismissible: false,
                               builder: (context) =>
                                   GroupDetailDialog(group: group)))
                       : const SizedBox.shrink())

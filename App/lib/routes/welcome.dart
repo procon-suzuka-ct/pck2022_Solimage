@@ -32,6 +32,7 @@ class WelcomeScreen extends ConsumerWidget {
                                 const SnackBar(content: Text("ログインしました")));
                             await showDialog(
                                 context: context,
+                                barrierDismissible: false,
                                 builder: (context) => const ModeSelectDialog());
                             ref.refresh(authProvider);
                           }

@@ -260,6 +260,7 @@ class PostScreen extends ConsumerWidget {
                                 if (awaitedUser != null) {
                                   showDialog(
                                       context: context,
+                                      barrierDismissible: false,
                                       builder: (context) => DataDeleteDialog(
                                           user: awaitedUser, expData: data));
                                 }
