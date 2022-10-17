@@ -15,7 +15,7 @@ class GroupParticipateDialog extends ConsumerWidget {
         title: const Text('グループに参加'),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
           const SimpleDialogOption(
-              padding: EdgeInsets.symmetric(horizontal: 10.0),
+              padding: EdgeInsets.zero,
               onPressed: null,
               child: ListTile(
                   title: Text('グループに参加します'),
@@ -23,7 +23,9 @@ class GroupParticipateDialog extends ConsumerWidget {
           TextField(
               controller: _controller,
               decoration: const InputDecoration(
-                  labelText: 'グループID', hintText: 'グループIDを入力してください'),
+                  border: OutlineInputBorder(),
+                  labelText: 'グループID',
+                  hintText: 'グループIDを入力してください'),
               keyboardType: TextInputType.number)
         ]),
         actions: <Widget>[

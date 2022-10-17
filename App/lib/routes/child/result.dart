@@ -22,6 +22,8 @@ final List<String> cardLabels = [
   'どうやって',
 ];
 
+// TODO: 実際のデータに差し替える（ほぼ実装済み、動作未確認）
+// TODO: expDataの閲覧数を実装する
 class ResultScreen extends ConsumerWidget {
   const ResultScreen({Key? key, required this.word}) : super(key: key);
 

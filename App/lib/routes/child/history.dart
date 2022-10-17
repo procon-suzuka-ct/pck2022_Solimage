@@ -26,6 +26,7 @@ class HistoryScreen extends ConsumerWidget {
               centerTitle: true,
               title: const Text('きろく'),
             ),
+            // TODO: 実際のデータで検証する（実装済みで動作未確認）
             body: Column(children: [
               Expanded(
                   child: histories.maybeWhen(

@@ -79,7 +79,7 @@ class PostScreen extends ConsumerWidget {
                     }
                   : null),
           state: step != 0 ? StepState.complete : StepState.indexed),
-      // 実際のデータに差し替える
+      // TODO: 実際のデータに差し替える（ワード一覧）
       Step(
           title: const Text('ワード'),
           subtitle: const Text('必須です'),

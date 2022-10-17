@@ -5,6 +5,7 @@ import 'package:solimage/components/mode_select.dart';
 import 'package:solimage/states/auth.dart';
 import 'package:solimage/utils/auth.dart';
 
+// TODO: （余裕があれば）紹介画面をもっと充実させたい
 class WelcomeScreen extends ConsumerWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
 
