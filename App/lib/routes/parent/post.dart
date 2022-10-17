@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_simple_treeview/flutter_simple_treeview.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:solimage/components/child/example_text.dart';
 import 'package:solimage/components/parent/data_delete.dart';
 import 'package:solimage/components/parent/data_post.dart';
 import 'package:solimage/states/user.dart';
@@ -48,8 +49,7 @@ final _dataProvider =
 
   return expData;
 });
-final exampleDataProvider =
-    FutureProvider.autoDispose((ref) => ExpData.getExpData(1));
+final _exampleDataProvider = FutureProvider((ref) => ExpData.getExpData(6));
 
 class PostScreen extends ConsumerWidget {
   const PostScreen({Key? key, this.dataId}) : super(key: key);
@@ -63,42 +63,9 @@ class PostScreen extends ConsumerWidget {
     final meaning = ref.watch(_meaningProvider);
     final imageUrl = ref.watch(_imageUrlProvider);
     final expData = ref.watch(_dataProvider(dataId));
-    final exampleData = ref.watch(exampleDataProvider);
+    final exampleData = ref.watch(_exampleDataProvider);
     final user = ref.watch(userProvider.future);
     final isRecommendData = ref.watch(_isRecommendDataProvider);
-
-    final List<Map<String, dynamic>> textEdits = [
-      {
-        'title': 'なぜ',
-        'provider': _whyProvider,
-        'state': ref.watch(_whyProvider)
-      },
-      {
-        'title': 'なに',
-        'provider': _whatProvider,
-        'state': ref.watch(_whatProvider)
-      },
-      {
-        'title': 'どこで',
-        'provider': _whereProvider,
-        'state': ref.watch(_whereProvider)
-      },
-      {
-        'title': 'いつ',
-        'provider': _whenProvider,
-        'state': ref.watch(_whenProvider)
-      },
-      {
-        'title': 'だれ',
-        'provider': _whoProvider,
-        'state': ref.watch(_whoProvider)
-      },
-      {
-        'title': 'どうやって',
-        'provider': _howProvider,
-        'state': ref.watch(_howProvider)
-      }
-    ];
 
     final steps = [
       Step(
@@ -204,23 +171,70 @@ class PostScreen extends ConsumerWidget {
                 icon: const Icon(Icons.cloud_upload),
                 label: Text('画像を${imageUrl.isEmpty ? '追加' : '変更'}'))
           ])),
-      // TODO: 具体例を追加する
       Step(
           title: const Text('5W1H'),
-          content: Wrap(
-              spacing: 10.0,
-              children: textEdits
-                  .map((tile) => Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: TextFormField(
-                          initialValue: tile['state'],
-                          decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              labelText: tile['title']),
-                          onChanged: (value) => ref
-                              .read(tile['provider'].notifier)
-                              .state = value)))
-                  .toList()))
+          content: exampleData.maybeWhen(
+              data: (data) => Wrap(spacing: 10.0, children: [
+                    Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: TextFormField(
+                            initialValue: ref.watch(_whyProvider),
+                            decoration: const InputDecoration(
+                                border: OutlineInputBorder(), labelText: 'なぜ'),
+                            onChanged: (value) =>
+                                ref.read(_whyProvider.notifier).state = value)),
+                    ExampleText(data?.why),
+                    Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: TextFormField(
+                            initialValue: ref.watch(_whatProvider),
+                            decoration: const InputDecoration(
+                                border: OutlineInputBorder(), labelText: 'なに'),
+                            onChanged: (value) => ref
+                                .read(_whatProvider.notifier)
+                                .state = value)),
+                    ExampleText(data?.what),
+                    Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: TextFormField(
+                            initialValue: ref.watch(_whereProvider),
+                            decoration: const InputDecoration(
+                                border: OutlineInputBorder(), labelText: 'どこ'),
+                            onChanged: (value) => ref
+                                .read(_whereProvider.notifier)
+                                .state = value)),
+                    ExampleText(data?.where),
+                    Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: TextFormField(
+                            initialValue: ref.watch(_whenProvider),
+                            decoration: const InputDecoration(
+                                border: OutlineInputBorder(), labelText: 'いつ'),
+                            onChanged: (value) => ref
+                                .read(_whenProvider.notifier)
+                                .state = value)),
+                    ExampleText(data?.when),
+                    Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: TextFormField(
+                            initialValue: ref.watch(_whoProvider),
+                            decoration: const InputDecoration(
+                                border: OutlineInputBorder(), labelText: 'だれ'),
+                            onChanged: (value) =>
+                                ref.read(_whoProvider.notifier).state = value)),
+                    ExampleText(data?.who),
+                    Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: TextFormField(
+                            initialValue: ref.watch(_howProvider),
+                            decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'どうやって'),
+                            onChanged: (value) =>
+                                ref.read(_howProvider.notifier).state = value)),
+                    ExampleText(data?.how)
+                  ]),
+              orElse: () => const CircularProgressIndicator()))
     ];
 
     return expData.maybeWhen(
