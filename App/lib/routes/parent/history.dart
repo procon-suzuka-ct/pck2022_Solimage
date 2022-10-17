@@ -28,8 +28,7 @@ class HistoryScreen extends ConsumerWidget {
           title: Text('オススメ中の投稿',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold))),
       recommendData.maybeWhen(
-          data: (recommendData) =>
-          recommendData != null
+          data: (recommendData) => recommendData != null
               ? CardTile(
                   onTap: () => context
                       .push('/parent/post?dataId=${recommendData.userId}'),

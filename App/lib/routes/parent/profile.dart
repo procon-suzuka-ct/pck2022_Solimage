@@ -107,8 +107,7 @@ class ProfileScreen extends ConsumerWidget {
       ...groups.maybeWhen(
           data: (data) => data.isNotEmpty
               ? data
-                  .map((group) =>
-          group != null
+                  .map((group) => group != null
                       ? CardTile(
                           child: ListTile(
                               leading: const Icon(Icons.group),

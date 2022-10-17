@@ -21,8 +21,7 @@ class GroupDetailDialog extends ConsumerWidget {
       content: Column(
           mainAxisSize: MainAxisSize.min,
           children: user.maybeWhen(
-              data: (user) =>
-              [
+              data: (user) => [
                     if (group.adminId == user?.uid)
                       SimpleDialogOption(
                           padding: EdgeInsets.zero,
