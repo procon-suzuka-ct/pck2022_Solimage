@@ -10,9 +10,14 @@ import 'package:solimage/utils/classes/expData.dart';
 import 'package:solimage/utils/theme.dart';
 
 final _currentPageProvider = StateProvider.autoDispose((ref) => 0);
-final _expDataProviderFamily = FutureProvider.autoDispose
-    .family<ExpData?, String>(
-        (ref, word) => ExpData.getExpDataByWord(word: word));
+final _expDataProviderFamily =
+    FutureProvider.autoDispose.family<ExpData?, String>((ref, word) async {
+  final expData = await ExpData.getExpDataByWord(word: word);
+
+  if (expData != null) await expData.addViews();
+
+  return expData;
+});
 final List<String> cardLabels = [
   'なんで',
   'なに',
@@ -23,7 +28,6 @@ final List<String> cardLabels = [
 ];
 
 // TODO: 実際のデータに差し替える（ほぼ実装済み、動作未確認）
-// TODO: expDataの閲覧数を実装する
 class ResultScreen extends ConsumerWidget {
   const ResultScreen({Key? key, required this.word}) : super(key: key);
 
