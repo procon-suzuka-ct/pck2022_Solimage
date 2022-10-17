@@ -20,7 +20,6 @@ class Classifier {
   // 変更済み（ここから）
   Classifier._internal() {
     _interpreterOptions.threads = 1;
-    _interpreterOptions.useNnApiForAndroid = true;
   }
 
   bool isInited = false;
