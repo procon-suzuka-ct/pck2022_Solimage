@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_simple_treeview/flutter_simple_treeview.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:solimage/components/child/example_text.dart';
 import 'package:solimage/components/parent/data_delete.dart';
 import 'package:solimage/components/parent/data_post.dart';
 import 'package:solimage/states/user.dart';
@@ -48,6 +49,7 @@ final _dataProvider =
 
   return expData;
 });
+final _exampleDataProvider = FutureProvider((ref) => ExpData.getExpData(6));
 
 class PostScreen extends ConsumerWidget {
   const PostScreen({Key? key, this.dataId}) : super(key: key);
@@ -61,47 +63,26 @@ class PostScreen extends ConsumerWidget {
     final meaning = ref.watch(_meaningProvider);
     final imageUrl = ref.watch(_imageUrlProvider);
     final expData = ref.watch(_dataProvider(dataId));
+    final exampleData = ref.watch(_exampleDataProvider);
     final user = ref.watch(userProvider.future);
     final isRecommendData = ref.watch(_isRecommendDataProvider);
-
-    final List<Map<String, dynamic>> textEdits = [
-      {
-        'title': 'なぜ',
-        'provider': _whyProvider,
-        'state': ref.watch(_whyProvider)
-      },
-      {
-        'title': 'なに',
-        'provider': _whatProvider,
-        'state': ref.watch(_whatProvider)
-      },
-      {
-        'title': 'どこで',
-        'provider': _whereProvider,
-        'state': ref.watch(_whereProvider)
-      },
-      {
-        'title': 'いつ',
-        'provider': _whenProvider,
-        'state': ref.watch(_whenProvider)
-      },
-      {
-        'title': 'だれ',
-        'provider': _whoProvider,
-        'state': ref.watch(_whoProvider)
-      },
-      {
-        'title': 'どうやって',
-        'provider': _howProvider,
-        'state': ref.watch(_howProvider)
-      }
-    ];
-
     final steps = [
-      // TODO: 実際のデータに差し替える
+      Step(
+          title: const Text('オススメ'),
+          subtitle: const Text('有効にすると、より多くの人に見てもらえます'),
+          content: Checkbox(
+              value: isRecommendData,
+              onChanged: expData.value is! RecommendData
+                  ? (value) {
+                      ref.read(_isRecommendDataProvider.notifier).state =
+                          value ?? false;
+                    }
+                  : null),
+          state: step != 0 ? StepState.complete : StepState.indexed),
+      // TODO: 実際のデータに差し替える（ワード一覧）
       Step(
           title: const Text('ワード'),
-          subtitle: Text(word),
+          subtitle: const Text('必須です'),
           content: TreeView(
               treeController: TreeController(allNodesExpanded: false),
               nodes: [
@@ -137,28 +118,33 @@ class PostScreen extends ConsumerWidget {
                       ])
                 ]),
               ],
-              indent: 20.0)),
+              indent: 20.0),
+          state: step != 1 && word.isNotEmpty
+              ? StepState.complete
+              : StepState.indexed),
       Step(
           title: const Text('簡単な説明'),
-          subtitle: Text(meaning),
-          content: TextFormField(
-              initialValue: meaning,
-              decoration: const InputDecoration(labelText: '簡単な説明'),
-              onChanged: (value) =>
-                  ref.read(_meaningProvider.notifier).state = value)),
-      // TODO: 具体例を追加する
-      Step(
-          title: const Text('5W1H'),
-          content: Column(
-              children: textEdits
-                  .map((tile) => TextFormField(
-                      initialValue: tile['state'],
-                      decoration: InputDecoration(labelText: tile['title']),
-                      onChanged: (value) =>
-                          ref.read(tile['provider'].notifier).state = value))
-                  .toList())),
+          subtitle: const Text('必須です'),
+          content: exampleData.maybeWhen(
+              data: (data) => Column(children: [
+                    TextFormField(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: (value) =>
+                            value == null || value.isEmpty ? '入力してください' : null,
+                        initialValue: meaning,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(), labelText: '簡単な説明'),
+                        onChanged: (value) =>
+                            ref.read(_meaningProvider.notifier).state = value),
+                    ExampleText(data?.meaning)
+                  ]),
+              orElse: () => const Center(child: CircularProgressIndicator())),
+          state: step != 2 && meaning.isNotEmpty
+              ? StepState.complete
+              : StepState.indexed),
       Step(
           title: const Text('画像'),
+          subtitle: const Text('オススメする場合は必須です'),
           content: Column(children: [
             if (imageUrl.isNotEmpty)
               Container(
@@ -196,18 +182,76 @@ class PostScreen extends ConsumerWidget {
                 },
                 icon: const Icon(Icons.cloud_upload),
                 label: Text('画像を${imageUrl.isEmpty ? '追加' : '変更'}'))
-          ])),
+          ]),
+          state: step != 3 && (isRecommendData ? imageUrl.isNotEmpty : true)
+              ? StepState.complete
+              : StepState.indexed),
       Step(
-        title: const Text('オススメ'),
-        content: Checkbox(
-            value: isRecommendData,
-            onChanged: expData.value is RecommendData
-                ? (value) {
-                    ref.read(_isRecommendDataProvider.notifier).state =
-                        value ?? false;
-                  }
-                : null),
-      )
+          title: const Text('5W1H'),
+          subtitle: const Text('可能な限り入力してください'),
+          content: exampleData.maybeWhen(
+              data: (data) => Wrap(spacing: 10.0, children: [
+                    Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: TextFormField(
+                            initialValue: ref.watch(_whyProvider),
+                            decoration: const InputDecoration(
+                                border: OutlineInputBorder(), labelText: 'なぜ'),
+                            onChanged: (value) =>
+                                ref.read(_whyProvider.notifier).state = value)),
+                    ExampleText(data?.why),
+                    Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: TextFormField(
+                            initialValue: ref.watch(_whatProvider),
+                            decoration: const InputDecoration(
+                                border: OutlineInputBorder(), labelText: 'なに'),
+                            onChanged: (value) => ref
+                                .read(_whatProvider.notifier)
+                                .state = value)),
+                    ExampleText(data?.what),
+                    Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: TextFormField(
+                            initialValue: ref.watch(_whereProvider),
+                            decoration: const InputDecoration(
+                                border: OutlineInputBorder(), labelText: 'どこ'),
+                            onChanged: (value) => ref
+                                .read(_whereProvider.notifier)
+                                .state = value)),
+                    ExampleText(data?.where),
+                    Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: TextFormField(
+                            initialValue: ref.watch(_whenProvider),
+                            decoration: const InputDecoration(
+                                border: OutlineInputBorder(), labelText: 'いつ'),
+                            onChanged: (value) => ref
+                                .read(_whenProvider.notifier)
+                                .state = value)),
+                    ExampleText(data?.when),
+                    Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: TextFormField(
+                            initialValue: ref.watch(_whoProvider),
+                            decoration: const InputDecoration(
+                                border: OutlineInputBorder(), labelText: 'だれ'),
+                            onChanged: (value) =>
+                                ref.read(_whoProvider.notifier).state = value)),
+                    ExampleText(data?.who),
+                    Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: TextFormField(
+                            initialValue: ref.watch(_howProvider),
+                            decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'どうやって'),
+                            onChanged: (value) =>
+                                ref.read(_howProvider.notifier).state = value)),
+                    ExampleText(data?.how)
+                  ]),
+              orElse: () => const CircularProgressIndicator()),
+          state: step != 4 ? StepState.complete : StepState.indexed)
     ];
 
     return expData.maybeWhen(
@@ -227,6 +271,7 @@ class PostScreen extends ConsumerWidget {
                                 if (awaitedUser != null) {
                                   showDialog(
                                       context: context,
+                                      barrierDismissible: false,
                                       builder: (context) => DataDeleteDialog(
                                           user: awaitedUser, expData: data));
                                 }
@@ -271,6 +316,8 @@ class PostScreen extends ConsumerWidget {
               ])),
               floatingActionButton: FloatingActionButton.extended(
                   onPressed: () async {
+                    ScaffoldMessenger.of(context).clearSnackBars();
+
                     if (word.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('ワードが選択されていません')));
@@ -280,6 +327,12 @@ class PostScreen extends ConsumerWidget {
                     if (meaning.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('簡単な説明が入力されていません')));
+                      return;
+                    }
+
+                    if (isRecommendData && imageUrl.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('画像を追加してください')));
                       return;
                     }
 

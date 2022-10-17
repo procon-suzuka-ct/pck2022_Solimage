@@ -5,6 +5,7 @@ import 'package:solimage/components/mode_select.dart';
 import 'package:solimage/states/auth.dart';
 import 'package:solimage/utils/auth.dart';
 
+// TODO: （余裕があれば）紹介画面をもっと充実させたい
 class WelcomeScreen extends ConsumerWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
 
@@ -17,7 +18,6 @@ class WelcomeScreen extends ConsumerWidget {
             Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
-                // TODO: 紹介文を追加する
                 children: <Widget>[
                   Text("Solimageへ\nようこそ!",
                       textAlign: TextAlign.center,
@@ -33,6 +33,7 @@ class WelcomeScreen extends ConsumerWidget {
                                 const SnackBar(content: Text("ログインしました")));
                             await showDialog(
                                 context: context,
+                                barrierDismissible: false,
                                 builder: (context) => const ModeSelectDialog());
                             ref.refresh(authProvider);
                           }

@@ -19,14 +19,15 @@ class UserNameDialog extends ConsumerWidget {
       title: const Text('名前'),
       content: Column(mainAxisSize: MainAxisSize.min, children: [
         const SimpleDialogOption(
-            padding: EdgeInsets.symmetric(horizontal: 10.0),
+            padding: EdgeInsets.zero,
             onPressed: null,
             child: ListTile(
                 title: Text('名前を変更します'),
                 subtitle: Text('名前はグループ内の人に公開されることがあります'))),
         TextField(
             controller: controller,
-            decoration: const InputDecoration(hintText: '名前を入力してください'))
+            decoration: const InputDecoration(
+                border: OutlineInputBorder(), hintText: '名前を入力してください'))
       ]),
       actions: <Widget>[
         TextButton(

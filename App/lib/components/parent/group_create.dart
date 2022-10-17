@@ -17,7 +17,7 @@ class GroupCreateDialog extends ConsumerWidget {
       title: const Text('グループを作成'),
       content: Column(mainAxisSize: MainAxisSize.min, children: [
         SimpleDialogOption(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            padding: EdgeInsets.zero,
             onPressed: null,
             child: ListTile(
                 title: const Text('グループを作成します'),
@@ -25,7 +25,9 @@ class GroupCreateDialog extends ConsumerWidget {
         TextField(
             controller: controller,
             decoration: const InputDecoration(
-                labelText: 'グループ名', hintText: 'グループ名を入力してください'))
+                border: OutlineInputBorder(),
+                labelText: 'グループ名',
+                hintText: 'グループ名を入力してください'))
       ]),
       actions: <Widget>[
         TextButton(
