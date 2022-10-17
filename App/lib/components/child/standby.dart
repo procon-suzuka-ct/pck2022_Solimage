@@ -26,7 +26,7 @@ final _classifierProvider = FutureProvider.autoDispose((ref) async {
     await classifier.loadModel();
     final result = await classifier
         .predict(image.decodeImage(File(imagePath).readAsBytesSync())!);
-    return result.label;
+    return result[0].label;
   }
   return null;
 });
