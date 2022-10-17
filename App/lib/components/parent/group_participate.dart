@@ -15,7 +15,7 @@ class GroupParticipateDialog extends ConsumerWidget {
         title: const Text('グループに参加'),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
           const SimpleDialogOption(
-              padding: EdgeInsets.symmetric(horizontal: 10.0),
+              padding: EdgeInsets.zero,
               onPressed: null,
               child: ListTile(
                   title: Text('グループに参加します'),
