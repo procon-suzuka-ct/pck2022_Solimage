@@ -128,7 +128,7 @@ class ProfileScreen extends ConsumerWidget {
           orElse: () => const [Center(child: CircularProgressIndicator())]),
       // TODO: 親しみやすいUXに改良する
       const ListTile(
-          title: Text('アクセス履歴',
+          title: Text('閲覧数',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold))),
       CardTile(
           padding: const EdgeInsets.all(30.0),
