@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:solimage/components/card_tile.dart';
 import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/group.dart';
 import 'package:solimage/utils/classes/user.dart';
@@ -33,40 +34,33 @@ class GroupMembersDialog extends ConsumerWidget {
                                 child: CircularProgressIndicator());
                           } else if (snapshot.connectionState ==
                               ConnectionState.done) {
-                            return Card(
-                                child: InkWell(
-                                    customBorder: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ),
-                                    child: ListTile(
-                                        title: Text('${member?.name}'),
-                                        trailing: (group.adminId ==
-                                                    snapshot.data &&
-                                                group.adminId != member?.uid)
-                                            ? IconButton(
-                                                onPressed: () async {
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(SnackBar(
-                                                          content: Text(
-                                                              '${member?.name}を削除しました')));
-                                                  if (member != null) {
-                                                    member.groups
-                                                        .remove(group.groupID);
-                                                    await member.save();
-                                                    group.removeMember(
-                                                        member.uid);
-                                                    for (var expData
-                                                        in member.expDatas) {
-                                                      group.removeExpData(
-                                                          expData);
-                                                    }
-                                                    await group.update();
-                                                  }
-                                                },
-                                                icon: const Icon(
-                                                    Icons.person_remove))
-                                            : null,
-                                        onTap: () {})));
+                            return CardTile(
+                                padding: const EdgeInsets.all(0),
+                                child: ListTile(
+                                    title: Text('${member?.name}'),
+                                    trailing: (group.adminId == snapshot.data &&
+                                            group.adminId != member?.uid)
+                                        ? IconButton(
+                                            onPressed: () async {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(SnackBar(
+                                                      content: Text(
+                                                          '${member?.name}を削除しました')));
+                                              if (member != null) {
+                                                member.groups
+                                                    .remove(group.groupID);
+                                                await member.save();
+                                                group.removeMember(member.uid);
+                                                for (var expData
+                                                    in member.expDatas) {
+                                                  group.removeExpData(expData);
+                                                }
+                                                await group.update();
+                                              }
+                                            },
+                                            icon:
+                                                const Icon(Icons.person_remove))
+                                        : null));
                           }
                           return const SizedBox.shrink();
                         }))

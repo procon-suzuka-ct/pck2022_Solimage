@@ -3,6 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:solimage/components/app_detail.dart';
+import 'package:solimage/components/card_tile.dart';
 import 'package:solimage/components/mode_select.dart';
 import 'package:solimage/components/parent/group_create.dart';
 import 'package:solimage/components/parent/group_detail.dart';
@@ -67,36 +68,24 @@ class ProfileScreen extends ConsumerWidget {
                         ]),
                     orElse: () => const CircularProgressIndicator())
               ])),
-      Card(
-          child: InkWell(
-              customBorder: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: const ListTile(
-                  leading: Icon(Icons.change_circle),
-                  title: Text('モード切り替え'),
-                  subtitle: Text('アプリを開いた時の動作を切り替える')),
-              onTap: () => showDialog(
-                  context: context,
-                  builder: (context) => const ModeSelectDialog()))),
-      Card(
-          child: InkWell(
-              customBorder: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: const ListTile(
-                  leading: Icon(Icons.logout), title: Text('ログアウト')),
-              onTap: () => showDialog(
-                  context: context,
-                  builder: (context) => UserLogoutDialog(prefs: prefs.value)))),
-      Card(
-          child: InkWell(
-              customBorder: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: const ListTile(
-                  leading: Icon(Icons.info), title: Text('アプリについて')),
-              onTap: () => showAppDetailDialog(context))),
+      CardTile(
+          child: const ListTile(
+              leading: Icon(Icons.change_circle),
+              title: Text('モード切り替え'),
+              subtitle: Text('アプリを開いた時の動作を切り替える')),
+          onTap: () => showDialog(
+              context: context,
+              builder: (context) => const ModeSelectDialog())),
+      CardTile(
+          child:
+              const ListTile(leading: Icon(Icons.logout), title: Text('ログアウト')),
+          onTap: () => showDialog(
+              context: context,
+              builder: (context) => UserLogoutDialog(prefs: prefs.value))),
+      CardTile(
+          child:
+              const ListTile(leading: Icon(Icons.info), title: Text('アプリについて')),
+          onTap: () => showAppDetailDialog(context)),
       ListTile(
           title: const Text('グループ',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
@@ -118,21 +107,18 @@ class ProfileScreen extends ConsumerWidget {
       ...groups.maybeWhen(
           data: (data) => data.isNotEmpty
               ? data
-                  .map((group) => group != null
-                      ? Card(
-                          child: InkWell(
-                              customBorder: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              child: ListTile(
-                                  leading: const Icon(Icons.group),
-                                  title: Text(group.groupName),
-                                  trailing: const Icon(Icons.info)),
-                              onTap: () => showDialog(
-                                  barrierDismissible: false,
-                                  context: context,
-                                  builder: (context) =>
-                                      GroupDetailDialog(group: group))))
+                  .map((group) =>
+          group != null
+                      ? CardTile(
+                          child: ListTile(
+                              leading: const Icon(Icons.group),
+                              title: Text(group.groupName),
+                              trailing: const Icon(Icons.info)),
+                          onTap: () => showDialog(
+                              barrierDismissible: false,
+                              context: context,
+                              builder: (context) =>
+                                  GroupDetailDialog(group: group)))
                       : const SizedBox.shrink())
                   .toList()
               : [
@@ -145,36 +131,31 @@ class ProfileScreen extends ConsumerWidget {
       const ListTile(
           title: Text('アクセス履歴',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold))),
-      Card(
-          child: InkWell(
-              customBorder: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Container(
-                  margin: const EdgeInsets.all(20.0),
-                  constraints: const BoxConstraints(maxHeight: 200.0),
-                  // TODO: 実際のデータに差し替える
-                  child: LineChart(LineChartData(
-                      lineTouchData: LineTouchData(
-                          touchTooltipData: LineTouchTooltipData(
-                              tooltipBgColor: Colors.grey.withOpacity(0.8),
-                              getTooltipItems: (touchedSpots) => touchedSpots
-                                  .map((item) => LineTooltipItem(
-                                      item.y.toStringAsFixed(2),
-                                      const TextStyle(color: Colors.white)))
-                                  .toList())),
-                      gridData: FlGridData(show: true),
-                      titlesData: FlTitlesData(show: false),
-                      borderData: FlBorderData(show: false),
-                      lineBarsData: [
-                        LineChartBarData(
-                            spots: List.generate(
-                                10,
-                                (index) =>
-                                    FlSpot(index.toDouble(), index.toDouble())),
-                            dotData: FlDotData(show: true))
-                      ]))),
-              onTap: () {}))
+      CardTile(
+          padding: const EdgeInsets.all(30.0),
+          child: ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 200.0),
+              // TODO: 実際のデータに差し替える
+              child: LineChart(LineChartData(
+                  lineTouchData: LineTouchData(
+                      touchTooltipData: LineTouchTooltipData(
+                          tooltipBgColor: Colors.grey.withOpacity(0.8),
+                          getTooltipItems: (touchedSpots) => touchedSpots
+                              .map((item) => LineTooltipItem(
+                                  item.y.toStringAsFixed(2),
+                                  const TextStyle(color: Colors.white)))
+                              .toList())),
+                  gridData: FlGridData(show: true),
+                  titlesData: FlTitlesData(show: false),
+                  borderData: FlBorderData(show: false),
+                  lineBarsData: [
+                    LineChartBarData(
+                        spots: List.generate(
+                            10,
+                            (index) =>
+                                FlSpot(index.toDouble(), index.toDouble())),
+                        dotData: FlDotData(show: true))
+                  ]))))
     ]);
   }
 }
