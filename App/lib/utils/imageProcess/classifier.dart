@@ -20,7 +20,6 @@ class Classifier {
   // 変更済み（ここから）
   Classifier._internal() {
     _interpreterOptions.threads = 1;
-    _interpreterOptions.useNnApiForAndroid = true;
   }
 
   bool isInited = false;
@@ -107,7 +106,18 @@ class Classifier {
         .process(_inputImage);
   }
 
-  Future<Category> predict(Object image) async {
+  /// This method is return [List] of [Category]
+  ///
+  /// The returned List is sorted by probability
+  ///
+  /// usage:
+  /// ```dart
+  /// final result = await Classifier.instance.predict(image);
+  /// var top = result[0];
+  /// var label = top.label;
+  /// var score = top.score;
+  /// ```
+  Future<List<Category>> predict(Object image) async {
     if (!isInited) await init();
     if (image is CameraImage) {
       image = ImageUtils.convertYUV420ToImage(image);
@@ -123,15 +133,26 @@ class Classifier {
     Map<String, double> labeledProb = TensorLabel.fromList(
             labels, _probabilityProcessor.process(_outputBuffer))
         .getMapWithFloatValue();
-    final pred = getTopProbability(labeledProb);
-    return Category(pred.key, pred.value);
+    final pred = getSortedProbability(labeledProb);
+    List<Category> categories = [];
+    for (var result in pred) {
+      categories.add(Category(result.key, result.value));
+    }
+    return categories;
   }
 
-  MapEntry<String, double> getTopProbability(Map<String, double> labeledProb) {
+  List<MapEntry<String, double>> getSortedProbability(
+      Map<String, double> labeledProb) {
     var pq = PriorityQueue<MapEntry<String, double>>(compare);
     pq.addAll(labeledProb.entries);
 
-    return pq.first;
+    // 1~3位までの確率を表示
+    List<MapEntry<String, double>> top3 = [];
+    while (pq.isNotEmpty) {
+      top3.add(pq.removeFirst());
+    }
+
+    return top3;
   }
 
   static Map<int, double> getLabelIndexes(List<double> predictResults) {
