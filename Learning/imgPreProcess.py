@@ -12,12 +12,12 @@ def process(cat: str):
     fileNames = os.listdir(os.path.join(imagesFolder, cat))
     fileNames = [file for file in fileNames if os.path.isfile(
         os.path.join(imagesFolder, cat, file))]
+    writeRoot = "Croped"
+    writeDir = os.path.join(basePath, writeRoot, cat)
     WIDTH = 216
     HEIGHT = 384
     for file in fileNames:
         imagePath = os.path.join(catPath, file)
-        writeRoot = "Croped"
-        writeDir = os.path.join(basePath, writeRoot, cat)
         writePath = os.path.join(writeDir, file)
 
         image = cv.imread(imagePath)
