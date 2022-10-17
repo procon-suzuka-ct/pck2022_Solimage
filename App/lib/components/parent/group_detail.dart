@@ -34,9 +34,9 @@ class GroupDetailDialog extends ConsumerWidget {
                         child: const ListTile(
                             leading: Icon(Icons.person), title: Text('メンバー一覧')),
                         onTap: () {
-                          Navigator.of(context).pop();
                           showDialog(
                               context: context,
+                              barrierDismissible: false,
                               builder: (context) =>
                                   GroupMembersDialog(group: group));
                         }),
