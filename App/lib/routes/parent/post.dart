@@ -50,6 +50,9 @@ final _dataProvider =
   return expData;
 });
 final _exampleDataProvider = FutureProvider((ref) => ExpData.getExpData(6));
+final _statesProviderFamily =
+    StateProvider.family<List<MaterialStatesController>, int>((ref, length) =>
+        List.generate(length, (_) => MaterialStatesController()));
 
 class PostScreen extends ConsumerWidget {
   const PostScreen({Key? key, this.dataId}) : super(key: key);
@@ -66,7 +69,6 @@ class PostScreen extends ConsumerWidget {
     final exampleData = ref.watch(_exampleDataProvider);
     final user = ref.watch(userProvider.future);
     final isRecommendData = ref.watch(_isRecommendDataProvider);
-
     final steps = [
       Step(
           title: const Text('オススメ'),
@@ -78,7 +80,8 @@ class PostScreen extends ConsumerWidget {
                       ref.read(_isRecommendDataProvider.notifier).state =
                           value ?? false;
                     }
-                  : null)),
+                  : null),
+          state: step != 0 ? StepState.complete : StepState.indexed),
       // 実際のデータに差し替える
       Step(
           title: const Text('ワード'),
@@ -118,7 +121,10 @@ class PostScreen extends ConsumerWidget {
                       ])
                 ]),
               ],
-              indent: 20.0)),
+              indent: 20.0),
+          state: step != 1 && word.isNotEmpty
+              ? StepState.complete
+              : StepState.indexed),
       Step(
           title: const Text('簡単な説明'),
           subtitle: Text(meaning.isEmpty ? '未入力' : meaning),
@@ -135,7 +141,10 @@ class PostScreen extends ConsumerWidget {
                             ref.read(_meaningProvider.notifier).state = value),
                     ExampleText(data?.meaning)
                   ]),
-              orElse: () => const Center(child: CircularProgressIndicator()))),
+              orElse: () => const Center(child: CircularProgressIndicator())),
+          state: step != 2 && meaning.isNotEmpty
+              ? StepState.complete
+              : StepState.indexed),
       Step(
           title: const Text('画像'),
           subtitle: const Text('オススメする場合は必須です'),
@@ -176,7 +185,10 @@ class PostScreen extends ConsumerWidget {
                 },
                 icon: const Icon(Icons.cloud_upload),
                 label: Text('画像を${imageUrl.isEmpty ? '追加' : '変更'}'))
-          ])),
+          ]),
+          state: step != 3 && (isRecommendData ? imageUrl.isNotEmpty : true)
+              ? StepState.complete
+              : StepState.indexed),
       Step(
           title: const Text('5W1H'),
           content: exampleData.maybeWhen(
@@ -240,7 +252,8 @@ class PostScreen extends ConsumerWidget {
                                 ref.read(_howProvider.notifier).state = value)),
                     ExampleText(data?.how)
                   ]),
-              orElse: () => const CircularProgressIndicator()))
+              orElse: () => const CircularProgressIndicator()),
+          state: step != 4 ? StepState.complete : StepState.indexed)
     ];
 
     return expData.maybeWhen(
