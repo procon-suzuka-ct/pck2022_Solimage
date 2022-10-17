@@ -122,14 +122,20 @@ class PostScreen extends ConsumerWidget {
       Step(
           title: const Text('簡単な説明'),
           subtitle: Text(meaning.isEmpty ? '未入力' : meaning),
-          content: TextFormField(
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              validator: (value) =>
-                  value == null || value.isEmpty ? '入力してください' : null,
-              initialValue: meaning,
-              decoration: const InputDecoration(labelText: '簡単な説明'),
-              onChanged: (value) =>
-                  ref.read(_meaningProvider.notifier).state = value)),
+          content: exampleData.maybeWhen(
+              data: (data) => Column(children: [
+                    TextFormField(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: (value) =>
+                            value == null || value.isEmpty ? '入力してください' : null,
+                        initialValue: meaning,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(), labelText: '簡単な説明'),
+                        onChanged: (value) =>
+                            ref.read(_meaningProvider.notifier).state = value),
+                    ExampleText(data?.meaning)
+                  ]),
+              orElse: () => const Center(child: CircularProgressIndicator()))),
       Step(
           title: const Text('画像'),
           subtitle: const Text('オススメする場合は必須です'),
