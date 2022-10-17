@@ -137,7 +137,7 @@ class ProfileScreen extends ConsumerWidget {
           padding: const EdgeInsets.all(30.0),
           child: ConstrainedBox(
               constraints: const BoxConstraints(maxHeight: 200.0),
-              // TODO: 実際のデータに差し替える
+              // TODO: 実際のデータに差し替える（閲覧数）
               child: LineChart(LineChartData(
                   lineTouchData: LineTouchData(
                       touchTooltipData: LineTouchTooltipData(
