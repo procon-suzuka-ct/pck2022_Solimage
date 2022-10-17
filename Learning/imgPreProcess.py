@@ -26,10 +26,11 @@ def process(cat: str):
         resizeRatio = min(WIDTH / width, HEIGHT / height)
         image = cv.resize(image, (int(width * resizeRatio),
                           int(height * resizeRatio)))
-        left = int((WIDTH - image.shape[1]) / 2)
-        right = WIDTH - image.shape[1] - left
-        top = int((HEIGHT - image.shape[0]) / 2)
-        bottom = HEIGHT - image.shape[0] - top
+        center = [int(height / 2), int(width / 2)]
+        left = center[1] - int(WIDTH / 2)
+        right = center[1] + int(WIDTH / 2)
+        top = center[0] - int(HEIGHT / 2)
+        bottom = center[0] + int(HEIGHT / 2)
         cropedImage = image[top:bottom, left:right]
         cv.imwrite(writePath, cropedImage)
 
