@@ -76,6 +76,7 @@ class ProfileScreen extends ConsumerWidget {
               subtitle: Text('アプリを開いた時の動作を切り替える')),
           onTap: () => showDialog(
               context: context,
+              barrierDismissible: false,
               builder: (context) => const ModeSelectDialog())),
       CardTile(
           child:
