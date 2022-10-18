@@ -10,7 +10,7 @@ import 'package:solimage/utils/classes/user.dart';
 class ExpData {
   late int _dataId;
   late String _userId;
-  int? rootId;
+  String? rootWord;
   List<int> childIds = [];
 
   int _views = 0;
@@ -49,11 +49,11 @@ class ExpData {
   ExpData(
       {required String word,
       required String meaning,
-      this.rootId,
+      this.rootWord,
       String? userID}) {
     _word = word;
     _meaning = meaning;
-    rootId ??= 0;
+    rootWord ??= "0";
     _dataId = 0;
     _userId = userID ?? "None";
   }
@@ -62,7 +62,7 @@ class ExpData {
       : _views = (json['views'] ?? 0) as int,
         _dataId = json['dataId'] as int,
         _userId = json['userId'] as String,
-        rootId = json['rootId'] as int?,
+        rootWord = (json['rootWord'] ?? json['rootId']).toString(),
         childIds = (json['childIds'] as List<dynamic>).cast<int>(),
         _word = json['word'] as String,
         _meaning = json['meaning'] as String,
@@ -81,7 +81,7 @@ class ExpData {
       "views": _views,
       "dataId": _dataId,
       'userId': _userId,
-      'rootId': rootId,
+      'rootWord': rootWord,
       'childIds': childIds,
       'word': _word,
       'meaning': _meaning,
