@@ -34,6 +34,7 @@ train = ImageDataGenerator(rescale=1./255,  # 255で割ることで正規化
                            rotation_range=40, # ランダムに回転
                            validation_split=0.1,  # 検証用データの割合
                            brightness_range=[0.3, 1.5],)  # ランダムに明るさを変更
+
 trainGenerator = train.flow_from_directory(dataPath, target_size=(
     384, 216), batch_size=32, class_mode="categorical", shuffle=True, subset="training")
 valGenerator = train.flow_from_directory(dataPath, target_size=(
@@ -65,7 +66,7 @@ x = base_model.output
 
 x = Dropout(0.5)(x)
 x = Flatten()(x)
-x = Dense(512, activation=tfa.activations.rrelu, kernel_regularizer=l2(0.001))(x)
+x = Dense(512, activation=tfa.activations.rrelu, kernel_regularizer=l2(0.01))(x)
 # 空間的なグローバルプーリング層を追加する
 #x = GlobalAveragePooling2D()(x)
 # 全結合層を追加する
