@@ -61,6 +61,15 @@ class PostScreen extends ConsumerWidget {
     final step = ref.watch(_stepProvider);
     final word = ref.watch(_wordProvider);
     final meaning = ref.watch(_meaningProvider);
+    final why = ref.watch(_whyProvider);
+    final what = ref.watch(_whatProvider);
+    final where = ref.watch(_whereProvider);
+    final when = ref.watch(_whenProvider);
+    final who = ref.watch(_whoProvider);
+    final how = ref.watch(_howProvider);
+    final is5W1HValid = [why, what, when, where, who, how]
+        .map((element) => element.isNotEmpty)
+        .contains(true);
     final imageUrl = ref.watch(_imageUrlProvider);
     final expData = ref.watch(_dataProvider(dataId));
     final exampleData = ref.watch(_exampleDataProvider);
@@ -194,7 +203,7 @@ class PostScreen extends ConsumerWidget {
                     Padding(
                         padding: const EdgeInsets.only(top: 10.0),
                         child: TextFormField(
-                            initialValue: ref.watch(_whyProvider),
+                            initialValue: why,
                             decoration: const InputDecoration(
                                 border: OutlineInputBorder(), labelText: 'なぜ'),
                             onChanged: (value) =>
@@ -203,7 +212,7 @@ class PostScreen extends ConsumerWidget {
                     Padding(
                         padding: const EdgeInsets.only(top: 10.0),
                         child: TextFormField(
-                            initialValue: ref.watch(_whatProvider),
+                            initialValue: what,
                             decoration: const InputDecoration(
                                 border: OutlineInputBorder(), labelText: 'なに'),
                             onChanged: (value) => ref
@@ -213,7 +222,7 @@ class PostScreen extends ConsumerWidget {
                     Padding(
                         padding: const EdgeInsets.only(top: 10.0),
                         child: TextFormField(
-                            initialValue: ref.watch(_whereProvider),
+                            initialValue: where,
                             decoration: const InputDecoration(
                                 border: OutlineInputBorder(), labelText: 'どこ'),
                             onChanged: (value) => ref
@@ -223,7 +232,7 @@ class PostScreen extends ConsumerWidget {
                     Padding(
                         padding: const EdgeInsets.only(top: 10.0),
                         child: TextFormField(
-                            initialValue: ref.watch(_whenProvider),
+                            initialValue: when,
                             decoration: const InputDecoration(
                                 border: OutlineInputBorder(), labelText: 'いつ'),
                             onChanged: (value) => ref
@@ -233,7 +242,7 @@ class PostScreen extends ConsumerWidget {
                     Padding(
                         padding: const EdgeInsets.only(top: 10.0),
                         child: TextFormField(
-                            initialValue: ref.watch(_whoProvider),
+                            initialValue: who,
                             decoration: const InputDecoration(
                                 border: OutlineInputBorder(), labelText: 'だれ'),
                             onChanged: (value) =>
@@ -242,7 +251,7 @@ class PostScreen extends ConsumerWidget {
                     Padding(
                         padding: const EdgeInsets.only(top: 10.0),
                         child: TextFormField(
-                            initialValue: ref.watch(_howProvider),
+                            initialValue: how,
                             decoration: const InputDecoration(
                                 border: OutlineInputBorder(),
                                 labelText: 'どうやって'),
@@ -251,7 +260,8 @@ class PostScreen extends ConsumerWidget {
                     ExampleText(data?.how)
                   ]),
               orElse: () => const CircularProgressIndicator()),
-          state: step != 4 ? StepState.complete : StepState.indexed)
+          state:
+              step != 4 && is5W1HValid ? StepState.complete : StepState.indexed)
     ];
 
     return expData.maybeWhen(
@@ -333,6 +343,12 @@ class PostScreen extends ConsumerWidget {
                     if (isRecommendData && imageUrl.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('画像を追加してください')));
+                      return;
+                    }
+
+                    if (!is5W1HValid) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('5W1Hは1つ以上入力してください')));
                       return;
                     }
 
