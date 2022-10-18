@@ -58,7 +58,7 @@ class Classifier {
   Future<void> loadModel() async {
     try {
       // 量子化したモデルは動かすとクラッシュするのでfirebaseは使わない
-      _modelFile = await FirebaseModelDownloader.instance
+      /*_modelFile = await FirebaseModelDownloader.instance
           .getModel(
               "solimage-special",
               FirebaseModelDownloadType.localModel,
@@ -69,9 +69,10 @@ class Classifier {
                 androidWifiRequired: false,
                 androidDeviceIdleRequired: false,
               ))
-          .then((value) => value.file);
-      _interpreter =
-          Interpreter.fromFile(_modelFile, options: _interpreterOptions);
+          .then((value) => value.file);*/
+      _interpreter = await Interpreter.fromAsset("model.tflite",
+          options: _interpreterOptions);
+      //Interpreter.fromFile(_modelFile, options: _interpreterOptions);
       _inputShape = _interpreter.getInputTensor(0).shape;
       _inputType = _interpreter.getInputTensor(0).type;
       _outputShape = _interpreter.getOutputTensor(0).shape;
