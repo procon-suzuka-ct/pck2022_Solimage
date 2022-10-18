@@ -11,7 +11,7 @@ import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/expData.dart';
 import 'package:solimage/utils/imageProcess/classifier.dart';
 
-final _recommendedDataProvider = FutureProvider.autoDispose((ref) async {
+final _recommendDataProvider = FutureProvider.autoDispose((ref) async {
   final uid = await ref.watch(userProvider.selectAsync((data) => data?.uid));
   final recommendData = uid != null
       ? await RecommendData.getRecommendDataByCurrentUid(uid)
@@ -42,11 +42,11 @@ class StandbyDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final recommendedData = ref.watch(_recommendedDataProvider);
+    final recommendData = ref.watch(_recommendDataProvider);
     final classifier = ref.watch(_classifierProvider);
 
     return Stack(children: [
-      recommendedData.maybeWhen(
+      recommendData.maybeWhen(
           data: (data) => AlertDialog(
               title: Text(data != null
                   ? data.word!
