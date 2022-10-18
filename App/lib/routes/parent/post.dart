@@ -274,7 +274,7 @@ class PostScreen extends ConsumerWidget {
                       padding: const EdgeInsets.all(10.0),
                       child: ListTile(
                           leading: const Icon(Icons.info),
-                          title: const Text('既に投稿済みです'),
+                          title: Text('投稿済み\n閲覧数: ${data.views}回'),
                           trailing: ElevatedButton.icon(
                               onPressed: () async {
                                 final awaitedUser = await user;
