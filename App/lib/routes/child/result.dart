@@ -68,17 +68,44 @@ class ResultScreen extends ConsumerWidget {
                               .read(_currentPageProvider.notifier)
                               .state = page,
                           children: [
-                        // TODO: 画像下に簡単な説明を表示する
                         Center(
                             child: imagePath != null
-                                ? Container(
-                                    margin: const EdgeInsets.all(10.0),
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                        image: DecorationImage(
-                                            image: FileImage(File(imagePath)),
-                                            fit: BoxFit.cover)))
+                                ? Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          Container(
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10.0),
+                                                  image: DecorationImage(
+                                                      image: FileImage(
+                                                          File(imagePath)),
+                                                      fit: BoxFit.cover))),
+                                          if (data?.meaning != null)
+                                            Align(
+                                                alignment:
+                                                    Alignment.bottomCenter,
+                                                child: Card(
+                                                    shape: const RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.vertical(
+                                                                bottom:
+                                                                    Radius.circular(
+                                                                        10.0))),
+                                                    margin: EdgeInsets.zero,
+                                                    child: Padding(
+                                                        padding:
+                                                            const EdgeInsets.all(
+                                                                10.0),
+                                                        child: Text(
+                                                            data!.meaning!,
+                                                            style: const TextStyle(
+                                                                fontSize:
+                                                                    22.0)))))
+                                        ]))
                                 : const CircularProgressIndicator()),
                         GridView.count(
                             crossAxisCount: 2,
