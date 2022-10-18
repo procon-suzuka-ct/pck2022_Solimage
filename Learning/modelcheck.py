@@ -13,7 +13,7 @@ layout = [[sg.Text("フォルダを選択してください", key="file"), sg.Bu
 
 def load_image(img_path):
   
-  img = tf.keras.utils.load_img(img_path, target_size=(216, 384))
+  img = tf.keras.utils.load_img(img_path, target_size=(384, 216, 3))
   img_tensor = tf.keras.utils.img_to_array(img)                    # (height, width, channels)
   img_tensor = np.expand_dims(img_tensor, axis=0)         # (1, height, width, channels), add a dimension because the model expects this shape: (batch_size, height, width, channels)
   img_tensor /= 255.                                      # imshow expects values in the range [0, 1]
@@ -42,7 +42,8 @@ def main():
       # predicting images
       img = load_image(f)
       pred = model.predict(img)
+      print(pred)
       y_classes = pred.argmax()
-      sg.popup(pred[0][y_classes])
+      sg.popup(pred)
 
 main()
