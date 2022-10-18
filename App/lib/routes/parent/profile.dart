@@ -163,63 +163,60 @@ class ProfileScreen extends ConsumerWidget {
               data: (data) => Text('閲覧数の合計: $data回'),
               orElse: () => const CircularProgressIndicator())),
       ...expDatas.maybeWhen(
-          data: (expDatas) => [
-                HeadingTile(
-                    '閲覧数上位${expDatas.length > 3 ? 3 : expDatas.length}投稿を表示しています',
-                    style: Theme.of(context).textTheme.bodyLarge),
-                ...expDatas.isNotEmpty
-                    ? expDatas
-                        .asMap()
-                        .entries
-                        .sortedByCompare((element) => element.value!.views,
-                            (a, b) => a.compareTo(b))
-                        .map((entry) => CardTile(
-                            child: ListTile(
-                                leading: Wrap(
-                                    alignment: WrapAlignment.center,
-                                    direction: Axis.horizontal,
-                                    children: [
-                                      Container(
-                                          decoration: const BoxDecoration(
-                                              color: Colors.blueGrey,
-                                              shape: BoxShape.circle),
-                                          child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(10.0),
-                                              child: Text('${entry.key + 1}',
-                                                  style: const TextStyle(
-                                                      color: Colors.white)))),
-                                      entry.value?.imageUrl != null
-                                          ? Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 8.0,
-                                                      horizontal: 10.0),
-                                              child: AspectRatio(
-                                                  aspectRatio: 1.0,
-                                                  child: ClipRRect(
-                                                      borderRadius:
-                                                          const BorderRadius
-                                                                  .all(
-                                                              Radius.circular(
-                                                                  10.0)),
-                                                      child: CachedNetworkImage(
-                                                          fit: BoxFit.cover,
-                                                          imageUrl: entry.value!
-                                                              .imageUrl!))))
-                                          : const SizedBox.shrink()
-                                    ]),
-                                title: Text('${entry.value?.word}'),
-                                trailing: const Icon(Icons.edit)),
-                            onTap: () => context.push(
-                                '/parent/post?dataId=${entry.value?.dataId}')))
-                        .toList()
-                    : [
-                        const TentativeCard(
-                            icon: Icon(Icons.edit, size: 30.0),
-                            label: Text('知識を投稿しましょう!'))
-                      ]
-              ],
+          data: (expDatas) => expDatas.isNotEmpty
+              ? [
+                  HeadingTile(
+                      '閲覧数上位${expDatas.length > 3 ? 3 : expDatas.length}投稿を表示しています',
+                      style: Theme.of(context).textTheme.bodyLarge),
+                  ...expDatas
+                      .asMap()
+                      .entries
+                      .sortedByCompare((element) => element.value!.views,
+                          (a, b) => a.compareTo(b))
+                      .map((entry) => CardTile(
+                          child: ListTile(
+                              leading: Wrap(
+                                  alignment: WrapAlignment.center,
+                                  direction: Axis.horizontal,
+                                  children: [
+                                    Container(
+                                        decoration: const BoxDecoration(
+                                            color: Colors.blueGrey,
+                                            shape: BoxShape.circle),
+                                        child: Padding(
+                                            padding: const EdgeInsets.all(10.0),
+                                            child: Text('${entry.key + 1}',
+                                                style: const TextStyle(
+                                                    color: Colors.white)))),
+                                    entry.value?.imageUrl != null
+                                        ? Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 8.0,
+                                                horizontal: 10.0),
+                                            child: AspectRatio(
+                                                aspectRatio: 1.0,
+                                                child: ClipRRect(
+                                                    borderRadius:
+                                                        const BorderRadius.all(
+                                                            Radius.circular(
+                                                                10.0)),
+                                                    child: CachedNetworkImage(
+                                                        fit: BoxFit.cover,
+                                                        imageUrl: entry.value!
+                                                            .imageUrl!))))
+                                        : const SizedBox.shrink()
+                                  ]),
+                              title: Text('${entry.value?.word}'),
+                              trailing: const Icon(Icons.edit)),
+                          onTap: () => context.push(
+                              '/parent/post?dataId=${entry.value?.dataId}')))
+                      .toList()
+                ]
+              : [
+                  const TentativeCard(
+                      icon: Icon(Icons.edit, size: 30.0),
+                      label: Text('知識を投稿しましょう!'))
+                ],
           orElse: () => [const Center(child: CircularProgressIndicator())])
     ]);
   }
