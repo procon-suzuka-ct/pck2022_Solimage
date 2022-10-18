@@ -32,7 +32,7 @@ train = ImageDataGenerator(rescale=1./255,  # 255で割ることで正規化
                            zoom_range=0.2,  # ランダムにズーム
                            horizontal_flip=True,  # 水平反転
                            rotation_range=40, # ランダムに回転
-                           validation_split=0.1,  # 検証用データの割合
+                           validation_split=0.2,  # 検証用データの割合
                            brightness_range=[0.3, 1.5],)  # ランダムに明るさを変更
 
 trainGenerator = train.flow_from_directory(dataPath, target_size=(
