@@ -57,7 +57,6 @@ dependencies:
   image_picker: ^0.8.6
   http: ^0.13.5
   collection: ^1.16.0
-  fl_chart: ^0.55.2
   vibration: ^1.7.6
   package_info_plus: ^1.4.2
   fluttertoast: ^8.1.1
@@ -72,7 +71,7 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^2.0.1
   mockito: ^5.3.2
-  build_runner: ^2.2.1
+  build_runner: ^2.3.0
   dependency_validator: any
   camera_platform_interface: ^2.2.2
 
