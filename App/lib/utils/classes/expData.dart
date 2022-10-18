@@ -10,7 +10,7 @@ import 'package:solimage/utils/classes/user.dart';
 class ExpData {
   late int _dataId;
   late String _userId;
-  int? rootId;
+  String? rootWord;
   List<int> childIds = [];
 
   int _views = 0;
@@ -49,11 +49,11 @@ class ExpData {
   ExpData(
       {required String word,
       required String meaning,
-      this.rootId,
+      this.rootWord,
       String? userID}) {
     _word = word;
     _meaning = meaning;
-    rootId ??= 0;
+    rootWord ??= "0";
     _dataId = 0;
     _userId = userID ?? "None";
   }
@@ -62,7 +62,7 @@ class ExpData {
       : _views = (json['views'] ?? 0) as int,
         _dataId = json['dataId'] as int,
         _userId = json['userId'] as String,
-        rootId = json['rootId'] as int?,
+        rootWord = (json['rootWord'] ?? json['rootId']).toString(),
         childIds = (json['childIds'] as List<dynamic>).cast<int>(),
         _word = json['word'] as String,
         _meaning = json['meaning'] as String,
@@ -81,7 +81,7 @@ class ExpData {
       "views": _views,
       "dataId": _dataId,
       'userId': _userId,
-      'rootId': rootId,
+      'rootWord': rootWord,
       'childIds': childIds,
       'word': _word,
       'meaning': _meaning,
@@ -190,15 +190,33 @@ class ExpData {
 
     docRef.get().then((value) {
       if (value.exists) {
-        docRef.update({
-          "index": FieldValue.arrayUnion([_dataId])
-        });
+        final data = value.data()!;
+        final list = (data['dataIds'] as List<dynamic>).cast<int>();
+        list.contains(_dataId)
+            ? null
+            : docRef.update({
+                "index": FieldValue.arrayUnion([_dataId]),
+              });
       } else {
         docRef.set({
           "index": [_dataId],
           "views": _views,
         });
       }
+    });
+
+    final rootRef =
+        FirebaseFirestore.instance.collection("expDataIndex").doc(rootWord);
+    rootRef.get().then((value) {
+      final data = value.data()!;
+      final list = (data["childWord"] as List<dynamic>).cast<String>();
+      value.exists
+          ? list.contains(rootWord)
+              ? null
+              : rootRef.update({
+                  "childWord": FieldValue.arrayUnion([rootWord])
+                })
+          : null;
     });
 
     await _getRef(_dataId.toString()).set(this);
@@ -209,6 +227,29 @@ class ExpData {
   static Future<ExpData?> getExpData(int dataId) async {
     final doc = await _getRef(dataId.toString()).get();
     return doc.data();
+  }
+
+  static Future<List<ExpData>> getChilds(
+      {required String word, bool onlyGroup = false}) async {
+    final doc = await FirebaseFirestore.instance
+        .collection("expDataIndex")
+        .doc(word)
+        .get();
+    if (doc.exists) {
+      final data = doc.data();
+      final childWords = (data!['childWord'] as List<dynamic>).cast<String>();
+      List<ExpData> childs = [];
+      for (final childWord in childWords) {
+        final child =
+            await getExpDataByWord(word: childWord, onlyGroup: onlyGroup);
+        if (child != null) {
+          childs.add(child);
+        }
+      }
+      return childs;
+    } else {
+      return [];
+    }
   }
 
   /// keywordからデータを取得する関数です
@@ -516,6 +557,12 @@ class RecommendData extends ExpData {
             fromFirestore: ((snapshot, _) =>
                 RecommendData.fromJson(snapshot.data()!)),
             toFirestore: ((data, _) => data.toJson()));
+  }
+
+  @override
+  Future<void> addViews() async {
+    var ref = _getRef(_userId);
+    await ref.update({'views': FieldValue.increment(1)});
   }
 
   static Future<RecommendData?> getRecommendData(String userid) async {
