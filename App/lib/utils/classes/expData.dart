@@ -559,6 +559,12 @@ class RecommendData extends ExpData {
             toFirestore: ((data, _) => data.toJson()));
   }
 
+  @override
+  Future<void> addViews() async {
+    var ref = _getRef(_userId);
+    await ref.update({'views': FieldValue.increment(1)});
+  }
+
   static Future<RecommendData?> getRecommendData(String userid) async {
     final doc = await _getRef(userid).get();
     if (doc.exists) {
