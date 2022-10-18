@@ -191,7 +191,7 @@ class ExpData {
     docRef.get().then((value) {
       if (value.exists) {
         docRef.update({
-          "index": FieldValue.arrayUnion([_dataId])
+          "index": FieldValue.arrayUnion([_dataId]),
         });
       } else {
         docRef.set({
@@ -199,6 +199,16 @@ class ExpData {
           "views": _views,
         });
       }
+    });
+
+    final rootRef =
+        FirebaseFirestore.instance.collection("expDataIndex").doc(rootWord);
+    rootRef.get().then((value) {
+      value.exists
+          ? rootRef.update({
+              "childWord": FieldValue.arrayUnion([rootWord])
+            })
+          : null;
     });
 
     await _getRef(_dataId.toString()).set(this);
@@ -209,6 +219,29 @@ class ExpData {
   static Future<ExpData?> getExpData(int dataId) async {
     final doc = await _getRef(dataId.toString()).get();
     return doc.data();
+  }
+
+  static Future<List<ExpData>> getChilds(
+      {required String word, bool onlyGroup = false}) async {
+    final doc = await FirebaseFirestore.instance
+        .collection("expDataIndex")
+        .doc(word)
+        .get();
+    if (doc.exists) {
+      final data = doc.data();
+      final childWords = (data!['childWord'] as List<dynamic>).cast<String>();
+      List<ExpData> childs = [];
+      for (final childWord in childWords) {
+        final child =
+            await getExpDataByWord(word: childWord, onlyGroup: onlyGroup);
+        if (child != null) {
+          childs.add(child);
+        }
+      }
+      return childs;
+    } else {
+      return [];
+    }
   }
 
   /// keywordからデータを取得する関数です
