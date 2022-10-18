@@ -10,9 +10,14 @@ import 'package:solimage/utils/classes/expData.dart';
 import 'package:solimage/utils/theme.dart';
 
 final _currentPageProvider = StateProvider.autoDispose((ref) => 0);
-final _expDataProviderFamily = FutureProvider.autoDispose
-    .family<ExpData?, String>(
-        (ref, word) => ExpData.getExpDataByWord(word: word));
+final _expDataProviderFamily =
+    FutureProvider.autoDispose.family<ExpData?, String>((ref, word) async {
+  final expData = await ExpData.getExpDataByWord(word: word);
+
+  if (expData != null) await expData.addViews();
+
+  return expData;
+});
 final List<String> cardLabels = [
   'なんで',
   'なに',
@@ -23,7 +28,6 @@ final List<String> cardLabels = [
 ];
 
 // TODO: 実際のデータに差し替える（ほぼ実装済み、動作未確認）
-// TODO: expDataの閲覧数を実装する
 class ResultScreen extends ConsumerWidget {
   const ResultScreen({Key? key, required this.word}) : super(key: key);
 
@@ -64,17 +68,44 @@ class ResultScreen extends ConsumerWidget {
                               .read(_currentPageProvider.notifier)
                               .state = page,
                           children: [
-                        // TODO: 画像下に簡単な説明を表示する
                         Center(
                             child: imagePath != null
-                                ? Container(
-                                    margin: const EdgeInsets.all(10.0),
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                        image: DecorationImage(
-                                            image: FileImage(File(imagePath)),
-                                            fit: BoxFit.cover)))
+                                ? Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          Container(
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10.0),
+                                                  image: DecorationImage(
+                                                      image: FileImage(
+                                                          File(imagePath)),
+                                                      fit: BoxFit.cover))),
+                                          if (data?.meaning != null)
+                                            Align(
+                                                alignment:
+                                                    Alignment.bottomCenter,
+                                                child: Card(
+                                                    shape: const RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.vertical(
+                                                                bottom:
+                                                                    Radius.circular(
+                                                                        10.0))),
+                                                    margin: EdgeInsets.zero,
+                                                    child: Padding(
+                                                        padding:
+                                                            const EdgeInsets.all(
+                                                                10.0),
+                                                        child: Text(
+                                                            data!.meaning!,
+                                                            style: const TextStyle(
+                                                                fontSize:
+                                                                    22.0)))))
+                                        ]))
                                 : const CircularProgressIndicator()),
                         GridView.count(
                             crossAxisCount: 2,

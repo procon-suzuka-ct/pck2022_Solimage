@@ -11,11 +11,17 @@ import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/expData.dart';
 import 'package:solimage/utils/imageProcess/classifier.dart';
 
-final _recommendedDataProvider = FutureProvider.autoDispose((ref) async {
+final _recommendDataProvider = FutureProvider.autoDispose((ref) async {
   final uid = await ref.watch(userProvider.selectAsync((data) => data?.uid));
-  return uid != null
+  final recommendData = uid != null
       ? await RecommendData.getRecommendDataByCurrentUid(uid)
       : null;
+
+  if (recommendData != null) {
+    await recommendData.addViews();
+  }
+
+  return recommendData;
 });
 
 final _classifierProvider = FutureProvider.autoDispose((ref) async {
@@ -31,17 +37,16 @@ final _classifierProvider = FutureProvider.autoDispose((ref) async {
   return null;
 });
 
-// TODO: recommendDataの閲覧数を実装する
 class StandbyDialog extends ConsumerWidget {
   const StandbyDialog({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final recommendedData = ref.watch(_recommendedDataProvider);
+    final recommendData = ref.watch(_recommendDataProvider);
     final classifier = ref.watch(_classifierProvider);
 
     return Stack(children: [
-      recommendedData.maybeWhen(
+      recommendData.maybeWhen(
           data: (data) => AlertDialog(
               title: Text(data != null
                   ? data.word!
