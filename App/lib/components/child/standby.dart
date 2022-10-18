@@ -27,7 +27,7 @@ final _recommendDataProvider = FutureProvider.autoDispose((ref) async {
 final _classifierProvider = FutureProvider.autoDispose((ref) async {
   final imagePath = ref.watch(imagePathProvider);
 
-  if (imagePath != null) {
+  if (imagePath.isNotEmpty) {
     final classifier = Classifier.instance;
     await classifier.loadModel();
     final result = await classifier
