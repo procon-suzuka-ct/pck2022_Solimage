@@ -190,9 +190,13 @@ class ExpData {
 
     docRef.get().then((value) {
       if (value.exists) {
-        docRef.update({
-          "index": FieldValue.arrayUnion([_dataId]),
-        });
+        final data = value.data()!;
+        final list = (data['dataIds'] as List<dynamic>).cast<int>();
+        list.contains(_dataId)
+            ? null
+            : docRef.update({
+                "index": FieldValue.arrayUnion([_dataId]),
+              });
       } else {
         docRef.set({
           "index": [_dataId],
@@ -204,10 +208,14 @@ class ExpData {
     final rootRef =
         FirebaseFirestore.instance.collection("expDataIndex").doc(rootWord);
     rootRef.get().then((value) {
+      final data = value.data()!;
+      final list = (data["childWord"] as List<dynamic>).cast<String>();
       value.exists
-          ? rootRef.update({
-              "childWord": FieldValue.arrayUnion([rootWord])
-            })
+          ? list.contains(rootWord)
+              ? null
+              : rootRef.update({
+                  "childWord": FieldValue.arrayUnion([rootWord])
+                })
           : null;
     });
 
@@ -549,6 +557,12 @@ class RecommendData extends ExpData {
             fromFirestore: ((snapshot, _) =>
                 RecommendData.fromJson(snapshot.data()!)),
             toFirestore: ((data, _) => data.toJson()));
+  }
+
+  @override
+  Future<void> addViews() async {
+    var ref = _getRef(_userId);
+    await ref.update({'views': FieldValue.increment(1)});
   }
 
   static Future<RecommendData?> getRecommendData(String userid) async {
