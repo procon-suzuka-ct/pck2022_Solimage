@@ -18,6 +18,7 @@ from keras.applications.mobilenet import MobileNet
 from keras.optimizers import adam_v2
 from keras.models import load_model
 import tensorflow as tf
+from keras.regularizers import l2
 
 #classes = len(label_dic)
 #y_train = to_categorical(y_train, classes)
@@ -33,9 +34,9 @@ train = ImageDataGenerator(rescale=1./255,  # 255で割ることで正規化
                            rotation_range=40, # ランダムに回転
                            validation_split=0.1)  # 検証用データの割合
 trainGenerator = train.flow_from_directory(dataPath, target_size=(
-    384, 216), batch_size=16, class_mode="categorical", shuffle=True, subset="training")
+    384, 216), batch_size=32, class_mode="categorical", shuffle=True, subset="training")
 valGenerator = train.flow_from_directory(dataPath, target_size=(
-    384, 216), batch_size=16, class_mode="categorical", shuffle=True, subset="validation")
+    384, 216), batch_size=32, class_mode="categorical", shuffle=True, subset="validation")
 
 labels = trainGenerator.class_indices
 os.makedirs("./tmp/model", exist_ok=True)
@@ -63,7 +64,7 @@ x = base_model.output
 
 x = Dropout(0.5)(x)
 x = Flatten()(x)
-x = Dense(512, activation=tfa.activations.rrelu)(x)
+x = Dense(512, activation=tfa.activations.rrelu, kernel_regularizer=l2(0.001))(x)
 # 空間的なグローバルプーリング層を追加する
 #x = GlobalAveragePooling2D()(x)
 # 全結合層を追加する
