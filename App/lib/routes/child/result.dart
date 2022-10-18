@@ -69,7 +69,7 @@ class ResultScreen extends ConsumerWidget {
                               .state = page,
                           children: [
                         Center(
-                            child: imagePath != null
+                            child: imagePath.isNotEmpty
                                 ? Padding(
                                     padding: const EdgeInsets.all(10.0),
                                     child: Stack(
