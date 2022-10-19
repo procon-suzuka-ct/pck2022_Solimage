@@ -8,6 +8,7 @@ from keras.models import Model
 from keras.layers import Dense, Dropout, Flatten, Input
 import tensorflow_addons as tfa
 from keras.applications.vgg16 import VGG16
+from keras.applications.mobilenet_v2 import MobileNetV2
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.optimizers import adam_v2
@@ -38,27 +39,29 @@ lebels_reverse = dict(zip(labels.values(), labels.keys()))
 json.dump(lebels_reverse, json_file)
 json_file.close()
 
+# 正則化のパラメータ設定
+regulizerRate = 0.05
+units = 512
+labelNum = len(labels)
+OP3_regulizer = regulizerRate * units / (units + labelNum)
+OP4_regulizer = regulizerRate * labelNum / (units + labelNum)
+
 # layer構築
 # VGG16をベースにsigmoidを使って多ラベル分類
-baseModel = VGG16(weights="imagenet",
+baseModel = MobileNetV2(weights="imagenet",
                   include_top=False,
                   input_tensor=Input(shape=(384, 216, 3)),)
 
 # 15層目まで重みを固定
-for layer in baseModel.layers[:15]:
+for layer in baseModel.layers[:-4]:
     layer.trainable = False
-
-units = 512
-labelNum = len(labels)
-OP3_regulizer = 0.01 * units / (units + labelNum)
-OP4_regulizer = 0.01 * labelNum / (units + labelNum)
 
 # 出力層
 x = baseModel.output
 x = Dropout(0.5, name = "output1")(x)
 x = Flatten(name = "output2")(x)
-x = Dense(512, activation=tfa.activations.rrelu, kernel_regularizer=l2(OP3_regulizer), name = "output3")(x)
-pridection = Dense(len(labels), activation="sigmoid", kernel_regularizer=l2(OP4_regulizer), name = "output4")(x)
+x = Dense(units, activation=tfa.activations.rrelu, kernel_regularizer=l2(OP3_regulizer), name = "output3")(x)
+pridection = Dense(labelNum, activation="sigmoid", kernel_regularizer=l2(OP4_regulizer), name = "output4")(x)
 
 model = Model(inputs=baseModel.input, outputs=pridection)
 
