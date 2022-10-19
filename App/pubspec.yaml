@@ -71,7 +71,7 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^2.0.1
   mockito: ^5.3.2
-  build_runner: ^2.3.0
+  build_runner: ^2.3.2
   dependency_validator: any
   camera_platform_interface: ^2.2.2
 
