@@ -9,9 +9,7 @@ TreeNode generateNode(Word rootWord, Map<String, List<Word>> wordMap) {
           .map((word) => generateNode(word, wordMap))
           .toList()
       : [];
-  if (children.isNotEmpty) {
-    children.add(TreeNode(content: AddWordButton(root: rootWord.root)));
-  }
+  children.add(TreeNode(content: AddWordButton(root: rootWord.root)));
 
   return TreeNode(
       content: rootWord.root == '0'

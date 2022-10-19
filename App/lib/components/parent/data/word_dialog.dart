@@ -30,7 +30,8 @@ class DataAddWordDialog extends ConsumerWidget {
                       final word = Word(word: controller.text, root: root);
                       word.save().then((_) => ScaffoldMessenger.of(context)
                           .showSnackBar(
-                              const SnackBar(content: Text('投稿しました'))));
+                              const SnackBar(content: Text('ワードを追加しました'))));
+                      Navigator.of(context).pop();
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('ワードを入力してください')));
