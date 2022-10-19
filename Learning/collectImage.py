@@ -1,4 +1,3 @@
-from icrawler import ImageDownloader
 from icrawler.builtin import GoogleImageCrawler
 import os, cv2 as cv
 from concurrent import futures
