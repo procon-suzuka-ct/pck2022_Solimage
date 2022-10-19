@@ -3,16 +3,15 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_simple_treeview/flutter_simple_treeview.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:solimage/components/child/example_text.dart';
-import 'package:solimage/components/parent/data_delete.dart';
-import 'package:solimage/components/parent/data_post.dart';
+import 'package:solimage/components/parent/data/delete_dialog.dart';
+import 'package:solimage/components/parent/data/post_dialog.dart';
+import 'package:solimage/components/parent/data/word_tree.dart';
+import 'package:solimage/states/post.dart';
 import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/expData.dart';
 
-final _stepProvider = StateProvider.autoDispose((ref) => 0);
-final _wordProvider = StateProvider.autoDispose((ref) => '');
 final _meaningProvider = StateProvider.autoDispose((ref) => '');
 final _whyProvider = StateProvider.autoDispose((ref) => '');
 final _whatProvider = StateProvider.autoDispose((ref) => '');
@@ -32,7 +31,7 @@ final _dataProvider =
       : null;
 
   if (expData != null) {
-    ref.read(_wordProvider.notifier).state = expData.word ?? '';
+    ref.read(wordProvider.notifier).state = expData.word ?? '';
     ref.read(_meaningProvider.notifier).state = expData.meaning ?? '';
     ref.read(_whyProvider.notifier).state = expData.why ?? '';
     ref.read(_whatProvider.notifier).state = expData.what ?? '';
@@ -58,8 +57,8 @@ class PostScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final step = ref.watch(_stepProvider);
-    final word = ref.watch(_wordProvider);
+    final step = ref.watch(stepProvider);
+    final word = ref.watch(wordProvider);
     final meaning = ref.watch(_meaningProvider);
     final why = ref.watch(_whyProvider);
     final what = ref.watch(_whatProvider);
@@ -88,46 +87,14 @@ class PostScreen extends ConsumerWidget {
                     }
                   : null),
           state: step != 0 ? StepState.complete : StepState.indexed),
-      // TODO: 実際のデータに差し替える（ワード一覧）
       Step(
           title: const Text('ワード'),
           subtitle: const Text('必須です'),
-          content: TreeView(
-              treeController: TreeController(allNodesExpanded: false),
-              nodes: [
-                TreeNode(content: const Text('生物'), children: [
-                  TreeNode(
-                      content: ElevatedButton(
-                          onPressed: () {
-                            ref.read(_wordProvider.notifier).state = '虫';
-                            ref.read(_stepProvider.notifier).state = step + 1;
-                          },
-                          child: const Text('虫')),
-                      children: [
-                        TreeNode(
-                            content: ElevatedButton(
-                                onPressed: () {
-                                  ref.read(_wordProvider.notifier).state =
-                                      'かまきり';
-                                  ref.read(_stepProvider.notifier).state =
-                                      step + 1;
-                                },
-                                child: const Text('かまきり')),
-                            children: [
-                              TreeNode(
-                                  content: ElevatedButton(
-                                      onPressed: () {
-                                        ref.read(_wordProvider.notifier).state =
-                                            '触角';
-                                        ref.read(_stepProvider.notifier).state =
-                                            step + 1;
-                                      },
-                                      child: const Text('触角')))
-                            ])
-                      ])
-                ]),
-              ],
-              indent: 20.0),
+          content: const Align(
+              alignment: Alignment.centerLeft,
+              child: SingleChildScrollView(
+                  child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal, child: WordTree()))),
           state: step != 1 && word.isNotEmpty
               ? StepState.complete
               : StepState.indexed),
@@ -292,15 +259,13 @@ class PostScreen extends ConsumerWidget {
                     physics: const NeverScrollableScrollPhysics(),
                     currentStep: step,
                     onStepCancel: step != 0
-                        ? () =>
-                            ref.read(_stepProvider.notifier).state = step - 1
+                        ? () => ref.read(stepProvider.notifier).state = step - 1
                         : null,
                     onStepContinue: step < steps.length - 1
-                        ? () =>
-                            ref.read(_stepProvider.notifier).state = step + 1
+                        ? () => ref.read(stepProvider.notifier).state = step + 1
                         : null,
                     onStepTapped: (index) =>
-                        ref.read(_stepProvider.notifier).state = index,
+                        ref.read(stepProvider.notifier).state = index,
                     steps: steps,
                     controlsBuilder:
                         (BuildContext context, ControlsDetails details) =>
