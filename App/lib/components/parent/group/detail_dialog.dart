@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:solimage/components/card_tile.dart';
-import 'package:solimage/components/parent/group_leave.dart';
-import 'package:solimage/components/parent/group_members.dart';
+import 'package:solimage/components/parent/group/leave_dialog.dart';
+import 'package:solimage/components/parent/group/members_dialog.dart';
 import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/group.dart';
 
