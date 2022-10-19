@@ -364,14 +364,14 @@ packages:
       name: firebase_ml_model_downloader
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.1+9"
+    version: "0.2.0"
   firebase_ml_model_downloader_platform_interface:
     dependency: transitive
     description:
       name: firebase_ml_model_downloader_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.1+18"
+    version: "0.1.1+19"
   firebase_performance:
     dependency: "direct main"
     description:

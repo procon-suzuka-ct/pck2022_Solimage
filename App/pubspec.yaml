@@ -38,7 +38,7 @@ dependencies:
   firebase_auth: ^3.11.2
   firebase_core: ^1.24.0
   firebase_crashlytics: ^2.9.0
-  firebase_ml_model_downloader: ^0.1.1+9
+  firebase_ml_model_downloader: ^0.2.0
   firebase_storage: ^10.3.11
   flutter_launcher_icons: ^0.10.0
   flutter_native_splash: ^2.2.11
