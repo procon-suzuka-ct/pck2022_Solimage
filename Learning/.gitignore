@@ -4,3 +4,4 @@
 *.csv
 *.h5
 *.tflite
+/images
