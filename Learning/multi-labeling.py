@@ -48,7 +48,7 @@ OP4_regulizer = regulizerRate * labelNum / (units + labelNum)
 
 # layer構築
 # VGG16をベースにsigmoidを使って多ラベル分類
-baseModel = MobileNetV2(weights="imagenet",
+baseModel = VGG16(weights="imagenet",
                   include_top=False,
                   input_tensor=Input(shape=(384, 216, 3)),)
 
