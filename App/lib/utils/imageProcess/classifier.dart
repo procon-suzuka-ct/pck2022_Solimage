@@ -97,12 +97,19 @@ class Classifier {
   /// ```
   ///
   TensorImage _preProcess() {
-    int cropSize = min(_inputImage.height, _inputImage.width);
+    final width = _inputShape[1];
+    final height = _inputShape[2];
+    final resizeRatio =
+        max(height / _inputImage.height, width / _inputImage.width);
+    final resizedWidth = (_inputImage.width * resizeRatio).floor();
+    final resizedHeight = (_inputImage.height * resizeRatio).floor();
     return ImageProcessorBuilder()
-        .add(ResizeWithCropOrPadOp(cropSize, cropSize))
         .add(ResizeOp(
-            _inputShape[1], _inputShape[2], ResizeMethod.NEAREST_NEIGHBOUR))
-        .add(_preProcessNormalizeOp)
+            resizedHeight, resizedWidth, ResizeMethod.NEAREST_NEIGHBOUR))
+        .add(ResizeWithCropOrPadOp(
+          height,
+          width,
+        ))
         .build()
         .process(_inputImage);
   }
@@ -129,6 +136,8 @@ class Classifier {
     _inputImage = TensorImage(_inputType);
     _inputImage.loadImage(image);
     _inputImage = _preProcess();
+
+    print(_inputShape);
 
     _interpreter.run(_inputImage.buffer, _outputBuffer.getBuffer());
     Map<String, double> labeledProb = TensorLabel.fromList(
