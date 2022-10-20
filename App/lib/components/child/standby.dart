@@ -13,6 +13,9 @@ import 'package:solimage/utils/imageProcess/classifier.dart';
 
 final _recommendDataProvider = FutureProvider.autoDispose((ref) async {
   final uid = await ref.watch(userProvider.selectAsync((data) => data?.uid));
+  final groups =
+      await ref.watch(userProvider.selectAsync((data) => data?.groups));
+  if (groups == null || groups.isEmpty) return null;
   final recommendData = uid != null
       ? await RecommendData.getRecommendDataByCurrentUid(uid)
       : null;
