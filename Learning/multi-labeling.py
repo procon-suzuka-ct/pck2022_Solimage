@@ -8,9 +8,11 @@ from keras.models import Model
 from keras.layers import Dense, Dropout, Flatten, Input
 import tensorflow_addons as tfa
 from keras.applications.vgg16 import VGG16
+from keras.applications.mobilenet_v2 import MobileNetV2
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.optimizers import adam_v2
+from keras.regularizers import l2
 
 dataPath = "image"
 
@@ -21,11 +23,11 @@ train = ImageDataGenerator(rescale=1./255,  # 255で割ることで正規化
                            zoom_range=0.2,  # ランダムにズーム
                            horizontal_flip=True,  # 水平反転
                            rotation_range=40,  # ランダムに回転
-                           validation_split=0.1)  # 検証用データの割合
+                           validation_split=0.2)  # 検証用データの割合
 trainGenerator = train.flow_from_directory(dataPath, target_size=(
-    384, 216), batch_size=16, class_mode="categorical", shuffle=True, subset="training")
+    384, 216), batch_size=32, class_mode="categorical", shuffle=True, subset="training")
 valGenerator = train.flow_from_directory(dataPath, target_size=(
-    384, 216), batch_size=16, class_mode="categorical", shuffle=True, subset="validation")
+    384, 216), batch_size=32, class_mode="categorical", shuffle=True, subset="validation")
 
 labels = trainGenerator.class_indices
 os.makedirs("./tmp/model", exist_ok=True)
@@ -37,22 +39,29 @@ lebels_reverse = dict(zip(labels.values(), labels.keys()))
 json.dump(lebels_reverse, json_file)
 json_file.close()
 
+# 正則化のパラメータ設定
+regulizerRate = 0.05
+units = 512
+labelNum = len(labels)
+OP3_regulizer = regulizerRate * units / (units + labelNum)
+OP4_regulizer = regulizerRate * labelNum / (units + labelNum)
+
 # layer構築
 # VGG16をベースにsigmoidを使って多ラベル分類
 baseModel = VGG16(weights="imagenet",
                   include_top=False,
-                  input_tensor=Input(shape=(216, 384, 3)),)
+                  input_tensor=Input(shape=(384, 216, 3)),)
 
 # 15層目まで重みを固定
-for layer in baseModel.layers[:15]:
+for layer in baseModel.layers[:-4]:
     layer.trainable = False
 
 # 出力層
 x = baseModel.output
-x = Dropout(0.5)(x)
-x = Flatten()(x)
-x = Dense(512, activation=tfa.activations.rrelu)(x)
-pridection = Dense(len(labels), activation="sigmoid")(x)
+x = Dropout(0.5, name = "output1")(x)
+x = Flatten(name = "output2")(x)
+x = Dense(units, activation=tfa.activations.rrelu, kernel_regularizer=l2(OP3_regulizer), name = "output3")(x)
+pridection = Dense(labelNum, activation="sigmoid", kernel_regularizer=l2(OP4_regulizer), name = "output4")(x)
 
 model = Model(inputs=baseModel.input, outputs=pridection)
 
@@ -61,7 +70,7 @@ model.compile(optimizer=adam_v2.Adam(learning_rate=0.0001), loss="binary_crossen
               metrics=["accuracy"])
 model.summary()
 
-early_stopping = EarlyStopping(monitor="val_loss", patience=2, min_delta=0)
+early_stopping = EarlyStopping(monitor="val_loss", patience=4, min_delta=0)
 check_point = ModelCheckpoint(
     "./tmp/model/model.h5", save_best_only=True, mode="min", monitor='val_loss')
 

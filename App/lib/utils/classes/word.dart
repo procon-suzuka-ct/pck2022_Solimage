@@ -22,6 +22,10 @@ class Word {
     };
   }
 
+  Stream<QuerySnapshot> listner() {
+    return FirebaseFirestore.instance.collection('words').snapshots();
+  }
+
   //WordをFirestoreに保存する
   Future<void> save() async {
     await FirebaseFirestore.instance.collection('words').doc(_word).set({
