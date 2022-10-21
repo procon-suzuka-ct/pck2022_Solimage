@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:solimage/states/router.dart';
-import 'package:solimage/utils/theme.dart';
 
 class SolimageApp extends ConsumerWidget {
   const SolimageApp({Key? key}) : super(key: key);
@@ -12,8 +11,11 @@ class SolimageApp extends ConsumerWidget {
 
     return MaterialApp.router(
       title: 'Solimage',
-      theme: lightTheme,
-      darkTheme: darkTheme,
+      theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.blue),
+      darkTheme: ThemeData(
+          useMaterial3: true,
+          brightness: Brightness.dark,
+          colorSchemeSeed: Colors.blue),
       themeMode: ThemeMode.light,
       builder: (context, child) {
         return MediaQuery(
