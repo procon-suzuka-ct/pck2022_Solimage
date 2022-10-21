@@ -48,37 +48,41 @@ class StandbyDialog extends ConsumerWidget {
     final recommendData = ref.watch(_recommendDataProvider);
     final classifier = ref.watch(_classifierProvider);
 
-    return Stack(children: [
-      recommendData.maybeWhen(
-          data: (data) => AlertDialog(
-              title: Text(data != null
-                  ? data.word!
-                  : classifier.isLoading && classifier.valueOrNull != null
-                      ? 'ちょっとまってね!'
-                      : 'けっかをみてみよう!'),
-              content: data != null
-                  ? Column(mainAxisSize: MainAxisSize.min, children: [
-                      Container(
-                          margin: const EdgeInsets.only(bottom: 10.0),
-                          constraints: const BoxConstraints.tightFor(
-                              width: 300, height: 300),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20.0),
-                              image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: CachedNetworkImageProvider(
-                                      data.imageUrl!)))),
-                      ChildActionButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            context.push('/child/result?userId=${data.userId}');
-                          },
-                          child: const Text('くわしく'))
-                    ])
-                  : null),
-          orElse: () => const AlertDialog(
-              content: Center(
-                  heightFactor: 1.0, child: CircularProgressIndicator()))),
+    return Column(mainAxisSize: MainAxisSize.max, children: [
+      Expanded(
+          child: recommendData.maybeWhen(
+              data: (data) => AlertDialog(
+                  title: Center(
+                      child: Text(
+                          data != null
+                              ? data.word!
+                              : classifier.isLoading &&
+                                      classifier.valueOrNull != null
+                                  ? 'ちょっとまってね!'
+                                  : 'けっかをみてみよう!',
+                          style: const TextStyle(
+                              fontSize: 30, fontWeight: FontWeight.bold))),
+                  content: data != null
+                      ? Column(mainAxisSize: MainAxisSize.min, children: [
+                          Expanded(
+                              child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 10.0),
+                                  child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(20.0),
+                                      child: CachedNetworkImage(
+                                          imageUrl: data.imageUrl!)))),
+                          ChildActionButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                context.push(
+                                    '/child/result?userId=${data.userId}');
+                              },
+                              child: const Text('くわしく'))
+                        ])
+                      : null),
+              orElse: () => const AlertDialog(
+                  content: Center(
+                      heightFactor: 1.0, child: CircularProgressIndicator())))),
       ChildActions(actions: [
         ChildActionButton(
             child: const Text('もどる'),
