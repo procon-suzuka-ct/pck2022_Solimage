@@ -42,7 +42,7 @@ class ChildActionButton extends StatelessWidget {
             }
           : null,
       style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.all(10.0),
+          padding: const EdgeInsets.all(20.0),
           textStyle:
               const TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold)),
       child: FittedBox(fit: BoxFit.contain, child: child));

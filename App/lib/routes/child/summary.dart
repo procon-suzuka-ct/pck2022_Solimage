@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:solimage/states/camera.dart';
@@ -15,16 +16,19 @@ class SummaryScreen extends ConsumerWidget {
     final imagePath = ref.watch(imagePathProvider);
 
     return Center(
-        child: imagePath.isNotEmpty
-            ? Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Stack(alignment: Alignment.center, children: [
-                  Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10.0),
-                          image: DecorationImage(
-                              image: FileImage(File(imagePath)),
-                              fit: BoxFit.cover))),
+        child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Stack(
+                alignment: Alignment.center,
+                fit: StackFit.expand,
+                children: [
+                  ClipRRect(
+                      borderRadius: BorderRadius.circular(10.0),
+                      child: FittedBox(
+                          fit: BoxFit.cover,
+                          child: imagePath.isNotEmpty
+                              ? Image.file(File(imagePath))
+                              : CachedNetworkImage(imageUrl: data.imageUrl!))),
                   if (data.meaning != null)
                     Align(
                         alignment: Alignment.bottomCenter,
@@ -37,13 +41,14 @@ class SummaryScreen extends ConsumerWidget {
                                 customBorder: const RoundedRectangleBorder(
                                     borderRadius: BorderRadius.vertical(
                                         bottom: Radius.circular(10.0))),
-                                child: Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: Text(data.meaning!,
-                                        style:
-                                            const TextStyle(fontSize: 20.0))),
+                                child: Center(
+                                    heightFactor: 1.0,
+                                    child: Padding(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: Text(data.meaning!,
+                                            style: const TextStyle(
+                                                fontSize: 20.0)))),
                                 onTap: () {})))
-                ]))
-            : const CircularProgressIndicator());
+                ])));
   }
 }

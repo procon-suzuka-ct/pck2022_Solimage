@@ -59,6 +59,7 @@ class StandbyDialog extends ConsumerWidget {
               content: data != null
                   ? Column(mainAxisSize: MainAxisSize.min, children: [
                       Container(
+                          margin: const EdgeInsets.only(bottom: 10.0),
                           constraints: const BoxConstraints.tightFor(
                               width: 300, height: 300),
                           decoration: BoxDecoration(
@@ -66,7 +67,13 @@ class StandbyDialog extends ConsumerWidget {
                               image: DecorationImage(
                                   fit: BoxFit.cover,
                                   image: CachedNetworkImageProvider(
-                                      data.imageUrl!))))
+                                      data.imageUrl!)))),
+                      ChildActionButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            context.push('/child/result?userId=${data.userId}');
+                          },
+                          child: const Text('くわしく'))
                     ])
                   : null),
           orElse: () => const AlertDialog(

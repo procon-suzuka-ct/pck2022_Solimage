@@ -8,27 +8,27 @@ import 'package:solimage/utils/classes/expData.dart';
 
 final _currentPageProvider = StateProvider.autoDispose((ref) => 0);
 final _expDataProviderFamily =
-    FutureProvider.autoDispose.family<ExpData?, String>((ref, word) async {
-  /*
-    final expData = await ExpData.getExpDataByWord(word: word);
+    FutureProvider.autoDispose.family<ExpData?, String>((ref, value) async {
+  ExpData? expData = await ExpData.getExpDataByWord(word: value);
+  expData ??= await RecommendData.getRecommendData(value);
+  expData ??= await ExpData.getExpData(0);
 
-    if (expData != null) await expData.addViews();
-   */
-  final expData = await ExpData.getExpData(0);
+  // if (expData != null) await expData.addViews();
 
   return expData;
 });
 
 // TODO: 実際のデータに差し替える（ほぼ実装済み、動作未確認）
 class ResultScreen extends ConsumerWidget {
-  const ResultScreen({Key? key, required this.word}) : super(key: key);
+  const ResultScreen({Key? key, this.word, this.userId}) : super(key: key);
 
-  final String word;
+  final String? word;
+  final String? userId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentPage = ref.watch(_currentPageProvider);
-    final expData = ref.watch(_expDataProviderFamily(word));
+    final expData = ref.watch(_expDataProviderFamily(word ?? userId!));
     final controller = PageController();
 
     return expData.maybeWhen(
@@ -39,7 +39,7 @@ class ResultScreen extends ConsumerWidget {
                   margin: const EdgeInsets.all(10.0),
                   child: FittedBox(
                       fit: BoxFit.contain,
-                      child: Text(data?.word ?? word,
+                      child: Text(data?.word ?? word!,
                           style: const TextStyle(
                               fontSize: 30.0, fontWeight: FontWeight.bold)))),
               automaticallyImplyLeading: false,

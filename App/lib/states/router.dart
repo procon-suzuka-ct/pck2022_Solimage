@@ -31,8 +31,10 @@ final routerProvider = Provider((ref) => GoRouter(
       GoRoute(
           path: '/child/result',
           name: '/child/result',
-          builder: (context, state) =>
-              SafeArea(child: ResultScreen(word: state.queryParams['word']!))),
+          builder: (context, state) => SafeArea(
+              child: ResultScreen(
+                  word: state.queryParams['word'],
+                  userId: state.queryParams['userId']))),
       GoRoute(
           path: '/parent/post',
           name: '/parent/post',
