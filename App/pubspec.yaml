@@ -36,7 +36,7 @@ dependencies:
   camera: ^0.10.0+3
   cloud_firestore: ^4.0.1
   firebase_auth: ^4.0.1
-  firebase_core: ^2.0.0
+  firebase_core: ^2.1.0
   firebase_crashlytics: ^3.0.1
   firebase_ml_model_downloader: ^0.2.0+1
   firebase_storage: ^11.0.1
