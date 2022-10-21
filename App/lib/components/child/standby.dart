@@ -37,7 +37,7 @@ final _classifierProvider = FutureProvider.autoDispose((ref) async {
         .predict(image.decodeImage(File(imagePath).readAsBytesSync())!);
     return result[0].label;
   }
-  return null;
+  throw const FileSystemException();
 });
 
 class StandbyDialog extends ConsumerWidget {
