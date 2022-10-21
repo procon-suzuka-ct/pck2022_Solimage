@@ -1,7 +1,5 @@
-import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:solimage/components/child/fwoh_card.dart';
-import 'package:solimage/components/child_actions.dart';
 import 'package:solimage/utils/classes/expData.dart';
 
 final List<String> _cardLabels = [
@@ -14,49 +12,51 @@ final List<String> _cardLabels = [
 ];
 
 class FWOHScreen extends StatelessWidget {
-  const FWOHScreen({Key? key, required this.data, required this.size})
-      : super(key: key);
+  const FWOHScreen({Key? key, required this.data}) : super(key: key);
 
   final ExpData data;
-  final Size size;
 
   @override
   Widget build(BuildContext context) {
-    final itemHeight = (size.height - 56 - 120) / 3;
-    final itemWidth = size.width / 2;
+    final cardDescriptions = [
+      data.why,
+      data.what,
+      data.where,
+      data.when,
+      data.who,
+      data.how
+    ];
 
-    return GridView.count(
-        crossAxisCount: 2,
-        crossAxisSpacing: 10.0,
-        mainAxisSpacing: 10.0,
-        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-        childAspectRatio: itemWidth / itemHeight,
-        physics: const NeverScrollableScrollPhysics(),
-        children: List.generate(
-            6,
-            (index) => OpenContainer(
-                openColor: Colors.transparent,
-                closedColor: Colors.transparent,
-                openBuilder: (context, action) => Container(
-                    decoration:
-                        BoxDecoration(color: Theme.of(context).backgroundColor),
-                    child: Stack(alignment: Alignment.center, children: [
-                      Center(
-                          child: FittedBox(
-                              fit: BoxFit.contain,
-                              child: Text(_cardLabels[index],
-                                  style: const TextStyle(
-                                      fontSize: 30.0,
-                                      fontWeight: FontWeight.bold)))),
-                      ChildActions(actions: [
-                        ChildActionButton(
-                            child: const Text('もどる'),
-                            onPressed: () => Navigator.of(context).pop())
-                      ])
-                    ])),
-                closedBuilder: (context, action) => FWOHCard(
-                    label: _cardLabels[index],
-                    description: _cardLabels[index],
-                    action: action))));
+    return Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(children: [
+          ...List.generate(
+              cardDescriptions.length,
+              (index) => Expanded(
+                  child: FWOHCard(
+                      word: data.word!,
+                      label: _cardLabels[index],
+                      description: cardDescriptions[index]))),
+          FittedBox(
+              fit: BoxFit.contain,
+              child: Wrap(spacing: 10.0, children: [
+                ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.all(30.0),
+                        textStyle: const TextStyle(
+                            fontSize: 30.0, fontWeight: FontWeight.bold)),
+                    label: const Text('おもしろい'),
+                    icon: const Icon(Icons.thumb_up, size: 50.0),
+                    onPressed: () {}),
+                ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.all(30.0),
+                        textStyle: const TextStyle(
+                            fontSize: 30.0, fontWeight: FontWeight.bold)),
+                    label: const Text('つまらない'),
+                    icon: const Icon(Icons.thumb_down, size: 50.0),
+                    onPressed: () {}),
+              ]))
+        ]));
   }
 }

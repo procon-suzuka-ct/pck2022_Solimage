@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solimage/components/child_actions.dart';
-import 'package:solimage/routes/child/conclusion.dart';
 import 'package:solimage/routes/child/fwoh.dart';
 import 'package:solimage/routes/child/summary.dart';
 import 'package:solimage/utils/classes/expData.dart';
@@ -54,8 +53,7 @@ class ResultScreen extends ConsumerWidget {
                           ref.read(_currentPageProvider.notifier).state = page,
                       children: [
                     SummaryScreen(data: data!),
-                    FWOHScreen(data: data, size: MediaQuery.of(context).size),
-                    const ConclusionScreen()
+                    FWOHScreen(data: data)
                   ])),
               ChildActions(actions: [
                 ChildActionButton(
@@ -65,7 +63,7 @@ class ResultScreen extends ConsumerWidget {
                             curve: Curves.easeInOut)
                         : () => context.pop(),
                     child: const Text('もどる')),
-                currentPage != 2
+                currentPage != 1
                     ? ChildActionButton(
                         onPressed: () => controller.nextPage(
                             duration: const Duration(milliseconds: 200),

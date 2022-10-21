@@ -57,15 +57,17 @@ class StandbyDialog extends ConsumerWidget {
                       ? 'ちょっとまってね!'
                       : 'けっかをみてみよう!'),
               content: data != null
-                  ? Container(
-                      constraints: const BoxConstraints.tightFor(
-                          width: 300, height: 300),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20.0),
-                          image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image:
-                                  CachedNetworkImageProvider(data.imageUrl!))))
+                  ? Column(mainAxisSize: MainAxisSize.min, children: [
+                      Container(
+                          constraints: const BoxConstraints.tightFor(
+                              width: 300, height: 300),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20.0),
+                              image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: CachedNetworkImageProvider(
+                                      data.imageUrl!))))
+                    ])
                   : null),
           orElse: () => const AlertDialog(
               content: Center(

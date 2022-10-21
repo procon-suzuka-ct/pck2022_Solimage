@@ -13,7 +13,7 @@ class ChildActions extends StatelessWidget {
       alignment: Alignment.bottomCenter,
       child: Container(
           height: height,
-          margin: const EdgeInsets.fromLTRB(10.0, 10.0, 0.0, 10.0),
+          margin: const EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 10.0),
           child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               mainAxisSize: MainAxisSize.max,
