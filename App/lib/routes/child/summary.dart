@@ -47,7 +47,7 @@ class SummaryScreen extends ConsumerWidget {
                                         padding: const EdgeInsets.all(10.0),
                                         child: Text(data.meaning!,
                                             style: const TextStyle(
-                                                fontSize: 20.0)))),
+                                                fontSize: 22.0)))),
                                 onTap: () {})))
                 ])));
   }
