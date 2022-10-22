@@ -13,7 +13,7 @@ class ChildActions extends StatelessWidget {
       alignment: Alignment.bottomCenter,
       child: Container(
           height: height,
-          margin: const EdgeInsets.fromLTRB(10.0, 10.0, 0.0, 10.0),
+          margin: const EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 10.0),
           child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               mainAxisSize: MainAxisSize.max,
@@ -42,7 +42,7 @@ class ChildActionButton extends StatelessWidget {
             }
           : null,
       style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.all(10.0),
+          padding: const EdgeInsets.all(20.0),
           textStyle:
               const TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold)),
       child: FittedBox(fit: BoxFit.contain, child: child));

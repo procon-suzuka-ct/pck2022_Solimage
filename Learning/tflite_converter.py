@@ -28,7 +28,7 @@ valGen = generator.flow_from_directory(dataPath, target_size=(
 
 
 def representative_dataset_gen():
-    for i in range(1000):
+    for i in range(300):
         yield [valGen.next()[0]]
 
 
@@ -48,8 +48,6 @@ converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
 # Set the input and output tensors to uint8 (APIs added in r2.3)
 converter.inference_input_type = tf.uint8
 converter.inference_output_type = tf.uint8
-
-tflite_model_quant = converter.convert()
 
 tflite_model = converter.convert()
 open(os.path.join(base, dirPath, modelPath), "wb").write(tflite_model)

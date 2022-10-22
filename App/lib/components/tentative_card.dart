@@ -2,11 +2,16 @@ import 'package:flutter/material.dart';
 
 class TentativeCard extends StatelessWidget {
   const TentativeCard(
-      {Key? key, required this.icon, required this.label, this.padding})
+      {Key? key,
+      required this.icon,
+      required this.label,
+      this.onTap,
+      this.padding})
       : super(key: key);
 
   final Widget icon;
   final Widget label;
+  final void Function()? onTap;
   final EdgeInsetsGeometry? padding;
 
   @override
@@ -15,6 +20,7 @@ class TentativeCard extends StatelessWidget {
           customBorder: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
           ),
+          onTap: onTap ?? () {},
           child: Padding(
               padding: padding ?? const EdgeInsets.all(50.0),
               child: DefaultTextStyle(
@@ -24,6 +30,5 @@ class TentativeCard extends StatelessWidget {
                       crossAxisAlignment: WrapCrossAlignment.center,
                       runAlignment: WrapAlignment.center,
                       spacing: 10.0,
-                      children: [icon, label]))),
-          onTap: () {}));
+                      children: [icon, label])))));
 }
