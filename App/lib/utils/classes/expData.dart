@@ -185,6 +185,9 @@ class ExpData {
       }
     });
 
+    // expDataIndexの更新
+
+    // ID
     final docRef =
         FirebaseFirestore.instance.collection("expDataIndex").doc(_word);
 
@@ -200,23 +203,23 @@ class ExpData {
       } else {
         docRef.set({
           "index": [_dataId],
-          "views": _views,
         });
       }
     });
 
+    // rootWord
     final rootRef =
         FirebaseFirestore.instance.collection("expDataIndex").doc(rootWord);
     rootRef.get().then((value) {
-      final data = value.data()!;
-      final list = (data["childWord"] as List<dynamic>).cast<String>();
-      value.exists
-          ? list.contains(rootWord)
-              ? null
-              : rootRef.update({
-                  "childWord": FieldValue.arrayUnion([rootWord])
-                })
-          : null;
+      if (value.exists) {
+        final data = value.data()!;
+        final list = (data["childWord"] as List<dynamic>).cast<String>();
+        list.contains(_word)
+            ? null
+            : rootRef.update({
+                "childWord": FieldValue.arrayUnion([_word]),
+              });
+      }
     });
 
     await _getRef(_dataId.toString()).set(this);
