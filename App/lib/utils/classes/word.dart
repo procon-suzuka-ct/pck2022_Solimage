@@ -22,7 +22,7 @@ class Word {
     };
   }
 
-  Stream<QuerySnapshot> listner() {
+  static Stream<QuerySnapshot> listener() {
     return FirebaseFirestore.instance.collection('words').snapshots();
   }
 
