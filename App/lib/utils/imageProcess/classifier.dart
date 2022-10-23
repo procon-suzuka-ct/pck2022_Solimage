@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+// import 'dart:io';
 import 'dart:math';
 
 import 'package:camera/camera.dart';
@@ -11,7 +11,7 @@ import 'package:solimage/utils/imageProcess/imageUtil.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
 import 'package:collection/collection.dart';
-import 'package:firebase_ml_model_downloader/firebase_ml_model_downloader.dart';
+// import 'package:firebase_ml_model_downloader/firebase_ml_model_downloader.dart';
 
 class Classifier {
   //singleton
@@ -34,9 +34,9 @@ class Classifier {
   late TfLiteType _inputType;
   late TfLiteType _outputType;
   late TensorImage _inputImage;
-  late File _modelFile;
+  // late File _modelFile;
 
-  DequantizeOp get _preProcessNormalizeOp => DequantizeOp(0, 255);
+  // DequantizeOp get _preProcessNormalizeOp => DequantizeOp(0, 255);
   NormalizeOp get _postProcessNormalizeOp => NormalizeOp(0, 1);
 
   late List<String> labels;
