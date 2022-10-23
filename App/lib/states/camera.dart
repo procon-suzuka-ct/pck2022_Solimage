@@ -9,23 +9,22 @@ final controllerProvider = FutureProvider((ref) async {
   final lifecycle = ref.watch(appLifecycleProvider);
   final cameras = await availableCameras();
 
-  if (cameras.isNotEmpty) {
-    final controller = CameraController(cameras.first, ResolutionPreset.medium,
-        imageFormatGroup: ImageFormatGroup.yuv420, enableAudio: false);
+  final controller = CameraController(cameras.first, ResolutionPreset.medium,
+      imageFormatGroup: ImageFormatGroup.yuv420, enableAudio: false);
 
-    if (controller.value.isInitialized) {
-      if (lifecycle == AppLifecycleState.inactive) controller.dispose();
-    } else {
-      if (lifecycle == AppLifecycleState.resumed) {
-        await controller.initialize();
-        await controller.setFlashMode(FlashMode.off);
-        await controller.lockCaptureOrientation(DeviceOrientation.portraitUp);
-      }
-      return controller;
+  if (controller.value.isInitialized) {
+    if (lifecycle == AppLifecycleState.inactive) {
+      await controller.dispose();
+    }
+  } else {
+    if (lifecycle == AppLifecycleState.resumed) {
+      await controller.initialize();
+      await controller.setFlashMode(FlashMode.off);
+      await controller.lockCaptureOrientation(DeviceOrientation.portraitUp);
     }
   }
 
-  return null;
+  return controller;
 });
 
 final imagePathProvider = StateProvider<String>((ref) => '');

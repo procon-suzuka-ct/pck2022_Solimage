@@ -4,16 +4,26 @@ import 'package:go_router/go_router.dart';
 import 'package:solimage/components/child_actions.dart';
 import 'package:solimage/routes/child/fwoh.dart';
 import 'package:solimage/routes/child/summary.dart';
+import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/expData.dart';
 
 final _currentPageProvider = StateProvider.autoDispose((ref) => 0);
 final _expDataProviderFamily =
     FutureProvider.autoDispose.family<ExpData?, String>((ref, value) async {
+  final user = await ref.read(userProvider.future);
   ExpData? expData = await ExpData.getExpDataByWord(word: value);
   expData ??= await RecommendData.getRecommendData(value);
   expData ??= await ExpData.getExpData(0);
 
-  // if (expData != null) await expData.addViews();
+  if (expData != null) {
+    await expData.addViews();
+    if (user != null &&
+        !(user.histories.contains(expData.word) ||
+            user.histories.contains(value))) {
+      user.histories.add(expData.word ?? value);
+      await user.save();
+    }
+  }
 
   return expData;
 });
