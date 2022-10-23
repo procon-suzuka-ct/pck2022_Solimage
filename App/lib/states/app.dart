@@ -13,11 +13,11 @@ class _AppLifecycleObserver extends WidgetsBindingObserver {
   }
 }
 
-final appLifecycleProvider = Provider<AppLifecycleState>((ref) {
+final appLifecycleProvider = Provider<AppLifecycleState?>((ref) {
   final observer = _AppLifecycleObserver((value) => ref.state = value);
 
   final binding = WidgetsBinding.instance..addObserver(observer);
   ref.onDispose(() => binding.removeObserver(observer));
 
-  return AppLifecycleState.resumed;
+  return binding.lifecycleState;
 });
