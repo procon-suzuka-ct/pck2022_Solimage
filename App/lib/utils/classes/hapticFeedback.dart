@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:vibration/vibration.dart';
 
 class HapticFeedback {
@@ -13,11 +14,35 @@ class HapticFeedback {
           duration: duration,
           pattern: pattern,
           intensities: intensities,
-          amplitude: amplitude < 255 ? amplitude : 255);
+          amplitude: min(amplitude, 255));
       await Future.delayed(Duration(milliseconds: delayTime));
     }
   }
 
+  /// This is a method of create custom vibration pattern
+  ///
+  /// [pattern] is a list of vibration duration in milliseconds
+  ///
+  /// [intensities] is a list of vibration intensities in percentage
+  ///
+  /// [repeat] is a number of repeat vibration
+  ///
+  /// [delayTime] is a delay time between vibration
+  ///
+  /// [amplitude] is a vibration intensity in percentage (range: 0 - 255)
+  ///
+  /// [duration] is a vibration duration in milliseconds
+  ///
+  /// Example:
+  /// ```dart
+  /// HapticFeedback.vibrate(
+  ///   pattern: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
+  ///   intensities: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
+  ///   repeat: 1,
+  ///   delayTime: 0,
+  ///   amplitude: 100,
+  ///   duration: 1000);
+  /// ```
   static Future<void> customVibrate(
           {List<int> pattern = const [],
           int duration = 500,
@@ -25,7 +50,7 @@ class HapticFeedback {
           List<int> intensities = const [],
           int amplitude = -1,
           int delayTime = 0}) async =>
-      _vibrate(
+      await _vibrate(
           pattern: pattern,
           duration: duration,
           repeat: repeat,
