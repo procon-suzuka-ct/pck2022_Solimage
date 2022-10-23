@@ -10,7 +10,7 @@ import 'package:solimage/states/camera.dart';
 
 final _cameraPermissionProvider =
     FutureProvider((ref) => Permission.camera.request());
-final _takingPictureProvider = StateProvider<bool>((ref) => false);
+final _isTakingPictureProvider = StateProvider<bool>((ref) => false);
 
 class CameraScreen extends ConsumerWidget {
   const CameraScreen({Key? key}) : super(key: key);
@@ -18,6 +18,7 @@ class CameraScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cameraPermission = ref.watch(_cameraPermissionProvider);
+    final isTakingPicture = ref.watch(_isTakingPictureProvider);
 
     return cameraPermission.maybeWhen(
         data: (data) {
@@ -69,25 +70,31 @@ class CameraScreen extends ConsumerWidget {
                                     padding: const EdgeInsets.all(15.0))))),
                     ChildActions(actions: [
                       ChildActionButton(
-                          onPressed: () async {
-                            ScaffoldMessenger.of(context)
-                                .clearMaterialBanners();
-                            ref.read(_takingPictureProvider.notifier).state =
-                                true;
-                            ref.read(imagePathProvider.notifier).state = '';
-                            if (controller != null) {
-                              showDialog(
-                                  context: context,
-                                  barrierDismissible: false,
-                                  barrierColor: Colors.black.withOpacity(0.8),
-                                  builder: (context) => const StandbyDialog());
-                              final path =
-                                  (await controller.takePicture()).path;
-                              ref.read(imagePathProvider.notifier).state = path;
-                            }
-                            ref.read(_takingPictureProvider.notifier).state =
-                                false;
-                          },
+                          onPressed: !isTakingPicture
+                              ? () async {
+                                  ScaffoldMessenger.of(context)
+                                      .clearMaterialBanners();
+                                  ref
+                                      .read(_isTakingPictureProvider.notifier)
+                                      .state = true;
+                                  ref.read(imagePathProvider.notifier).state =
+                                      '';
+                                  await showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      barrierColor:
+                                          Colors.black.withOpacity(0.8),
+                                      builder: (context) =>
+                                          const StandbyDialog());
+                                  final path =
+                                      (await controller.takePicture()).path;
+                                  ref.read(imagePathProvider.notifier).state =
+                                      path;
+                                  ref
+                                      .read(_isTakingPictureProvider.notifier)
+                                      .state = false;
+                                }
+                              : null,
                           child: const Text('さつえい')),
                       ChildActionButton(
                           onPressed: () {
@@ -97,7 +104,7 @@ class CameraScreen extends ConsumerWidget {
                           },
                           child: const Text('きろく'))
                     ]),
-                    LoadingOverlay(visible: ref.watch(_takingPictureProvider))
+                    LoadingOverlay(visible: ref.watch(_isTakingPictureProvider))
                   ]));
                 },
                 orElse: () => const Scaffold(
