@@ -45,8 +45,8 @@ class HistoryScreen extends ConsumerWidget {
                                                     style: const TextStyle(
                                                         fontSize: 30.0,
                                                         fontWeight:
-                                                            FontWeight.bold))),
-                                            onTap: () {})));
+                                                            FontWeight.bold)))),
+                                        onTap: () {}));
                               })
                           : const Padding(
                               padding: EdgeInsets.all(30.0),

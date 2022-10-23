@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:solimage/states/user.dart';
+import 'package:solimage/states/words.dart';
 import 'package:solimage/utils/classes/word.dart';
 
 class DataAddWordDialog extends ConsumerWidget {
@@ -28,10 +29,14 @@ class DataAddWordDialog extends ConsumerWidget {
                   onPressed: () {
                     if (controller.text.isNotEmpty) {
                       final word = Word(word: controller.text, root: root);
-                      word.save().then((_) => ScaffoldMessenger.of(context)
-                          .showSnackBar(
-                              const SnackBar(content: Text('ワードを追加しました'))));
-                      Navigator.of(context).pop();
+                      word
+                          .save()
+                          .then((_) => ref.refresh(wordsProvider.future))
+                          .then((_) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('ワードを追加しました')));
+                        Navigator.of(context).pop();
+                      });
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('ワードを入力してください')));

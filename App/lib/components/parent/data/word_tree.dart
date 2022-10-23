@@ -4,17 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_simple_treeview/flutter_simple_treeview.dart';
 import 'package:solimage/components/parent/data/word_button.dart';
+import 'package:solimage/states/words.dart';
 import 'package:solimage/utils/classes/word.dart';
 import 'package:solimage/utils/word_nodes.dart';
-
-final _wordsProvider = FutureProvider((ref) => Word.getWords());
 
 class WordTree extends ConsumerWidget {
   const WordTree({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final words = ref.watch(_wordsProvider);
+    final words = ref.watch(wordsProvider);
+    print(words);
     final controller = TreeController();
 
     return words.maybeWhen(
