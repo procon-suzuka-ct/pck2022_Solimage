@@ -121,9 +121,6 @@ class ExpData {
       String? who,
       String? how,
       String? imageUrl}) {
-    if (Auth().currentUser()!.uid != _userId) {
-      throw Exception('userId is not match');
-    }
     _word = word ?? _word;
     _meaning = meaning ?? _meaning;
     _why = why ?? _why;
