@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:solimage/states/history.dart';
 import 'package:solimage/utils/classes/expData.dart';
 
 final _postingProvider = StateProvider.autoDispose((ref) => false);
@@ -36,7 +37,10 @@ class DataPostDialog extends ConsumerWidget {
                       await expData.saveImage(imagePath: imagePath);
                     }
 
-                    await expData.save().then((_) {
+                    await expData
+                        .save()
+                        .then((_) => ref.refresh(recommendDataProvider.future))
+                        .then((_) {
                       ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('投稿しました')));
                       context.go('/parent');
