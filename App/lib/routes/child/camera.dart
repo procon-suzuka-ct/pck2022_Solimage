@@ -79,7 +79,7 @@ class CameraScreen extends ConsumerWidget {
                                       .state = true;
                                   ref.read(imagePathProvider.notifier).state =
                                       '';
-                                  await showDialog(
+                                  showDialog(
                                       context: context,
                                       barrierDismissible: false,
                                       barrierColor:
