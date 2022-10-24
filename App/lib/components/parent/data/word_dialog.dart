@@ -28,7 +28,10 @@ class DataAddWordDialog extends ConsumerWidget {
                   child: const Text('OK'),
                   onPressed: () {
                     if (controller.text.isNotEmpty) {
-                      final word = Word(word: controller.text, root: root);
+                      final word = Word(
+                          word: controller.text,
+                          root: root,
+                          key: controller.text);
                       word
                           .save()
                           .then((_) => ref.refresh(wordsProvider.future))
