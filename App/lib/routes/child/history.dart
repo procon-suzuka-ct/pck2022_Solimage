@@ -33,20 +33,17 @@ class HistoryScreen extends ConsumerWidget {
                               itemCount: histories.length,
                               itemBuilder: (context, index) {
                                 final history = histories[index];
-                                return Card(
-                                    child: InkWell(
-                                        customBorder: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                        ),
-                                        child: ListTile(
-                                            title: Center(
-                                                child: Text(history,
-                                                    style: const TextStyle(
-                                                        fontSize: 30.0,
-                                                        fontWeight:
-                                                            FontWeight.bold)))),
-                                        onTap: () {}));
+                                return Padding(
+                                    padding:
+                                        const EdgeInsets.only(bottom: 10.0),
+                                    child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            padding: const EdgeInsets.all(30.0),
+                                            textStyle: const TextStyle(
+                                                fontSize: 30.0,
+                                                fontWeight: FontWeight.bold)),
+                                        child: Center(child: Text(history)),
+                                        onPressed: () {}));
                               })
                           : const Padding(
                               padding: EdgeInsets.all(30.0),

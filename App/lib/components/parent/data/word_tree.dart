@@ -14,8 +14,7 @@ class WordTree extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final words = ref.watch(wordsProvider);
-    print(words);
-    final controller = TreeController();
+    final controller = TreeController(allNodesExpanded: false);
 
     return words.maybeWhen(
         data: (words) {
