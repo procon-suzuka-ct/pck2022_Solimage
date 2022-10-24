@@ -111,7 +111,7 @@ class PostScreen extends ConsumerWidget {
           state: step != 0 ? StepState.complete : StepState.indexed),
       Step(
           title: const Text('ワード'),
-          subtitle: Text(word),
+          subtitle: Text(word.isNotEmpty ? word : '未入力'),
           content: isRecommendData
               ? Padding(
                   padding: const EdgeInsets.all(10.0),
@@ -135,7 +135,7 @@ class PostScreen extends ConsumerWidget {
               : StepState.indexed),
       Step(
           title: const Text('簡単な説明'),
-          subtitle: Text(meaning),
+          subtitle: Text(meaning.isNotEmpty ? meaning : '未入力'),
           content: Padding(
               padding: const EdgeInsets.all(10.0),
               child: exampleData.maybeWhen(
