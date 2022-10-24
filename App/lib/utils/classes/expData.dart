@@ -393,14 +393,23 @@ class ExpData {
             ? imageUrls.entries.toList()[imageUrl].value
             : null,
       );
-      getExpData(why!).then((value) => value!.addViews());
-      getExpData(what!).then((value) => value!.addViews());
-      getExpData(where!).then((value) => value!.addViews());
-      getExpData(when!).then((value) => value!.addViews());
-      getExpData(who!).then((value) => value!.addViews());
-      getExpData(how!).then((value) => value!.addViews());
-      getExpData(imageUrl!).then((value) => value!.addViews());
 
+      void viewed(int? id) {
+        if (id == null) return;
+        getExpData(id).then((value) {
+          if (value != null) {
+            value.addViews();
+          }
+        });
+      }
+
+      viewed(why);
+      viewed(what);
+      viewed(where);
+      viewed(when);
+      viewed(who);
+      viewed(how);
+      viewed(imageUrl);
       return data;
     }
     return null;
