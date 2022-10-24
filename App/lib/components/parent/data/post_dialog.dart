@@ -33,8 +33,12 @@ class DataPostDialog extends ConsumerWidget {
                 ? () async {
                     ref.read(_postingProvider.notifier).state = true;
 
-                    if (imagePath.isNotEmpty && !imagePath.startsWith('http')) {
-                      await expData.saveImage(imagePath: imagePath);
+                    if (imagePath.isNotEmpty) {
+                      if (!imagePath.startsWith('http')) {
+                        await expData.saveImage(imagePath: imagePath);
+                      } else {
+                        expData.setData(imageUrl: imagePath);
+                      }
                     }
 
                     await expData
