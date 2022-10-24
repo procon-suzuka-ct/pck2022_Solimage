@@ -77,156 +77,211 @@ class PostScreen extends ConsumerWidget {
     final steps = [
       Step(
           title: const Text('オススメ'),
-          subtitle: const Text('有効にすると、より多くの人に見てもらえます'),
-          content: Checkbox(
-              value: isRecommendData,
-              onChanged: expData.value is! RecommendData
-                  ? (value) {
-                      ref.read(_isRecommendDataProvider.notifier).state =
-                          value ?? false;
-                    }
-                  : null),
+          subtitle: Text(isRecommendData ? 'オススメする' : 'オススメしない'),
+          content: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(children: [
+                RadioListTile<bool>(
+                  title: const Text('オススメする'),
+                  subtitle: const Text('撮影後の待ち時間にCMのように表示されます'),
+                  value: true,
+                  onChanged: expData.value is! RecommendData
+                      ? (value) {
+                          ref.read(wordProvider.notifier).state = '';
+                          ref.read(_isRecommendDataProvider.notifier).state =
+                              value!;
+                        }
+                      : null,
+                  groupValue: isRecommendData,
+                ),
+                RadioListTile<bool>(
+                  title: const Text('オススメしない'),
+                  subtitle: const Text('画像で検索したときに表示されます'),
+                  value: false,
+                  onChanged: expData.value is! RecommendData
+                      ? (value) {
+                          ref.read(wordProvider.notifier).state = '';
+                          ref.read(_isRecommendDataProvider.notifier).state =
+                              value!;
+                        }
+                      : null,
+                  groupValue: isRecommendData,
+                )
+              ])),
           state: step != 0 ? StepState.complete : StepState.indexed),
       Step(
           title: const Text('ワード'),
-          subtitle: const Text('必須です'),
-          content: const Align(
-              alignment: Alignment.centerLeft,
-              child: SingleChildScrollView(
+          subtitle: Text(word),
+          content: isRecommendData
+              ? Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: TextFormField(
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (value) =>
+                          value == null || value.isEmpty ? '入力してください' : null,
+                      initialValue: word,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(), labelText: 'ワード'),
+                      onChanged: (value) =>
+                          ref.read(wordProvider.notifier).state = value))
+              : const Align(
+                  alignment: Alignment.centerLeft,
                   child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal, child: WordTree()))),
+                      child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: WordTree()))),
           state: step != 1 && word.isNotEmpty
               ? StepState.complete
               : StepState.indexed),
       Step(
           title: const Text('簡単な説明'),
-          subtitle: const Text('必須です'),
-          content: exampleData.maybeWhen(
-              data: (data) => Column(children: [
-                    TextFormField(
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (value) =>
-                            value == null || value.isEmpty ? '入力してください' : null,
-                        initialValue: meaning,
-                        decoration: const InputDecoration(
-                            border: OutlineInputBorder(), labelText: '簡単な説明'),
-                        onChanged: (value) =>
-                            ref.read(_meaningProvider.notifier).state = value),
-                    ExampleText(data?.meaning)
-                  ]),
-              orElse: () => const Center(child: CircularProgressIndicator())),
+          subtitle: Text(meaning),
+          content: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: exampleData.maybeWhen(
+                  data: (data) => Column(children: [
+                        TextFormField(
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            validator: (value) => value == null || value.isEmpty
+                                ? '入力してください'
+                                : null,
+                            initialValue: meaning,
+                            decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: '簡単な説明'),
+                            onChanged: (value) => ref
+                                .read(_meaningProvider.notifier)
+                                .state = value),
+                        ExampleText(data?.meaning)
+                      ]),
+                  orElse: () =>
+                      const Center(child: CircularProgressIndicator()))),
           state: step != 2 && meaning.isNotEmpty
               ? StepState.complete
               : StepState.indexed),
       Step(
           title: const Text('画像'),
-          subtitle: const Text('オススメする場合は必須です'),
-          content: Column(children: [
-            if (imageUrl.isNotEmpty)
-              Container(
-                  margin: const EdgeInsets.all(10.0),
-                  child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10.0),
-                      child: imageUrl.startsWith('http')
-                          ? CachedNetworkImage(
-                              height: 500.0,
-                              imageUrl: imageUrl,
-                              placeholder: (context, url) => const Center(
-                                  child: CircularProgressIndicator()))
-                          : Image.file(File(imageUrl)))),
-            ElevatedButton.icon(
-                onPressed: () async {
-                  final path = (await ImagePicker()
-                          .pickImage(source: ImageSource.camera))
-                      ?.path;
+          subtitle: Text(imageUrl.isNotEmpty ? '追加済み' : '追加されていません'),
+          content: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(children: [
+                if (imageUrl.isNotEmpty)
+                  Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10.0),
+                          child: imageUrl.startsWith('http')
+                              ? CachedNetworkImage(
+                                  height: 500.0,
+                                  imageUrl: imageUrl,
+                                  placeholder: (context, url) => const Center(
+                                      child: CircularProgressIndicator()))
+                              : Image.file(File(imageUrl)))),
+                ElevatedButton.icon(
+                    onPressed: () async {
+                      final path = (await ImagePicker()
+                              .pickImage(source: ImageSource.camera))
+                          ?.path;
 
-                  if (path != null) {
-                    ref.read(_imageUrlProvider.notifier).state = path;
-                  }
-                },
-                icon: const Icon(Icons.camera_alt),
-                label: Text('画像を${imageUrl.isEmpty ? '撮影' : '変更'}')),
-            ElevatedButton.icon(
-                onPressed: () async {
-                  final path = (await ImagePicker()
-                          .pickImage(source: ImageSource.gallery))
-                      ?.path;
+                      if (path != null) {
+                        ref.read(_imageUrlProvider.notifier).state = path;
+                      }
+                    },
+                    icon: const Icon(Icons.camera_alt),
+                    label: Text('画像を${imageUrl.isEmpty ? '撮影' : '変更'}')),
+                ElevatedButton.icon(
+                    onPressed: () async {
+                      final path = (await ImagePicker()
+                              .pickImage(source: ImageSource.gallery))
+                          ?.path;
 
-                  if (path != null) {
-                    ref.read(_imageUrlProvider.notifier).state = path;
-                  }
-                },
-                icon: const Icon(Icons.cloud_upload),
-                label: Text('画像を${imageUrl.isEmpty ? '追加' : '変更'}'))
-          ]),
+                      if (path != null) {
+                        ref.read(_imageUrlProvider.notifier).state = path;
+                      }
+                    },
+                    icon: const Icon(Icons.cloud_upload),
+                    label: Text('画像を${imageUrl.isEmpty ? 'アップロード' : '変更'}'))
+              ])),
           state: step != 3 && (isRecommendData ? imageUrl.isNotEmpty : true)
               ? StepState.complete
               : StepState.indexed),
       Step(
           title: const Text('5W1H'),
-          subtitle: const Text('可能な限り入力してください'),
-          content: exampleData.maybeWhen(
-              data: (data) => Wrap(spacing: 10.0, children: [
-                    Padding(
-                        padding: const EdgeInsets.only(top: 10.0),
-                        child: TextFormField(
-                            initialValue: why,
-                            decoration: const InputDecoration(
-                                border: OutlineInputBorder(), labelText: 'なぜ'),
-                            onChanged: (value) =>
-                                ref.read(_whyProvider.notifier).state = value)),
-                    ExampleText(data?.why),
-                    Padding(
-                        padding: const EdgeInsets.only(top: 10.0),
-                        child: TextFormField(
-                            initialValue: what,
-                            decoration: const InputDecoration(
-                                border: OutlineInputBorder(), labelText: 'なに'),
-                            onChanged: (value) => ref
-                                .read(_whatProvider.notifier)
-                                .state = value)),
-                    ExampleText(data?.what),
-                    Padding(
-                        padding: const EdgeInsets.only(top: 10.0),
-                        child: TextFormField(
-                            initialValue: where,
-                            decoration: const InputDecoration(
-                                border: OutlineInputBorder(), labelText: 'どこ'),
-                            onChanged: (value) => ref
-                                .read(_whereProvider.notifier)
-                                .state = value)),
-                    ExampleText(data?.where),
-                    Padding(
-                        padding: const EdgeInsets.only(top: 10.0),
-                        child: TextFormField(
-                            initialValue: when,
-                            decoration: const InputDecoration(
-                                border: OutlineInputBorder(), labelText: 'いつ'),
-                            onChanged: (value) => ref
-                                .read(_whenProvider.notifier)
-                                .state = value)),
-                    ExampleText(data?.when),
-                    Padding(
-                        padding: const EdgeInsets.only(top: 10.0),
-                        child: TextFormField(
-                            initialValue: who,
-                            decoration: const InputDecoration(
-                                border: OutlineInputBorder(), labelText: 'だれ'),
-                            onChanged: (value) =>
-                                ref.read(_whoProvider.notifier).state = value)),
-                    ExampleText(data?.who),
-                    Padding(
-                        padding: const EdgeInsets.only(top: 10.0),
-                        child: TextFormField(
-                            initialValue: how,
-                            decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'どうやって'),
-                            onChanged: (value) =>
-                                ref.read(_howProvider.notifier).state = value)),
-                    ExampleText(data?.how)
-                  ]),
-              orElse: () => const CircularProgressIndicator()),
+          subtitle: const Text('少なくとも1つ以上入力してください'),
+          content: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: exampleData.maybeWhen(
+                  data: (data) => Wrap(spacing: 10.0, children: [
+                        Padding(
+                            padding: const EdgeInsets.only(top: 10.0),
+                            child: TextFormField(
+                                initialValue: why,
+                                decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'なぜ'),
+                                onChanged: (value) => ref
+                                    .read(_whyProvider.notifier)
+                                    .state = value)),
+                        ExampleText(data?.why),
+                        Padding(
+                            padding: const EdgeInsets.only(top: 10.0),
+                            child: TextFormField(
+                                initialValue: what,
+                                decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'なに'),
+                                onChanged: (value) => ref
+                                    .read(_whatProvider.notifier)
+                                    .state = value)),
+                        ExampleText(data?.what),
+                        Padding(
+                            padding: const EdgeInsets.only(top: 10.0),
+                            child: TextFormField(
+                                initialValue: where,
+                                decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'どこ'),
+                                onChanged: (value) => ref
+                                    .read(_whereProvider.notifier)
+                                    .state = value)),
+                        ExampleText(data?.where),
+                        Padding(
+                            padding: const EdgeInsets.only(top: 10.0),
+                            child: TextFormField(
+                                initialValue: when,
+                                decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'いつ'),
+                                onChanged: (value) => ref
+                                    .read(_whenProvider.notifier)
+                                    .state = value)),
+                        ExampleText(data?.when),
+                        Padding(
+                            padding: const EdgeInsets.only(top: 10.0),
+                            child: TextFormField(
+                                initialValue: who,
+                                decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'だれ'),
+                                onChanged: (value) => ref
+                                    .read(_whoProvider.notifier)
+                                    .state = value)),
+                        ExampleText(data?.who),
+                        Padding(
+                            padding: const EdgeInsets.only(top: 10.0),
+                            child: TextFormField(
+                                initialValue: how,
+                                decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'どうやって'),
+                                onChanged: (value) => ref
+                                    .read(_howProvider.notifier)
+                                    .state = value)),
+                        ExampleText(data?.how)
+                      ]),
+                  orElse: () =>
+                      const Center(child: CircularProgressIndicator()))),
           state:
               step != 4 && is5W1HValid ? StepState.complete : StepState.indexed)
     ];
@@ -349,7 +404,7 @@ class PostScreen extends ConsumerWidget {
                             expData: expData, imagePath: imageUrl));
                   },
                   icon: const Icon(Icons.check),
-                  label: const Text('投稿')),
+                  label: Text(expData.value is! RecommendData ? '投稿' : '保存')),
             ),
         orElse: () =>
             const Scaffold(body: Center(child: CircularProgressIndicator())));

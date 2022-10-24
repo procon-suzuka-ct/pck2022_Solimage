@@ -5,16 +5,13 @@ import 'package:go_router/go_router.dart';
 import 'package:solimage/components/card_tile.dart';
 import 'package:solimage/components/parent/heading_tile.dart';
 import 'package:solimage/components/tentative_card.dart';
+import 'package:solimage/states/history.dart';
 import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/expData.dart';
 
 final _expDatasProvider = FutureProvider((ref) async => await Future.wait(
     (await ref.watch(userProvider.selectAsync((data) => data?.expDatas ?? [])))
         .map((expData) => ExpData.getExpData(expData))));
-final recommendDataProvider = FutureProvider((ref) async {
-  final uid = await ref.watch(userProvider.selectAsync((data) => data?.uid));
-  return uid != null ? await RecommendData.getRecommendData(uid) : null;
-});
 
 class HistoryScreen extends ConsumerWidget {
   const HistoryScreen({Key? key}) : super(key: key);
