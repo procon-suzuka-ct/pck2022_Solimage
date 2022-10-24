@@ -102,26 +102,6 @@ class ProfileScreen extends ConsumerWidget {
                         ]),
                     orElse: () => const CircularProgressIndicator())
               ])),
-      CardTile(
-          child: const ListTile(
-              leading: Icon(Icons.change_circle),
-              title: Text('モード切り替え'),
-              subtitle: Text('アプリを開いた時の動作を切り替える')),
-          onTap: () => showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => const ModeSelectDialog())),
-      CardTile(
-          child:
-              const ListTile(leading: Icon(Icons.logout), title: Text('ログアウト')),
-          onTap: () => showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => UserLogoutDialog(prefs: prefs.value))),
-      CardTile(
-          child:
-              const ListTile(leading: Icon(Icons.info), title: Text('アプリについて')),
-          onTap: () => showAppDetailDialog(context)),
       HeadingTile('グループ',
           trailing: Wrap(spacing: 10.0, children: [
             ElevatedButton(
@@ -219,7 +199,28 @@ class ProfileScreen extends ConsumerWidget {
                       icon: Icon(Icons.edit, size: 30.0),
                       label: Text('知識を投稿しましょう!'))
                 ],
-          orElse: () => [const Center(child: CircularProgressIndicator())])
+          orElse: () => [const Center(child: CircularProgressIndicator())]),
+      HeadingTile('設定'),
+      CardTile(
+          child: const ListTile(
+              leading: Icon(Icons.change_circle),
+              title: Text('モード切り替え'),
+              subtitle: Text('アプリを開いた時の動作を切り替える')),
+          onTap: () => showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => const ModeSelectDialog())),
+      CardTile(
+          child:
+              const ListTile(leading: Icon(Icons.logout), title: Text('ログアウト')),
+          onTap: () => showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => UserLogoutDialog(prefs: prefs.value))),
+      CardTile(
+          child:
+              const ListTile(leading: Icon(Icons.info), title: Text('アプリについて')),
+          onTap: () => showAppDetailDialog(context)),
     ]);
   }
 }
