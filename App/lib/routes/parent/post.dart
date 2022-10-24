@@ -77,19 +77,33 @@ class PostScreen extends ConsumerWidget {
     final steps = [
       Step(
           title: const Text('オススメ'),
-          subtitle: const Text('有効にすると、より多くの人に見てもらえます'),
-          content: Checkbox(
-              value: isRecommendData,
+          subtitle: Text(isRecommendData ? 'オススメする' : 'オススメしない'),
+          content: Column(children: [
+            RadioListTile<bool>(
+              title: const Text('オススメする'),
+              subtitle: const Text('撮影後の待ち時間にCMのように表示されます'),
+              value: true,
               onChanged: expData.value is! RecommendData
-                  ? (value) {
-                      ref.read(_isRecommendDataProvider.notifier).state =
-                          value ?? false;
-                    }
-                  : null),
+                  ? (value) =>
+                      ref.read(_isRecommendDataProvider.notifier).state = value!
+                  : null,
+              groupValue: isRecommendData,
+            ),
+            RadioListTile<bool>(
+              title: const Text('オススメしない'),
+              subtitle: const Text('画像で検索したときに表示されます'),
+              value: false,
+              onChanged: expData.value is! RecommendData
+                  ? (value) =>
+                      ref.read(_isRecommendDataProvider.notifier).state = value!
+                  : null,
+              groupValue: isRecommendData,
+            )
+          ]),
           state: step != 0 ? StepState.complete : StepState.indexed),
       Step(
           title: const Text('ワード'),
-          subtitle: const Text('必須です'),
+          subtitle: Text(word),
           content: const Align(
               alignment: Alignment.centerLeft,
               child: SingleChildScrollView(
@@ -100,7 +114,7 @@ class PostScreen extends ConsumerWidget {
               : StepState.indexed),
       Step(
           title: const Text('簡単な説明'),
-          subtitle: const Text('必須です'),
+          subtitle: Text(meaning),
           content: exampleData.maybeWhen(
               data: (data) => Column(children: [
                     TextFormField(
@@ -120,7 +134,7 @@ class PostScreen extends ConsumerWidget {
               : StepState.indexed),
       Step(
           title: const Text('画像'),
-          subtitle: const Text('オススメする場合は必須です'),
+          subtitle: Text(imageUrl.isNotEmpty ? '追加済み' : '追加されていません'),
           content: Column(children: [
             if (imageUrl.isNotEmpty)
               Container(
@@ -157,14 +171,14 @@ class PostScreen extends ConsumerWidget {
                   }
                 },
                 icon: const Icon(Icons.cloud_upload),
-                label: Text('画像を${imageUrl.isEmpty ? '追加' : '変更'}'))
+                label: Text('画像を${imageUrl.isEmpty ? 'アップロード' : '変更'}'))
           ]),
           state: step != 3 && (isRecommendData ? imageUrl.isNotEmpty : true)
               ? StepState.complete
               : StepState.indexed),
       Step(
           title: const Text('5W1H'),
-          subtitle: const Text('可能な限り入力してください'),
+          subtitle: const Text('少なくとも1つ以上入力してください'),
           content: exampleData.maybeWhen(
               data: (data) => Wrap(spacing: 10.0, children: [
                     Padding(
