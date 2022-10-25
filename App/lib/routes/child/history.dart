@@ -7,7 +7,7 @@ import 'package:solimage/states/camera.dart';
 import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/word.dart';
 
-final historiesProvider = FutureProvider.autoDispose((ref) async => Future.wait(
+final historiesProvider = FutureProvider((ref) async => Future.wait(
     (await ref.watch(userProvider.selectAsync((data) => data!.histories)))
         .map((history) => Word.getWord(history))));
 
