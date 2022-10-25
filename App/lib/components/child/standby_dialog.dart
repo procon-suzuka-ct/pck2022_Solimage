@@ -64,13 +64,17 @@ class StandbyDialog extends ConsumerWidget {
                               fontSize: 30, fontWeight: FontWeight.bold))),
                   content: data != null
                       ? Column(mainAxisSize: MainAxisSize.min, children: [
-                          Expanded(
-                              child: Padding(
-                                  padding: const EdgeInsets.only(bottom: 10.0),
-                                  child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(20.0),
-                                      child: CachedNetworkImage(
-                                          imageUrl: data.imageUrl!)))),
+                          AspectRatio(
+                              aspectRatio: 1,
+                              child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  child: CachedNetworkImage(
+                                      fit: BoxFit.cover,
+                                      imageUrl: data.imageUrl!))),
+                          Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text(data.meaning!,
+                                  style: const TextStyle(fontSize: 20.0))),
                           ChildActionButton(
                               onPressed: () {
                                 Navigator.of(context).pop();

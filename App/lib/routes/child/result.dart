@@ -17,10 +17,8 @@ final _expDataProviderFamily =
 
   if (expData != null) {
     await expData.addViews();
-    if (user != null &&
-        !(user.histories.contains(expData.word) ||
-            user.histories.contains(value))) {
-      user.histories.add(expData.word ?? value);
+    if (user != null && !(user.histories.contains(expData.word))) {
+      user.histories.add(expData.word!);
       await user.save();
     }
   }
