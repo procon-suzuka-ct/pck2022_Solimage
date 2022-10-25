@@ -34,8 +34,8 @@ class ExpData {
   int get views => _views;
   int get dataId => _dataId;
   String get userId => _userId;
-  String? get word => _word;
-  String? get meaning => _meaning;
+  String get word => _word;
+  String get meaning => _meaning;
   String? get why => _why;
   String? get what => _what;
   String? get where => _where;
@@ -274,6 +274,9 @@ class ExpData {
         for (final data in expDataListResultRaw)
           if (data != null) data
       ];
+      if (expDataListResult.isEmpty) {
+        return null;
+      }
       Map<int, String> meanings = {};
       Map<int, String> whyList = {};
       Map<int, String> whatList = {};
@@ -308,9 +311,7 @@ class ExpData {
         if (!onlyGroup ||
             expDataIDs.contains(expData.dataId) ||
             (expData.dataId >= 100000000 && expData.dataId < 999999999)) {
-          if (expData.meaning != null) {
-            meanings[expData.dataId] = expData.meaning!;
-          }
+          meanings[expData.dataId] = expData.meaning;
           if (expData.why != null) whyList[expData.dataId] = expData.why!;
           if (expData.what != null) whatList[expData.dataId] = expData.what!;
           if (expData.where != null) whereList[expData.dataId] = expData.where!;
@@ -337,9 +338,7 @@ class ExpData {
             imageUrls.isNotEmpty) {
           break;
         }
-        if (meanings.isEmpty && expData.meaning != null) {
-          meanings[expData.dataId] = expData.meaning!;
-        }
+        meanings[expData.dataId] = expData.meaning;
         if (whyList.isEmpty && expData.why != null) {
           whyList[expData.dataId] = expData.why!;
         }
@@ -376,7 +375,7 @@ class ExpData {
           imageUrls.isNotEmpty ? random.nextInt(imageUrls.length) : null;
 
       ExpData data = ExpData(
-        word: word,
+        word: expDataListResult[0].word,
         meaning: meanings.entries.toList()[meaning].value,
       );
       data.setData(
@@ -539,7 +538,7 @@ class RecommendData extends ExpData {
     _when = json['when'] as String?;
     _who = json['who'] as String?;
     _how = json['how'] as String?;
-    _imageUrl = json['imageURL'] as String?;
+    _imageUrl = (json['imageURL'] ?? json["imageUrl"]) as String?;
   }
 
   @override
