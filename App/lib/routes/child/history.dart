@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solimage/components/child_actions.dart';
 import 'package:solimage/components/tentative_card.dart';
+import 'package:solimage/states/camera.dart';
 import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/word.dart';
 
@@ -48,8 +49,14 @@ class HistoryScreen extends ConsumerWidget {
                                                         FontWeight.bold)),
                                             child: Center(
                                                 child: Text(history.word)),
-                                            onPressed: () async => context.push(
-                                                '/child/result?word=${history.key}')))
+                                            onPressed: () async {
+                                              ref
+                                                  .read(imagePathProvider
+                                                      .notifier)
+                                                  .state = '';
+                                              context.push(
+                                                  '/child/result?word=${history.key}');
+                                            }))
                                     : const SizedBox.shrink();
                               })
                           : Padding(
