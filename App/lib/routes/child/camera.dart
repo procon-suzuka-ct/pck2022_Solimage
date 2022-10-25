@@ -77,19 +77,21 @@ class CameraScreen extends ConsumerWidget {
                                   ref
                                       .read(_isTakingPictureProvider.notifier)
                                       .state = true;
-                                  ref.read(imagePathProvider.notifier).state =
-                                      '';
-                                  showDialog(
-                                      context: context,
-                                      barrierDismissible: false,
-                                      barrierColor:
-                                          Colors.black.withOpacity(0.8),
-                                      builder: (context) =>
-                                          const StandbyDialog());
-                                  final path =
-                                      (await controller.takePicture()).path;
-                                  ref.read(imagePathProvider.notifier).state =
-                                      path;
+                                  if (controller != null) {
+                                    ref.read(imagePathProvider.notifier).state =
+                                        '';
+                                    showDialog(
+                                        context: context,
+                                        barrierDismissible: false,
+                                        barrierColor:
+                                            Colors.black.withOpacity(0.8),
+                                        builder: (context) =>
+                                            const StandbyDialog());
+                                    final path =
+                                        (await controller.takePicture()).path;
+                                    ref.read(imagePathProvider.notifier).state =
+                                        path;
+                                  }
                                   ref
                                       .read(_isTakingPictureProvider.notifier)
                                       .state = false;
