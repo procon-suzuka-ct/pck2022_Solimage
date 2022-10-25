@@ -252,6 +252,23 @@ class ExpData {
     }
   }
 
+  static Future<List<ExpData>> _getExpDatas() async {
+    final ref = FirebaseFirestore.instance
+        .collection("expData")
+        .withConverter<ExpData>(
+            fromFirestore: (snapshot, _) => ExpData.fromJson(snapshot.data()!),
+            toFirestore: (expData, _) => expData.toJson());
+    final doc = await ref.get();
+    final datas = doc.docs;
+    List<ExpData> expDatas = [];
+    for (var data in datas) {
+      final expData = data.data();
+      expDatas.add(expData);
+    }
+
+    return expDatas;
+  }
+
   /// keywordからデータを取得する関数です
   ///
   /// 返ってくる[ExpData]オブジェクトは複数あるデータからランダムで抽出され構成されます
@@ -264,18 +281,16 @@ class ExpData {
         .doc(word)
         .get();
 
+    if (!doc.exists) {
+      return null;
+    }
+    final indexData = doc.data()!;
+    final indexList = (indexData["index"] as List<dynamic>).cast<int>();
+
     if (doc.exists) {
-      List<Future<ExpData?>> expDataList = [];
-      for (final dataId in doc['index']) {
-        expDataList.add(getExpData(dataId));
-      }
-      final expDataListResultRaw = await Future.wait(expDataList);
-      final expDataListResult = [
-        for (final data in expDataListResultRaw)
-          if (data != null) data
-      ];
-      if (expDataListResult.isEmpty) {
-        return null;
+      List<ExpData> expDataList = [];
+      for (final data in await _getExpDatas()) {
+        indexList.contains(data._dataId) ? expDataList.add(data) : null;
       }
       Map<int, String> meanings = {};
       Map<int, String> whyList = {};
@@ -307,7 +322,7 @@ class ExpData {
         }
       }
 
-      for (final expData in expDataListResult) {
+      for (final expData in expDataList) {
         if (!onlyGroup ||
             expDataIDs.contains(expData.dataId) ||
             (expData.dataId >= 100000000 && expData.dataId < 999999999)) {
@@ -324,7 +339,7 @@ class ExpData {
         }
       }
 
-      for (final expData in expDataListResult) {
+      for (final expData in expDataList) {
         if (expData.dataId >= 100000000) {
           continue;
         }
@@ -375,7 +390,7 @@ class ExpData {
           imageUrls.isNotEmpty ? random.nextInt(imageUrls.length) : null;
 
       ExpData data = ExpData(
-        word: expDataListResult[0].word,
+        word: expDataList[0].word,
         meaning: meanings.entries.toList()[meaning].value,
       );
       data.setData(
