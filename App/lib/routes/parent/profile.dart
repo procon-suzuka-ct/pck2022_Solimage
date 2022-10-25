@@ -135,9 +135,14 @@ class ProfileScreen extends ConsumerWidget {
                       : const SizedBox.shrink())
                   .toList()
               : [
-                  const TentativeCard(
-                      icon: Icon(Icons.group, size: 30.0),
-                      label: Text('グループに参加しましょう!'))
+                  TentativeCard(
+                      icon: const Icon(Icons.group, size: 30.0),
+                      label: const Text('グループに参加しましょう!'),
+                      onTap: () => showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (context) =>
+                              GroupParticipateDialog(user: user.value)))
                 ],
           orElse: () => const [Center(child: CircularProgressIndicator())]),
       HeadingTile('興味',
@@ -195,12 +200,13 @@ class ProfileScreen extends ConsumerWidget {
                       .toList()
                 ]
               : [
-                  const TentativeCard(
-                      icon: Icon(Icons.edit, size: 30.0),
-                      label: Text('知識を投稿しましょう!'))
+                  TentativeCard(
+                      icon: const Icon(Icons.edit, size: 30.0),
+                      label: const Text('知識を投稿しましょう!'),
+                      onTap: () => context.push('/parent/post'))
                 ],
           orElse: () => [const Center(child: CircularProgressIndicator())]),
-      HeadingTile('設定'),
+      const HeadingTile('設定'),
       CardTile(
           child: const ListTile(
               leading: Icon(Icons.change_circle),

@@ -31,8 +31,8 @@ final _dataProvider =
       : null;
 
   if (expData != null) {
-    ref.read(wordProvider.notifier).state = expData.word ?? '';
-    ref.read(_meaningProvider.notifier).state = expData.meaning ?? '';
+    ref.read(wordProvider.notifier).state = expData.word;
+    ref.read(_meaningProvider.notifier).state = expData.meaning;
     ref.read(_whyProvider.notifier).state = expData.why ?? '';
     ref.read(_whatProvider.notifier).state = expData.what ?? '';
     ref.read(_whereProvider.notifier).state = expData.where ?? '';

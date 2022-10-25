@@ -11,14 +11,15 @@ final _currentPageProvider = StateProvider.autoDispose((ref) => 0);
 final _expDataProviderFamily =
     FutureProvider.autoDispose.family<ExpData?, String>((ref, value) async {
   final user = await ref.read(userProvider.future);
-  ExpData? expData = await ExpData.getExpDataByWord(word: value);
+  ExpData? expData =
+      await ExpData.getExpDataByWord(word: value, onlyGroup: true);
   expData ??= await RecommendData.getRecommendData(value);
   expData ??= await ExpData.getExpData(0);
 
   if (expData != null) {
     await expData.addViews();
     if (user != null && !(user.histories.contains(expData.word))) {
-      user.histories.add(expData.word!);
+      user.histories.add(expData.word);
       await user.save();
     }
   }
