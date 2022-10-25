@@ -52,16 +52,18 @@ class HistoryScreen extends ConsumerWidget {
                                                 '/child/result?word=${history.key}')))
                                     : const SizedBox.shrink();
                               })
-                          : const Padding(
-                              padding: EdgeInsets.all(30.0),
+                          : Padding(
+                              padding: const EdgeInsets.all(30.0),
                               child: FittedBox(
                                   fit: BoxFit.fitWidth,
                                   child: TentativeCard(
-                                      padding: EdgeInsets.all(20.0),
-                                      icon: Icon(Icons.camera_alt),
-                                      label: Text('さつえいしてみよう!',
+                                      padding: const EdgeInsets.all(20.0),
+                                      icon: const Icon(Icons.camera_alt),
+                                      label: const Text('さつえいしてみよう!',
                                           style: TextStyle(
-                                              fontWeight: FontWeight.bold))))),
+                                              fontWeight: FontWeight.bold)),
+                                      onTap: () =>
+                                          context.go('/child/camera')))),
                       orElse: () =>
                           const Center(child: CircularProgressIndicator()))),
               ChildActions(actions: [

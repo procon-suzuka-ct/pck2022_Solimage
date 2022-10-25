@@ -44,9 +44,10 @@ class HistoryScreen extends ConsumerWidget {
                           : null,
                       title: Text('${recommendData.word}'),
                       trailing: const Icon(Icons.edit)))
-              : const TentativeCard(
-                  icon: Icon(Icons.message, size: 30.0),
-                  label: Text('オススメ情報を投稿してみましょう!')),
+              : TentativeCard(
+                  icon: const Icon(Icons.message, size: 30.0),
+                  label: const Text('オススメ情報を投稿してみましょう!'),
+                  onTap: () => context.push('/parent/post?recommend=true')),
           orElse: () =>
               Container(margin: const EdgeInsets.all(20.0), child: const Center(child: CircularProgressIndicator()))),
       const HeadingTile('過去の投稿'),
@@ -74,9 +75,10 @@ class HistoryScreen extends ConsumerWidget {
                           .push('/parent/post?dataId=${expData?.dataId}')))
                   .toList()
               : [
-                  const TentativeCard(
-                      icon: Icon(Icons.edit, size: 30.0),
-                      label: Text('知識を投稿しましょう!'))
+                  TentativeCard(
+                      icon: const Icon(Icons.edit, size: 30.0),
+                      label: const Text('知識を投稿しましょう!'),
+                      onTap: () => context.push('/parent/post'))
                 ],
           orElse: () => const [Center(child: CircularProgressIndicator())])
     ]);
