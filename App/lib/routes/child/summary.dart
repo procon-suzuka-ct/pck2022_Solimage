@@ -28,7 +28,11 @@ class SummaryScreen extends ConsumerWidget {
                           fit: BoxFit.cover,
                           child: imagePath.isNotEmpty
                               ? Image.file(File(imagePath))
-                              : CachedNetworkImage(imageUrl: data.imageUrl!))),
+                              : data.imageUrl!.startsWith('data')
+                                  ? Image.memory(UriData.parse(data.imageUrl!)
+                                      .contentAsBytes())
+                                  : CachedNetworkImage(
+                                      imageUrl: data.imageUrl!))),
                   if (data.meaning != null)
                     Align(
                         alignment: Alignment.bottomCenter,
