@@ -55,7 +55,7 @@ class StandbyDialog extends ConsumerWidget {
                   title: Center(
                       child: Text(
                           data != null
-                              ? data.word!
+                              ? data.word
                               : classifier.isLoading &&
                                       classifier.valueOrNull != null
                                   ? 'ちょっとまってね!'
@@ -73,7 +73,7 @@ class StandbyDialog extends ConsumerWidget {
                                       imageUrl: data.imageUrl!))),
                           Padding(
                               padding: const EdgeInsets.all(10.0),
-                              child: Text(data.meaning!,
+                              child: Text(data.meaning,
                                   style: const TextStyle(fontSize: 20.0))),
                           ChildActionButton(
                               onPressed: () {

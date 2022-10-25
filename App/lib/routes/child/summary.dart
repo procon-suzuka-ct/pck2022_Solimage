@@ -33,26 +33,25 @@ class SummaryScreen extends ConsumerWidget {
                                       .contentAsBytes())
                                   : CachedNetworkImage(
                                       imageUrl: data.imageUrl!))),
-                  if (data.meaning != null)
-                    Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Card(
-                            shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.vertical(
-                                    bottom: Radius.circular(10.0))),
-                            margin: EdgeInsets.zero,
-                            child: InkWell(
-                                customBorder: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.vertical(
-                                        bottom: Radius.circular(10.0))),
-                                child: Center(
-                                    heightFactor: 1.0,
-                                    child: Padding(
-                                        padding: const EdgeInsets.all(10.0),
-                                        child: Text(data.meaning!,
-                                            style: const TextStyle(
-                                                fontSize: 22.0)))),
-                                onTap: () {})))
+                  Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Card(
+                          shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                  bottom: Radius.circular(10.0))),
+                          margin: EdgeInsets.zero,
+                          child: InkWell(
+                              customBorder: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(
+                                      bottom: Radius.circular(10.0))),
+                              child: Center(
+                                  heightFactor: 1.0,
+                                  child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Text(data.meaning,
+                                          style: const TextStyle(
+                                              fontSize: 22.0)))),
+                              onTap: () {})))
                 ])));
   }
 }

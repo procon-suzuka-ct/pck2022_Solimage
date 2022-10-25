@@ -42,7 +42,7 @@ class HistoryScreen extends ConsumerWidget {
                                           fit: BoxFit.cover,
                                           imageUrl: recommendData.imageUrl!))))
                           : null,
-                      title: Text('${recommendData.word}'),
+                      title: Text(recommendData.word),
                       trailing: const Icon(Icons.edit)))
               : TentativeCard(
                   icon: const Icon(Icons.message, size: 30.0),
