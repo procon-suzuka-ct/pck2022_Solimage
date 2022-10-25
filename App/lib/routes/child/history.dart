@@ -4,9 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:solimage/components/child_actions.dart';
 import 'package:solimage/components/tentative_card.dart';
 import 'package:solimage/states/user.dart';
+import 'package:solimage/utils/classes/word.dart';
 
-final historiesProvider = FutureProvider.autoDispose(
-    (ref) => ref.watch(userProvider.selectAsync((data) => data?.histories)));
+final historiesProvider = FutureProvider.autoDispose((ref) async => Future.wait(
+    (await ref.watch(userProvider.selectAsync((data) => data!.histories)))
+        .map((history) => Word.getWord(history))));
 
 class HistoryScreen extends ConsumerWidget {
   const HistoryScreen({Key? key}) : super(key: key);
@@ -22,29 +24,33 @@ class HistoryScreen extends ConsumerWidget {
           title: const Text('きろく',
               style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold)),
         ),
-        // TODO: 実際のデータで検証する（実装済みで動作未確認）
         body: Padding(
             padding: const EdgeInsets.all(10.0),
             child: Column(children: [
               Expanded(
                   child: histories.maybeWhen(
-                      data: (histories) => (histories != null &&
-                              histories.isNotEmpty)
+                      data: (histories) => histories.isNotEmpty
                           ? ListView.builder(
                               itemCount: histories.length,
                               itemBuilder: (context, index) {
                                 final history = histories[index];
-                                return Padding(
-                                    padding:
-                                        const EdgeInsets.only(bottom: 10.0),
-                                    child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                            padding: const EdgeInsets.all(30.0),
-                                            textStyle: const TextStyle(
-                                                fontSize: 30.0,
-                                                fontWeight: FontWeight.bold)),
-                                        child: Center(child: Text(history)),
-                                        onPressed: () {}));
+                                return history != null
+                                    ? Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 10.0),
+                                        child: ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                                padding:
+                                                    const EdgeInsets.all(30.0),
+                                                textStyle: const TextStyle(
+                                                    fontSize: 30.0,
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                            child: Center(
+                                                child: Text(history.word)),
+                                            onPressed: () async => context.push(
+                                                '/child/result?word=${history.key}')))
+                                    : const SizedBox.shrink();
                               })
                           : const Padding(
                               padding: EdgeInsets.all(30.0),

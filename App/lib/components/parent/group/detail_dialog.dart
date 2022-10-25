@@ -62,14 +62,14 @@ class GroupDetailDialog extends ConsumerWidget {
         user.maybeWhen(
             data: (user) => TextButton(
                 onPressed: () async {
-                  if (group.members.length != 1 && group.adminId != user?.uid) {
+                  if (group.adminId != user?.uid) {
                     Navigator.of(context).pop();
                     await showDialog(
                         context: context,
                         builder: (context) => GroupLeaveDialog(group: group));
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text('他にメンバーがいないグループは削除できません')));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('管理者はグループから抜けられません')));
                     Navigator.of(context).pop();
                   }
                 },
