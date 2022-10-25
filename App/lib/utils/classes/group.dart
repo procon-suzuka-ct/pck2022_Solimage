@@ -79,6 +79,22 @@ class Group {
     }
   }
 
+  static Future<List<Group>> getGroups(String uid) async {
+    final ref =
+        FirebaseFirestore.instance.collection("group").withConverter<Group>(
+              fromFirestore: (snapshot, _) => Group.fromJson(snapshot.data()!),
+              toFirestore: (group, _) => group.toJson(),
+            );
+    final doc = await ref.get();
+    final datas = doc.docs;
+    List<Group> groups = [];
+    for (var data in datas) {
+      final group = data.data();
+      group.members.contains(uid) ? groups.add(group) : null;
+    }
+    return groups;
+  }
+
   Stream<DocumentSnapshot> listner() {
     return FirebaseFirestore.instance
         .collection('group')
