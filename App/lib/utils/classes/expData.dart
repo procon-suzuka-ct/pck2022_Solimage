@@ -72,7 +72,7 @@ class ExpData {
         _when = json['when'] as String?,
         _who = json['who'] as String?,
         _how = json['how'] as String?,
-        _imageUrl = json['imageUrl'] as String?,
+        _imageUrl = json['imageURL'] as String?,
         _goodUsers = ((json['goodUsers'] ?? []) as List<dynamic>).cast<int>(),
         _badUsers = ((json['badUsers'] ?? []) as List<dynamic>).cast<int>();
 
@@ -91,7 +91,7 @@ class ExpData {
       'when': _when,
       'who': _who,
       'how': _how,
-      'imageUrl': _imageUrl,
+      'imageURL': _imageUrl,
       'goodUsers': _goodUsers,
       'badUsers': _badUsers
     };
@@ -542,7 +542,7 @@ class RecommendData extends ExpData {
     _when = json['when'] as String?;
     _who = json['who'] as String?;
     _how = json['how'] as String?;
-    _imageUrl = json['imageUrl'] as String?;
+    _imageUrl = json['imageURL'] as String?;
   }
 
   @override
@@ -557,7 +557,7 @@ class RecommendData extends ExpData {
       'when': _when,
       'who': _who,
       'how': _how,
-      'imageUrl': _imageUrl,
+      'imageURL': _imageUrl,
     };
   }
 

@@ -28,7 +28,8 @@ class HistoryScreen extends ConsumerWidget {
             child: Column(children: [
               Expanded(
                   child: histories.maybeWhen(
-                      data: (histories) => histories != null
+                      data: (histories) => (histories != null &&
+                              histories.isNotEmpty)
                           ? ListView.builder(
                               itemCount: histories.length,
                               itemBuilder: (context, index) {
