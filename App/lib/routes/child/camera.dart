@@ -25,13 +25,13 @@ class CameraScreen extends ConsumerWidget {
           if (data == PermissionStatus.granted) {
             final controller = ref.watch(controllerProvider);
 
-            return controller.maybeWhen(
+            return controller.when(
                 data: (controller) {
                   final size = MediaQuery.of(context).size;
 
                   return Scaffold(
                       body: Stack(fit: StackFit.expand, children: <Widget>[
-                    if (controller.value.previewSize != null)
+                    if (controller != null)
                       Transform.scale(
                           scale: 1 /
                               (size.aspectRatio * controller.value.aspectRatio),
@@ -107,7 +107,8 @@ class CameraScreen extends ConsumerWidget {
                     LoadingOverlay(visible: ref.watch(_isTakingPictureProvider))
                   ]));
                 },
-                orElse: () => const Scaffold(
+                error: (error, _) => Text('Error: $error'),
+                loading: () => const Scaffold(
                     body: Center(child: CircularProgressIndicator())));
           } else {
             return Scaffold(
