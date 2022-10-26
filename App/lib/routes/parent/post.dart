@@ -110,57 +110,6 @@ class PostScreen extends ConsumerWidget {
               ])),
           state: step != 0 ? StepState.complete : StepState.indexed),
       Step(
-          title: const Text('ワード'),
-          subtitle: Text(word.isNotEmpty ? word : '未入力'),
-          content: isRecommendData
-              ? Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: TextFormField(
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (value) =>
-                          value == null || value.isEmpty ? '入力してください' : null,
-                      initialValue: word,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(), labelText: 'ワード'),
-                      onChanged: (value) =>
-                          ref.read(wordProvider.notifier).state = value))
-              : const Align(
-                  alignment: Alignment.centerLeft,
-                  child: SingleChildScrollView(
-                      child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: WordTree()))),
-          state: step != 1 && word.isNotEmpty
-              ? StepState.complete
-              : StepState.indexed),
-      Step(
-          title: const Text('簡単な説明'),
-          subtitle: Text(meaning.isNotEmpty ? meaning : '未入力'),
-          content: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: exampleData.maybeWhen(
-                  data: (data) => Column(children: [
-                        TextFormField(
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            validator: (value) => value == null || value.isEmpty
-                                ? '入力してください'
-                                : null,
-                            initialValue: meaning,
-                            decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: '簡単な説明'),
-                            onChanged: (value) => ref
-                                .read(_meaningProvider.notifier)
-                                .state = value),
-                        ExampleText(data?.meaning)
-                      ]),
-                  orElse: () =>
-                      const Center(child: CircularProgressIndicator()))),
-          state: step != 2 && meaning.isNotEmpty
-              ? StepState.complete
-              : StepState.indexed),
-      Step(
           title: const Text('画像'),
           subtitle: Text(imageUrl.isNotEmpty ? '追加済み' : '追加されていません'),
           content: Padding(
@@ -203,7 +152,58 @@ class PostScreen extends ConsumerWidget {
                     icon: const Icon(Icons.cloud_upload),
                     label: Text('画像を${imageUrl.isEmpty ? 'アップロード' : '変更'}'))
               ])),
-          state: step != 3 && (isRecommendData ? imageUrl.isNotEmpty : true)
+          state: step != 1 && (isRecommendData ? imageUrl.isNotEmpty : true)
+              ? StepState.complete
+              : StepState.indexed),
+      Step(
+          title: const Text('ワード'),
+          subtitle: Text(word.isNotEmpty ? word : '未入力'),
+          content: isRecommendData
+              ? Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: TextFormField(
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (value) =>
+                          value == null || value.isEmpty ? '入力してください' : null,
+                      initialValue: word,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(), labelText: 'ワード'),
+                      onChanged: (value) =>
+                          ref.read(wordProvider.notifier).state = value))
+              : const Align(
+                  alignment: Alignment.centerLeft,
+                  child: SingleChildScrollView(
+                      child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: WordTree()))),
+          state: step != 2 && word.isNotEmpty
+              ? StepState.complete
+              : StepState.indexed),
+      Step(
+          title: const Text('簡単な説明'),
+          subtitle: Text(meaning.isNotEmpty ? meaning : '未入力'),
+          content: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: exampleData.maybeWhen(
+                  data: (data) => Column(children: [
+                        TextFormField(
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            validator: (value) => value == null || value.isEmpty
+                                ? '入力してください'
+                                : null,
+                            initialValue: meaning,
+                            decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: '簡単な説明'),
+                            onChanged: (value) => ref
+                                .read(_meaningProvider.notifier)
+                                .state = value),
+                        ExampleText(data?.meaning)
+                      ]),
+                  orElse: () =>
+                      const Center(child: CircularProgressIndicator()))),
+          state: step != 3 && meaning.isNotEmpty
               ? StepState.complete
               : StepState.indexed),
       Step(
