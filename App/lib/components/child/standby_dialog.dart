@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image/image.dart' as image;
-import 'package:solimage/components/child_actions.dart';
+import 'package:solimage/components/child/child_actions.dart';
 import 'package:solimage/states/camera.dart';
 import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/expData.dart';

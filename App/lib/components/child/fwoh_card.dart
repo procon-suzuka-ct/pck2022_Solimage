@@ -1,7 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 
-import '../child_actions.dart';
+import 'child_actions.dart';
 
 class FWOHCard extends StatelessWidget {
   const FWOHCard(
