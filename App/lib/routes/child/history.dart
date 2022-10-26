@@ -3,10 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solimage/components/child_actions.dart';
 import 'package:solimage/components/tentative_card.dart';
+import 'package:solimage/states/camera.dart';
 import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/word.dart';
 
-final historiesProvider = FutureProvider.autoDispose((ref) async => Future.wait(
+final historiesProvider = FutureProvider((ref) async => Future.wait(
     (await ref.watch(userProvider.selectAsync((data) => data!.histories)))
         .map((history) => Word.getWord(history))));
 
@@ -48,20 +49,28 @@ class HistoryScreen extends ConsumerWidget {
                                                         FontWeight.bold)),
                                             child: Center(
                                                 child: Text(history.word)),
-                                            onPressed: () async => context.push(
-                                                '/child/result?word=${history.key}')))
+                                            onPressed: () async {
+                                              ref
+                                                  .read(imagePathProvider
+                                                      .notifier)
+                                                  .state = '';
+                                              context.push(
+                                                  '/child/result?word=${history.key}');
+                                            }))
                                     : const SizedBox.shrink();
                               })
-                          : const Padding(
-                              padding: EdgeInsets.all(30.0),
+                          : Padding(
+                              padding: const EdgeInsets.all(30.0),
                               child: FittedBox(
                                   fit: BoxFit.fitWidth,
                                   child: TentativeCard(
-                                      padding: EdgeInsets.all(20.0),
-                                      icon: Icon(Icons.camera_alt),
-                                      label: Text('さつえいしてみよう!',
+                                      padding: const EdgeInsets.all(20.0),
+                                      icon: const Icon(Icons.camera_alt),
+                                      label: const Text('さつえいしてみよう!',
                                           style: TextStyle(
-                                              fontWeight: FontWeight.bold))))),
+                                              fontWeight: FontWeight.bold)),
+                                      onTap: () =>
+                                          context.go('/child/camera')))),
                       orElse: () =>
                           const Center(child: CircularProgressIndicator()))),
               ChildActions(actions: [

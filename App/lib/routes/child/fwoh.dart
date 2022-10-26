@@ -46,7 +46,7 @@ class FWOHScreen extends ConsumerWidget {
               cardDescriptions.length,
               (index) => Expanded(
                   child: FWOHCard(
-                      word: data.word!,
+                      word: data.word,
                       label: _cardLabels[index],
                       description: cardDescriptions[index]))),
           if (data is! RecommendData)

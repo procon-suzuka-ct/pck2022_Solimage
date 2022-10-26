@@ -63,7 +63,7 @@ class ExpData {
         _dataId = json['dataId'] as int,
         _userId = json['userId'] as String,
         rootWord = (json['rootWord'] ?? json['rootId']).toString(),
-        childIds = (json['childIds'] as List<dynamic>).cast<int>(),
+        childIds = ((json['childIds'] ?? []) as List<dynamic>).cast<int>(),
         _word = json['word'] as String,
         _meaning = json['meaning'] as String,
         _why = json['why'] as String?,
