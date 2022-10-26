@@ -22,7 +22,11 @@ class FWOHCard extends StatelessWidget {
           child: Scaffold(
               appBar: AppBar(
                   centerTitle: true,
-                  title: Text(word),
+                  title: FittedBox(
+                      fit: BoxFit.contain,
+                      child: Text(word,
+                          style: const TextStyle(
+                              fontSize: 40.0, fontWeight: FontWeight.bold))),
                   automaticallyImplyLeading: false),
               body: Column(mainAxisSize: MainAxisSize.max, children: [
                 Expanded(
@@ -32,7 +36,7 @@ class FWOHCard extends StatelessWidget {
                       Text('$label?',
                           style: const TextStyle(
                               overflow: TextOverflow.clip,
-                              fontSize: 30.0,
+                              fontSize: 40.0,
                               fontWeight: FontWeight.bold)),
                       Padding(
                           padding: const EdgeInsets.all(30.0),

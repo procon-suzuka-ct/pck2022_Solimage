@@ -40,7 +40,7 @@ class FWOHScreen extends ConsumerWidget {
     ];
 
     return Padding(
-        padding: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(children: [
           ...List.generate(
               cardDescriptions.length,
