@@ -162,9 +162,9 @@ class ProfileScreen extends ConsumerWidget {
                           (a, b) => a.compareTo(b))
                       .map((entry) => CardTile(
                           child: ListTile(
-                              leading: Wrap(
-                                  alignment: WrapAlignment.center,
-                                  direction: Axis.horizontal,
+                              leading: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Container(
                                         decoration: const BoxDecoration(
