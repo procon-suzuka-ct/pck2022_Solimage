@@ -45,17 +45,18 @@ class ResultScreen extends ConsumerWidget {
         bottom: false,
         child: expData.maybeWhen(
             data: (data) => Scaffold(
-                appBar: AppBar(
-                  centerTitle: true,
-                  title: currentPage != 0
-                      ? FittedBox(
-                          fit: BoxFit.contain,
-                          child: Text(data?.word ?? word!,
-                              style: const TextStyle(
-                                  fontSize: 40.0, fontWeight: FontWeight.bold)))
-                      : null,
-                  automaticallyImplyLeading: false,
-                ),
+                appBar: currentPage != 0
+                    ? AppBar(
+                        centerTitle: true,
+                        title: FittedBox(
+                            fit: BoxFit.contain,
+                            child: Text(data?.word ?? word!,
+                                style: const TextStyle(
+                                    fontSize: 40.0,
+                                    fontWeight: FontWeight.bold))),
+                        automaticallyImplyLeading: false,
+                      )
+                    : null,
                 body: Column(children: [
                   Expanded(
                       child: PageView(
