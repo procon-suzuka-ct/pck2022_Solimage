@@ -95,6 +95,10 @@ class StandbyDialog extends ConsumerWidget {
                                                     fontSize: 20.0))),
                                         ChildActionButton(
                                             onPressed: () {
+                                              ref
+                                                  .read(imagePathProvider
+                                                      .notifier)
+                                                  .state = '';
                                               Navigator.of(context).pop();
                                               context.push(
                                                   '/child/result?userId=${data.userId}');
