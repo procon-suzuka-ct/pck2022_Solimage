@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image/image.dart' as image;
@@ -80,16 +81,22 @@ class StandbyDialog extends ConsumerWidget {
                                 ? Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                        AspectRatio(
-                                            aspectRatio: 1,
-                                            child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(20.0),
-                                                child: CachedNetworkImage(
-                                                    fit: BoxFit.cover,
-                                                    imageUrl: data.imageUrl!))),
+                                        Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom: 10.0),
+                                            child: AspectRatio(
+                                                aspectRatio: 1,
+                                                child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20.0),
+                                                    child: CachedNetworkImage(
+                                                        fit: BoxFit.cover,
+                                                        imageUrl:
+                                                            data.imageUrl!)))),
                                         ChildActionButton(
                                             onPressed: () {
+                                              HapticFeedback.heavyImpact();
                                               ref
                                                   .read(imagePathProvider
                                                       .notifier)
@@ -123,6 +130,8 @@ class StandbyDialog extends ConsumerWidget {
                                                               10.0),
                                                     ),
                                                     onTap: () {
+                                                      HapticFeedback
+                                                          .heavyImpact();
                                                       ref
                                                           .read(
                                                               imagePathProvider
@@ -162,9 +171,12 @@ class StandbyDialog extends ConsumerWidget {
         labels.maybeWhen(
             data: (data) => currentPage == 0
                 ? ChildActionButton(
-                    onPressed: () => controller.nextPage(
-                        duration: const Duration(milliseconds: 200),
-                        curve: Curves.easeInOut),
+                    onPressed: () {
+                      HapticFeedback.heavyImpact();
+                      controller.nextPage(
+                          duration: const Duration(milliseconds: 200),
+                          curve: Curves.easeInOut);
+                    },
                     child: const Text('つぎへ', textAlign: TextAlign.center))
                 : const SizedBox.shrink(),
             orElse: () => const Center(child: CircularProgressIndicator()))

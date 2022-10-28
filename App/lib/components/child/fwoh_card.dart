@@ -1,7 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-
-import 'child_actions.dart';
+import 'package:solimage/components/child/child_actions.dart';
+import 'package:solimage/utils/classes/hapticFeedback.dart';
 
 class FWOHCard extends StatelessWidget {
   const FWOHCard(
@@ -47,7 +47,10 @@ class FWOHCard extends StatelessWidget {
                 ChildActions(actions: [
                   ChildActionButton(
                       child: const Text('もどる'),
-                      onPressed: () => Navigator.of(context).pop())
+                      onPressed: () {
+                        HapticFeedback.heavyImpact();
+                        Navigator.of(context).pop();
+                      })
                 ])
               ]))),
       closedBuilder: (context, action) => Padding(
@@ -56,9 +59,10 @@ class FWOHCard extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                   textStyle: const TextStyle(
                       fontSize: 30.0, fontWeight: FontWeight.bold)),
-              onPressed: (description != null && description!.isNotEmpty)
-                  ? action
-                  : null,
+              onPressed: (description != null && description!.isNotEmpty) ? () {
+                HapticFeedback.heavyImpact();
+                action();
+              } : null,
               child: Center(
                   child: FittedBox(fit: BoxFit.contain, child: Text(label))))));
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solimage/components/child/child_actions.dart';
@@ -49,14 +50,16 @@ class HistoryScreen extends ConsumerWidget {
                                                         FontWeight.bold)),
                                             child: Center(
                                                 child: Text(history.word)),
-                                            onPressed: () async {
-                                              ref
-                                                  .read(imagePathProvider
-                                                      .notifier)
-                                                  .state = '';
-                                              context.push(
-                                                  '/child/result?word=${history.key}');
-                                            }))
+                                            onPressed: () =>
+                                                HapticFeedback.heavyImpact()
+                                                    .then((_) {
+                                                  ref
+                                                      .read(imagePathProvider
+                                                          .notifier)
+                                                      .state = '';
+                                                  context.push(
+                                                      '/child/result?word=${history.key}');
+                                                })))
                                     : const SizedBox.shrink();
                               })
                           : Padding(
@@ -69,8 +72,10 @@ class HistoryScreen extends ConsumerWidget {
                                       label: const Text('さつえいしてみよう!',
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold)),
-                                      onTap: () =>
-                                          context.go('/child/camera')))),
+                                      onTap: () {
+                                        HapticFeedback.heavyImpact();
+                                        context.go('/child/camera');
+                                      }))),
                       orElse: () =>
                           const Center(child: CircularProgressIndicator()))),
               ChildActions(actions: [
