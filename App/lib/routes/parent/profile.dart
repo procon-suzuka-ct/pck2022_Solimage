@@ -3,7 +3,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:solimage/components/app_detail.dart';
 import 'package:solimage/components/card_tile.dart';
 import 'package:solimage/components/mode_select.dart';
 import 'package:solimage/components/parent/group/create_dialog.dart';
@@ -162,9 +161,9 @@ class ProfileScreen extends ConsumerWidget {
                           (a, b) => a.compareTo(b))
                       .map((entry) => CardTile(
                           child: ListTile(
-                              leading: Wrap(
-                                  alignment: WrapAlignment.center,
-                                  direction: Axis.horizontal,
+                              leading: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Container(
                                         decoration: const BoxDecoration(
@@ -223,10 +222,12 @@ class ProfileScreen extends ConsumerWidget {
               context: context,
               barrierDismissible: false,
               builder: (context) => UserLogoutDialog(prefs: prefs.value))),
-      CardTile(
-          child:
-              const ListTile(leading: Icon(Icons.info), title: Text('アプリについて')),
-          onTap: () => showAppDetailDialog(context)),
+      /*
+        CardTile(
+            child:
+                const ListTile(leading: Icon(Icons.info), title: Text('アプリについて')),
+            onTap: () => showAppDetailDialog(context)),
+       */
     ]);
   }
 }
