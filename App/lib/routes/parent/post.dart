@@ -155,24 +155,11 @@ class PostScreen extends ConsumerWidget {
       Step(
           title: const Text('ワード'),
           subtitle: Text(word.isNotEmpty ? word : '未入力'),
-          content: isRecommendData
-              ? Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: TextFormField(
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (value) =>
-                          value == null || value.isEmpty ? '入力してください' : null,
-                      initialValue: word,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(), labelText: 'ワード'),
-                      onChanged: (value) =>
-                          ref.read(wordProvider.notifier).state = value))
-              : const Align(
-                  alignment: Alignment.centerLeft,
+          content: const Align(
+              alignment: Alignment.centerLeft,
+              child: SingleChildScrollView(
                   child: SingleChildScrollView(
-                      child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: WordTree()))),
+                      scrollDirection: Axis.horizontal, child: WordTree()))),
           state: step != 2 && word.isNotEmpty
               ? StepState.complete
               : StepState.indexed),
