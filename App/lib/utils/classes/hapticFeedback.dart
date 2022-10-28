@@ -69,4 +69,12 @@ class HapticFeedback {
   static Future<void> heavyImpact() async {
     await _vibrate(amplitude: 255, duration: 1, repeat: 3, delayTime: 10);
   }
+
+  static Future<void> positiveImpact() async {
+    await _vibrate(intensities: [31, 63, 127, 255], duration: 10);
+  }
+
+  static Future<void> negativeImpact() async {
+    await _vibrate(intensities: [255, 127, 63, 31], duration: 10);
+  }
 }
