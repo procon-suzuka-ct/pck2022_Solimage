@@ -159,6 +159,7 @@ class ProfileScreen extends ConsumerWidget {
                       .entries
                       .sortedByCompare((element) => element.value!.views,
                           (a, b) => a.compareTo(b))
+                      .getRange(0, 3)
                       .map((entry) => CardTile(
                           child: ListTile(
                               leading: Row(
