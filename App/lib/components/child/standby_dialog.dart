@@ -88,11 +88,6 @@ class StandbyDialog extends ConsumerWidget {
                                                 child: CachedNetworkImage(
                                                     fit: BoxFit.cover,
                                                     imageUrl: data.imageUrl!))),
-                                        Padding(
-                                            padding: const EdgeInsets.all(10.0),
-                                            child: Text(data.meaning,
-                                                style: const TextStyle(
-                                                    fontSize: 20.0))),
                                         ChildActionButton(
                                             onPressed: () {
                                               ref

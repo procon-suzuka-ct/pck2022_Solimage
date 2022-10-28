@@ -12,7 +12,6 @@ import 'package:solimage/states/post.dart';
 import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/expData.dart';
 
-final _meaningProvider = StateProvider.autoDispose((ref) => '');
 final _whyProvider = StateProvider.autoDispose((ref) => '');
 final _whatProvider = StateProvider.autoDispose((ref) => '');
 final _whereProvider = StateProvider.autoDispose((ref) => '');
@@ -32,7 +31,6 @@ final _dataProvider =
 
   if (expData != null) {
     ref.read(wordProvider.notifier).state = expData.word;
-    ref.read(_meaningProvider.notifier).state = expData.meaning;
     ref.read(_whyProvider.notifier).state = expData.why ?? '';
     ref.read(_whatProvider.notifier).state = expData.what ?? '';
     ref.read(_whereProvider.notifier).state = expData.where ?? '';
@@ -59,7 +57,6 @@ class PostScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final step = ref.watch(stepProvider);
     final word = ref.watch(wordProvider);
-    final meaning = ref.watch(_meaningProvider);
     final why = ref.watch(_whyProvider);
     final what = ref.watch(_whatProvider);
     final where = ref.watch(_whereProvider);
@@ -180,33 +177,6 @@ class PostScreen extends ConsumerWidget {
               ? StepState.complete
               : StepState.indexed),
       Step(
-          title: const Text('簡単な説明'),
-          subtitle: Text(meaning.isNotEmpty ? meaning : '未入力'),
-          content: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: exampleData.maybeWhen(
-                  data: (data) => Column(children: [
-                        TextFormField(
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            validator: (value) => value == null || value.isEmpty
-                                ? '入力してください'
-                                : null,
-                            initialValue: meaning,
-                            decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: '簡単な説明'),
-                            onChanged: (value) => ref
-                                .read(_meaningProvider.notifier)
-                                .state = value),
-                        ExampleText(data?.meaning)
-                      ]),
-                  orElse: () =>
-                      const Center(child: CircularProgressIndicator()))),
-          state: step != 3 && meaning.isNotEmpty
-              ? StepState.complete
-              : StepState.indexed),
-      Step(
           title: const Text('5W1H'),
           subtitle: const Text('少なくとも1つ以上入力してください'),
           content: Padding(
@@ -283,7 +253,7 @@ class PostScreen extends ConsumerWidget {
                   orElse: () =>
                       const Center(child: CircularProgressIndicator()))),
           state:
-              step != 4 && is5W1HValid ? StepState.complete : StepState.indexed)
+              step != 3 && is5W1HValid ? StepState.complete : StepState.indexed)
     ];
 
     return expData.maybeWhen(
@@ -354,12 +324,6 @@ class PostScreen extends ConsumerWidget {
                       return;
                     }
 
-                    if (meaning.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('簡単な説明が入力されていません')));
-                      return;
-                    }
-
                     if (isRecommendData && imageUrl.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('画像を追加してください')));
@@ -389,7 +353,6 @@ class PostScreen extends ConsumerWidget {
 
                     expData.setData(
                         word: word,
-                        meaning: ref.read(_meaningProvider),
                         why: ref.read(_whyProvider),
                         what: ref.read(_whatProvider),
                         when: ref.read(_whenProvider),
