@@ -111,6 +111,7 @@ class StandbyDialog extends ConsumerWidget {
                                 data: (labels) => SizedBox(
                                     width: 300.0,
                                     child: GridView.count(
+                                        shrinkWrap: true,
                                         crossAxisCount: 2,
                                         children: labels.entries
                                             .map((label) => Card(
