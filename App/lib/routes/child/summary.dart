@@ -15,43 +15,26 @@ class SummaryScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final imagePath = ref.watch(imagePathProvider);
 
-    return Center(
-        child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Stack(
-                alignment: Alignment.center,
-                fit: StackFit.expand,
-                children: [
-                  ClipRRect(
-                      borderRadius: BorderRadius.circular(10.0),
-                      child: FittedBox(
-                          fit: BoxFit.cover,
-                          child: imagePath.isNotEmpty
-                              ? Image.file(File(imagePath))
-                              : data.imageUrl!.startsWith('data')
-                                  ? Image.memory(UriData.parse(data.imageUrl!)
-                                      .contentAsBytes())
-                                  : CachedNetworkImage(
-                                      imageUrl: data.imageUrl!))),
-                  Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Card(
-                          shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.vertical(
-                                  bottom: Radius.circular(10.0))),
-                          margin: EdgeInsets.zero,
-                          child: InkWell(
-                              customBorder: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.vertical(
-                                      bottom: Radius.circular(10.0))),
-                              child: Center(
-                                  heightFactor: 1.0,
-                                  child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Text(data.meaning,
-                                          style: const TextStyle(
-                                              fontSize: 22.0)))),
-                              onTap: () {})))
-                ])));
+    return Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Text(data.word,
+                  style: const TextStyle(
+                      fontSize: 40.0, fontWeight: FontWeight.bold))),
+          Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10.0),
+                  child: imagePath.isNotEmpty
+                      ? Image.file(File(imagePath))
+                      : data.imageUrl!.startsWith('data')
+                          ? Image.memory(
+                              UriData.parse(data.imageUrl!).contentAsBytes())
+                          : CachedNetworkImage(imageUrl: data.imageUrl!)))
+        ]);
   }
 }

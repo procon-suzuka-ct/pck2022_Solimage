@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:solimage/components/child/child_actions.dart';
 import 'package:solimage/components/child/standby_dialog.dart';
-import 'package:solimage/components/child_actions.dart';
 import 'package:solimage/components/loading_overlay.dart';
 import 'package:solimage/states/camera.dart';
 
@@ -42,7 +42,7 @@ class CameraScreen extends ConsumerWidget {
                         child: Container(
                             margin: const EdgeInsets.all(10.0),
                             child: ElevatedButton.icon(
-                                icon: const Icon(Icons.supervisor_account),
+                                icon: const Icon(Icons.history_edu),
                                 onPressed: () => ScaffoldMessenger.of(context)
                                         .showMaterialBanner(MaterialBanner(
                                             actions: [
@@ -62,9 +62,9 @@ class CameraScreen extends ConsumerWidget {
                                               child: const Text('いいえ')),
                                         ],
                                             content: const Text(
-                                                '大人用メニューに切り替えてもよろしいでしょうか?'))),
+                                                '投稿モードに切り替えてもよろしいでしょうか?'))),
                                 label: const FittedBox(
-                                  child: Text('大人用メニュー'),
+                                  child: Text('投稿モード'),
                                 ),
                                 style: ElevatedButton.styleFrom(
                                     padding: const EdgeInsets.all(15.0))))),

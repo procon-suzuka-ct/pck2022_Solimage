@@ -11,21 +11,30 @@ class Auth {
 
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
+  GoogleSignInAccount? googleUser;
+
+  final googleSignIn = GoogleSignIn(scopes: ['email']);
+
   Future<User?> signIn() async {
-    final googleSignin = GoogleSignIn(scopes: [
-      'email',
-    ]);
-    GoogleSignInAccount? googleUser;
     GoogleSignInAuthentication googleAuth;
     AuthCredential credential;
 
-    googleUser = await googleSignin.signIn();
+    try {
+      googleUser = await googleSignIn.signIn();
+    } catch (_) {
+      return null;
+    }
+
     if (googleUser != null) {
-      googleAuth = await googleUser.authentication;
-      credential = GoogleAuthProvider.credential(
-        idToken: googleAuth.idToken,
-        accessToken: googleAuth.accessToken,
-      );
+      googleAuth = await googleUser!.authentication;
+      try {
+        credential = GoogleAuthProvider.credential(
+          idToken: googleAuth.idToken,
+          accessToken: googleAuth.accessToken,
+        );
+      } catch (_) {
+        return null;
+      }
 
       try {
         final result = await _auth.signInWithCredential(credential);
@@ -42,6 +51,7 @@ class Auth {
   }
 
   Future<void> signOut() async {
+    await googleSignIn.signOut();
     await _auth.signOut();
     return;
   }

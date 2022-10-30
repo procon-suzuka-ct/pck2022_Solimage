@@ -15,6 +15,7 @@ class UserLogoutDialog extends StatelessWidget {
           TextButton(
               child: const Text('はい'),
               onPressed: () {
+                Navigator.of(context).pop();
                 Auth().signOut();
                 if (prefs != null) prefs!.clear();
                 ScaffoldMessenger.of(context)
