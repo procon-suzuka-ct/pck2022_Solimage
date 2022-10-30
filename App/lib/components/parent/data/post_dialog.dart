@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:solimage/components/connectivity.dart';
 import 'package:solimage/states/history.dart';
 import 'package:solimage/utils/classes/expData.dart';
 
@@ -30,26 +31,27 @@ class DataPostDialog extends ConsumerWidget {
       actions: [
         TextButton(
             onPressed: !posting
-                ? () async {
-                    ref.read(_postingProvider.notifier).state = true;
+                ? () => checkConnectivity(context).then((_) => () async {
+                      ref.read(_postingProvider.notifier).state = true;
 
-                    if (imagePath.isNotEmpty) {
-                      if (!imagePath.startsWith('http')) {
-                        await expData.saveImage(imagePath: imagePath);
-                      } else {
-                        expData.setData(imageUrl: imagePath);
+                      if (imagePath.isNotEmpty) {
+                        if (!imagePath.startsWith('http')) {
+                          await expData.saveImage(imagePath: imagePath);
+                        } else {
+                          expData.setData(imageUrl: imagePath);
+                        }
                       }
-                    }
 
-                    await expData
-                        .save()
-                        .then((_) => ref.refresh(recommendDataProvider.future))
-                        .then((_) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('投稿しました')));
-                      context.go('/parent');
-                    });
-                  }
+                      await expData
+                          .save()
+                          .then(
+                              (_) => ref.refresh(recommendDataProvider.future))
+                          .then((_) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('投稿しました')));
+                        context.go('/parent');
+                      });
+                    })
                 : null,
             child: const Text('はい')),
         TextButton(

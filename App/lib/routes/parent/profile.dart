@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solimage/components/card_tile.dart';
+import 'package:solimage/components/connectivity.dart';
 import 'package:solimage/components/mode_select.dart';
 import 'package:solimage/components/parent/group/create_dialog.dart';
 import 'package:solimage/components/parent/group/detail_dialog.dart';
@@ -92,29 +93,33 @@ class ProfileScreen extends ConsumerWidget {
                               style: Theme.of(context).textTheme.titleLarge),
                           IconButton(
                               icon: const Icon(Icons.edit),
-                              onPressed: () => showDialog(
-                                  context: context,
-                                  barrierDismissible: false,
-                                  builder: (context) => UserNameDialog(
-                                      user: user.value,
-                                      nameProvider: _nameProvider)))
+                              onPressed: () => checkConnectivity(context).then(
+                                  (_) => showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      builder: (context) => UserNameDialog(
+                                          user: user.value,
+                                          nameProvider: _nameProvider))))
                         ]),
                     orElse: () => const CircularProgressIndicator())
               ])),
       HeadingTile('グループ',
           trailing: Wrap(spacing: 10.0, children: [
             ElevatedButton(
-                onPressed: () => showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (context) => GroupCreateDialog(user: user.value)),
+                onPressed: () => checkConnectivity(context).then((_) =>
+                    showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) =>
+                            GroupCreateDialog(user: user.value))),
                 child: const Text('作成')),
             ElevatedButton(
-                onPressed: () => showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (context) =>
-                        GroupParticipateDialog(user: user.value)),
+                onPressed: () => checkConnectivity(context).then((_) =>
+                    showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) =>
+                            GroupParticipateDialog(user: user.value))),
                 child: const Text('参加'))
           ])),
       ...groups.maybeWhen(
@@ -126,11 +131,12 @@ class ProfileScreen extends ConsumerWidget {
                               leading: const Icon(Icons.group),
                               title: Text(group.groupName),
                               trailing: const Icon(Icons.info)),
-                          onTap: () => showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (context) =>
-                                  GroupDetailDialog(group: group)))
+                          onTap: () => checkConnectivity(context).then((_) =>
+                              showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) =>
+                                      GroupDetailDialog(group: group))))
                       : const SizedBox.shrink())
                   .toList()
               : [
@@ -195,15 +201,17 @@ class ProfileScreen extends ConsumerWidget {
                                   ]),
                               title: Text('${entry.value?.word}'),
                               trailing: const Icon(Icons.edit)),
-                          onTap: () => context.push(
-                              '/parent/post?dataId=${entry.value?.dataId}')))
+                          onTap: () => checkConnectivity(context).then((_) =>
+                              context.push(
+                                  '/parent/post?dataId=${entry.value?.dataId}'))))
                       .toList()
                 ]
               : [
                   TentativeCard(
                       icon: const Icon(Icons.edit, size: 30.0),
                       label: const Text('知識を投稿しましょう!'),
-                      onTap: () => context.push('/parent/post'))
+                      onTap: () => checkConnectivity(context)
+                          .then((_) => context.push('/parent/post')))
                 ],
           orElse: () => [const Center(child: CircularProgressIndicator())]),
       const HeadingTile('設定'),

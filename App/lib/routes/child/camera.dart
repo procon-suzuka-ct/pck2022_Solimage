@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:solimage/components/child/child_actions.dart';
 import 'package:solimage/components/child/standby_dialog.dart';
+import 'package:solimage/components/connectivity.dart';
 import 'package:solimage/components/loading_overlay.dart';
 import 'package:solimage/states/camera.dart';
 
@@ -71,39 +72,42 @@ class CameraScreen extends ConsumerWidget {
                     ChildActions(actions: [
                       ChildActionButton(
                           onPressed: !isTakingPicture
-                              ? () async {
-                                  ScaffoldMessenger.of(context)
-                                      .clearMaterialBanners();
-                                  ref
-                                      .read(_isTakingPictureProvider.notifier)
-                                      .state = true;
-                                  if (controller != null) {
-                                    ref.read(imagePathProvider.notifier).state =
-                                        '';
-                                    showDialog(
-                                        context: context,
-                                        barrierDismissible: false,
-                                        barrierColor:
-                                            Colors.black.withOpacity(0.8),
-                                        builder: (context) =>
-                                            const StandbyDialog());
-                                    final path =
-                                        (await controller.takePicture()).path;
-                                    ref.read(imagePathProvider.notifier).state =
-                                        path;
-                                  }
-                                  ref
-                                      .read(_isTakingPictureProvider.notifier)
-                                      .state = false;
-                                }
+                              ? () =>
+                                  checkConnectivity(context).then((_) async {
+                                    ScaffoldMessenger.of(context)
+                                        .clearMaterialBanners();
+                                    ref
+                                        .read(_isTakingPictureProvider.notifier)
+                                        .state = true;
+                                    if (controller != null) {
+                                      ref
+                                          .read(imagePathProvider.notifier)
+                                          .state = '';
+                                      showDialog(
+                                          context: context,
+                                          barrierDismissible: false,
+                                          barrierColor:
+                                              Colors.black.withOpacity(0.8),
+                                          builder: (context) =>
+                                              const StandbyDialog());
+                                      final path =
+                                          (await controller.takePicture()).path;
+                                      ref
+                                          .read(imagePathProvider.notifier)
+                                          .state = path;
+                                    }
+                                    ref
+                                        .read(_isTakingPictureProvider.notifier)
+                                        .state = false;
+                                  })
                               : null,
                           child: const Text('さつえい')),
                       ChildActionButton(
-                          onPressed: () {
-                            ScaffoldMessenger.of(context)
-                                .clearMaterialBanners();
-                            context.push('/child/history');
-                          },
+                          onPressed: () => checkConnectivity(context).then((_) {
+                                ScaffoldMessenger.of(context)
+                                    .clearMaterialBanners();
+                                context.push('/child/history');
+                              }),
                           child: const Text('きろく'))
                     ]),
                     LoadingOverlay(visible: ref.watch(_isTakingPictureProvider))

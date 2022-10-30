@@ -61,6 +61,7 @@ dependencies:
   package_info_plus: ^1.4.2
   fluttertoast: ^8.1.1
   introduction_screen: ^3.0.2
+  connectivity_plus: ^3.0.2
 
 dev_dependencies:
   flutter_test:
