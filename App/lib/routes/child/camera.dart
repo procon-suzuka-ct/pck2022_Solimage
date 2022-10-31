@@ -32,7 +32,7 @@ class CameraScreen extends ConsumerWidget {
 
                   return Scaffold(
                       body: Stack(fit: StackFit.expand, children: <Widget>[
-                    if (controller != null)
+                    if (controller != null && controller.value.isInitialized)
                       Transform.scale(
                           scale: 1 /
                               (size.aspectRatio * controller.value.aspectRatio),
