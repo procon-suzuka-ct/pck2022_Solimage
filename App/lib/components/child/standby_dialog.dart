@@ -93,7 +93,6 @@ class StandbyDialog extends ConsumerWidget {
                                 imageUrl: recommendData.value!.imageUrl!)))),
                 ChildActionButton(
                     onPressed: () {
-                      HapticFeedback.heavyImpact();
                       ref.read(imagePathProvider.notifier).state = '';
                       Navigator.of(context).pop();
                       context.push(
@@ -159,20 +158,28 @@ class StandbyDialog extends ConsumerWidget {
       ChildActions(actions: [
         ChildActionButton(
             child: const Text('もどる'),
-            onPressed: () => Navigator.of(context).pop()),
+            onPressed: () => currentPage == 1 &&
+                    recommendData.value != null &&
+                    recommendUser.value != null
+                ? controller.previousPage(
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeInOut)
+                : Navigator.of(context).pop()),
         labels.maybeWhen(
             data: (data) => currentPage == 0 &&
                     recommendData.value != null &&
                     recommendUser.value != null
                 ? ChildActionButton(
                     onPressed: () {
-                      HapticFeedback.heavyImpact();
                       controller.nextPage(
                           duration: const Duration(milliseconds: 200),
                           curve: Curves.easeInOut);
                     },
                     child: const Text('つぎへ', textAlign: TextAlign.center))
-                : const SizedBox.shrink(),
+                : ChildActionButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child:
+                        const Text('もういちど\nさつえい', textAlign: TextAlign.center)),
             orElse: () => const Center(child: CircularProgressIndicator()))
       ])
     ]);
