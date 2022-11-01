@@ -400,6 +400,25 @@ class ExpData {
     };
   }
 
+  ExpData? mapToExpData(Map<String, ExpData?> map) {
+    final entries = map.entries.toList();
+
+    final expData = ExpData(
+      word: entries[0].value!.word,
+      meaning: map["meaning"]!.meaning,
+    );
+    expData.setData(
+      why: map["why"]?.why,
+      what: map["what"]?.what,
+      where: map["where"]?.where,
+      when: map["when"]?.when,
+      who: map["who"]?.who,
+      how: map["how"]?.how,
+      imageUrl: map["imageUrl"]?.imageUrl,
+    );
+    return expData;
+  }
+
   Future<void> addViews() async {
     var ref = _getRef(_dataId.toString());
     await ref.update({'views': FieldValue.increment(1)});
