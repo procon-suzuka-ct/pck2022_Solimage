@@ -21,7 +21,7 @@ jobs:
       - name: install dependencies
         continue-on-error: true
         run: cd App && flutter pub get
-      - run: cd App && flutter analyze --fatal-infos --fatal-warnings .
+      - run: cd App && flutter analyze --fatal-warnings .
 
   widget_test: 
     runs-on: ubuntu-latest
