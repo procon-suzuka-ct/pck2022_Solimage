@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:solimage/components/child/fwoh_card.dart';
 import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/expData.dart';
+import 'package:solimage/utils/classes/hapticFeedback.dart';
 
 final List<String> _cardLabels = [
   'なんで',
@@ -40,7 +41,7 @@ class FWOHScreen extends ConsumerWidget {
     ];
 
     return Padding(
-        padding: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(children: [
           ...List.generate(
               cardDescriptions.length,
@@ -66,6 +67,7 @@ class FWOHScreen extends ConsumerWidget {
                                   fit: BoxFit.contain, child: Text('おもしろい')),
                               icon: const Icon(Icons.thumb_up, size: 30.0),
                               onPressed: () async {
+                                HapticFeedback.positiveImpact();
                                 final user =
                                     await ref.read(userProvider.future);
                                 data.good(user!.uid);
@@ -88,6 +90,7 @@ class FWOHScreen extends ConsumerWidget {
                                   fit: BoxFit.contain, child: Text('つまらない')),
                               icon: const Icon(Icons.thumb_down, size: 30.0),
                               onPressed: () async {
+                                HapticFeedback.negativeImpact();
                                 final user =
                                     await ref.read(userProvider.future);
                                 data.bad(user!.uid);

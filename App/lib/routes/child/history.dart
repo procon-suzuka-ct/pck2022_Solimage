@@ -1,15 +1,26 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:solimage/components/child_actions.dart';
+import 'package:solimage/components/child/child_actions.dart';
 import 'package:solimage/components/tentative_card.dart';
 import 'package:solimage/states/camera.dart';
 import 'package:solimage/states/user.dart';
-import 'package:solimage/utils/classes/word.dart';
+import 'package:solimage/utils/classes/expData.dart';
 
-final historiesProvider = FutureProvider((ref) async => Future.wait(
-    (await ref.watch(userProvider.selectAsync((data) => data!.histories)))
-        .map((history) => Word.getWord(history))));
+final historiesProvider = FutureProvider((ref) async {
+  final histories =
+      await ref.watch(userProvider.selectAsync((data) => data!.histories));
+  final expDatas = await Future.wait(
+      histories.map((history) => ExpData.getExpDataByWord(word: history)));
+  final map = <String, ExpData?>{};
+  for (final history in histories) {
+    final expData = expDatas[histories.indexOf(history)];
+    if (expData != null && expData.imageUrl != null) map[history] = expData;
+  }
+  return map;
+});
 
 class HistoryScreen extends ConsumerWidget {
   const HistoryScreen({Key? key}) : super(key: key);
@@ -28,37 +39,60 @@ class HistoryScreen extends ConsumerWidget {
         body: Padding(
             padding: const EdgeInsets.all(10.0),
             child: Column(children: [
+              const Text('しゃしんにふれると、きろくをみられます',
+                  style: TextStyle(fontSize: 20.0),
+                  textAlign: TextAlign.center),
               Expanded(
                   child: histories.maybeWhen(
                       data: (histories) => histories.isNotEmpty
-                          ? ListView.builder(
-                              itemCount: histories.length,
-                              itemBuilder: (context, index) {
-                                final history = histories[index];
-                                return history != null
-                                    ? Padding(
-                                        padding:
-                                            const EdgeInsets.only(bottom: 10.0),
-                                        child: ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                                padding:
-                                                    const EdgeInsets.all(30.0),
-                                                textStyle: const TextStyle(
-                                                    fontSize: 30.0,
-                                                    fontWeight:
-                                                        FontWeight.bold)),
-                                            child: Center(
-                                                child: Text(history.word)),
-                                            onPressed: () async {
-                                              ref
-                                                  .read(imagePathProvider
-                                                      .notifier)
-                                                  .state = '';
-                                              context.push(
-                                                  '/child/result?word=${history.key}');
-                                            }))
-                                    : const SizedBox.shrink();
-                              })
+                          ? Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: GridView.count(
+                                  crossAxisCount: 2,
+                                  children: histories.entries
+                                      .map((history) => Card(
+                                          child: InkWell(
+                                              customBorder:
+                                                  RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                              ),
+                                              onTap: () {
+                                                HapticFeedback.heavyImpact();
+                                                ref
+                                                    .read(imagePathProvider
+                                                        .notifier)
+                                                    .state = '';
+                                                Navigator.of(context).pop();
+                                                context.push(
+                                                    '/child/result?word=${history.key}');
+                                              },
+                                              child: Column(children: [
+                                                Expanded(
+                                                    child: ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                                10.0),
+                                                        child: history.value!
+                                                                .imageUrl!
+                                                                .startsWith(
+                                                                    'data')
+                                                            ? Image.memory(
+                                                                UriData.parse(history.value!.imageUrl!)
+                                                                    .contentAsBytes(),
+                                                                fit: BoxFit
+                                                                    .cover)
+                                                            : CachedNetworkImage(
+                                                                imageUrl: history
+                                                                    .value!
+                                                                    .imageUrl!,
+                                                                fit: BoxFit
+                                                                    .cover))),
+                                                Text(history.value!.word,
+                                                    style: const TextStyle(
+                                                        fontSize: 24.0))
+                                              ]))))
+                                      .toList()))
                           : Padding(
                               padding: const EdgeInsets.all(30.0),
                               child: FittedBox(
@@ -69,8 +103,10 @@ class HistoryScreen extends ConsumerWidget {
                                       label: const Text('さつえいしてみよう!',
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold)),
-                                      onTap: () =>
-                                          context.go('/child/camera')))),
+                                      onTap: () {
+                                        HapticFeedback.heavyImpact();
+                                        context.go('/child/camera');
+                                      }))),
                       orElse: () =>
                           const Center(child: CircularProgressIndicator()))),
               ChildActions(actions: [

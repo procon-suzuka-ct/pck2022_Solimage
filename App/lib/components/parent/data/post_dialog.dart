@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:solimage/components/connectivity.dart';
 import 'package:solimage/states/history.dart';
 import 'package:solimage/utils/classes/expData.dart';
 
@@ -26,30 +27,31 @@ class DataPostDialog extends ConsumerWidget {
               heightFactor: 1.0,
               child: CircularProgressIndicator())
           : Text(
-              '投稿してもよろしいでしょうか?${expData is RecommendData ? '\n既に投稿済みのオススメ情報がある場合、上書きされます' : ''}'),
+              '投稿してもよろしいでしょうか?${expData is RecommendData ? '\n既にオススメ中の知識がある場合、上書きされます' : ''}'),
       actions: [
         TextButton(
             onPressed: !posting
-                ? () async {
-                    ref.read(_postingProvider.notifier).state = true;
+                ? () => checkConnectivity(context).then((_) => () async {
+                      ref.read(_postingProvider.notifier).state = true;
 
-                    if (imagePath.isNotEmpty) {
-                      if (!imagePath.startsWith('http')) {
-                        await expData.saveImage(imagePath: imagePath);
-                      } else {
-                        expData.setData(imageUrl: imagePath);
+                      if (imagePath.isNotEmpty) {
+                        if (!imagePath.startsWith('http')) {
+                          await expData.saveImage(imagePath: imagePath);
+                        } else {
+                          expData.setData(imageUrl: imagePath);
+                        }
                       }
-                    }
 
-                    await expData
-                        .save()
-                        .then((_) => ref.refresh(recommendDataProvider.future))
-                        .then((_) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('投稿しました')));
-                      context.go('/parent');
-                    });
-                  }
+                      await expData
+                          .save()
+                          .then(
+                              (_) => ref.refresh(recommendDataProvider.future))
+                          .then((_) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('投稿しました')));
+                        context.go('/parent');
+                      });
+                    })
                 : null,
             child: const Text('はい')),
         TextButton(

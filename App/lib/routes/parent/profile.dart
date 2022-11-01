@@ -3,8 +3,8 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:solimage/components/app_detail.dart';
 import 'package:solimage/components/card_tile.dart';
+import 'package:solimage/components/connectivity.dart';
 import 'package:solimage/components/mode_select.dart';
 import 'package:solimage/components/parent/group/create_dialog.dart';
 import 'package:solimage/components/parent/group/detail_dialog.dart';
@@ -26,21 +26,17 @@ final _nameProvider = FutureProvider(
 final _groupsProvider = FutureProvider((ref) async => await Future.wait(
     (await ref.watch(userProvider.selectAsync((data) => data?.groups ?? [])))
         .map((groupID) => Group.getGroup(groupID))));
-final _expDatasProvider = FutureProvider((ref) async {
-  final expDataIds =
-      await ref.watch(userProvider.selectAsync((data) => data?.expDatas));
-  final List<ExpData?> expDatas = expDataIds != null && expDataIds.isNotEmpty
-      ? await Future.wait(
-          expDataIds.map((expDataId) => ExpData.getExpData(expDataId)))
-      : [];
-  expDatas.removeWhere((element) => element == null);
+final _expDatasProvider = FutureProvider.autoDispose((ref) async {
+  final expDatas = await Future.wait((await ref
+          .watch(userProvider.selectAsync((data) => data?.expDatas ?? [])))
+      .map((expDataID) => ExpData.getExpData(expDataID)));
   return expDatas;
 });
 final _recommendDataProvider = FutureProvider((ref) async {
   final uid = await ref.watch(userProvider.selectAsync((data) => data?.uid));
   return uid != null ? await RecommendData.getRecommendData(uid) : null;
 });
-final _totalViewsProvider = FutureProvider((ref) async {
+final _totalViewsProvider = FutureProvider.autoDispose((ref) async {
   int totalViews = 0;
   final expDatas = await ref.watch(_expDatasProvider.future);
   final recommendData = await ref.watch(_recommendDataProvider.future);
@@ -51,7 +47,7 @@ final _totalViewsProvider = FutureProvider((ref) async {
   if (recommendData != null) totalViews += recommendData.views;
 
   return totalViews;
-});
+}, dependencies: [_expDatasProvider, _recommendDataProvider]);
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -93,29 +89,33 @@ class ProfileScreen extends ConsumerWidget {
                               style: Theme.of(context).textTheme.titleLarge),
                           IconButton(
                               icon: const Icon(Icons.edit),
-                              onPressed: () => showDialog(
-                                  context: context,
-                                  barrierDismissible: false,
-                                  builder: (context) => UserNameDialog(
-                                      user: user.value,
-                                      nameProvider: _nameProvider)))
+                              onPressed: () => checkConnectivity(context).then(
+                                  (_) => showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      builder: (context) => UserNameDialog(
+                                          user: user.value,
+                                          nameProvider: _nameProvider))))
                         ]),
                     orElse: () => const CircularProgressIndicator())
               ])),
       HeadingTile('グループ',
           trailing: Wrap(spacing: 10.0, children: [
             ElevatedButton(
-                onPressed: () => showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (context) => GroupCreateDialog(user: user.value)),
+                onPressed: () => checkConnectivity(context).then((_) =>
+                    showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) =>
+                            GroupCreateDialog(user: user.value))),
                 child: const Text('作成')),
             ElevatedButton(
-                onPressed: () => showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (context) =>
-                        GroupParticipateDialog(user: user.value)),
+                onPressed: () => checkConnectivity(context).then((_) =>
+                    showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) =>
+                            GroupParticipateDialog(user: user.value))),
                 child: const Text('参加'))
           ])),
       ...groups.maybeWhen(
@@ -127,11 +127,12 @@ class ProfileScreen extends ConsumerWidget {
                               leading: const Icon(Icons.group),
                               title: Text(group.groupName),
                               trailing: const Icon(Icons.info)),
-                          onTap: () => showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (context) =>
-                                  GroupDetailDialog(group: group)))
+                          onTap: () => checkConnectivity(context).then((_) =>
+                              showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) =>
+                                      GroupDetailDialog(group: group))))
                       : const SizedBox.shrink())
                   .toList()
               : [
@@ -160,11 +161,12 @@ class ProfileScreen extends ConsumerWidget {
                       .entries
                       .sortedByCompare((element) => element.value!.views,
                           (a, b) => a.compareTo(b))
+                      .getRange(0, 3)
                       .map((entry) => CardTile(
                           child: ListTile(
-                              leading: Wrap(
-                                  alignment: WrapAlignment.center,
-                                  direction: Axis.horizontal,
+                              leading: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Container(
                                         decoration: const BoxDecoration(
@@ -195,15 +197,17 @@ class ProfileScreen extends ConsumerWidget {
                                   ]),
                               title: Text('${entry.value?.word}'),
                               trailing: const Icon(Icons.edit)),
-                          onTap: () => context.push(
-                              '/parent/post?dataId=${entry.value?.dataId}')))
+                          onTap: () => checkConnectivity(context).then((_) =>
+                              context.push(
+                                  '/parent/post?dataId=${entry.value?.dataId}'))))
                       .toList()
                 ]
               : [
                   TentativeCard(
                       icon: const Icon(Icons.edit, size: 30.0),
                       label: const Text('知識を投稿しましょう!'),
-                      onTap: () => context.push('/parent/post'))
+                      onTap: () => checkConnectivity(context)
+                          .then((_) => context.push('/parent/post')))
                 ],
           orElse: () => [const Center(child: CircularProgressIndicator())]),
       const HeadingTile('設定'),
@@ -223,10 +227,12 @@ class ProfileScreen extends ConsumerWidget {
               context: context,
               barrierDismissible: false,
               builder: (context) => UserLogoutDialog(prefs: prefs.value))),
-      CardTile(
-          child:
-              const ListTile(leading: Icon(Icons.info), title: Text('アプリについて')),
-          onTap: () => showAppDetailDialog(context)),
+      /*
+        CardTile(
+            child:
+                const ListTile(leading: Icon(Icons.info), title: Text('アプリについて')),
+            onTap: () => showAppDetailDialog(context)),
+       */
     ]);
   }
 }
