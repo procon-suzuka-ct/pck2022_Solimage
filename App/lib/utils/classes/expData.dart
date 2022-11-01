@@ -533,6 +533,9 @@ class RecommendData extends ExpData {
           userID: userID,
         );
 
+  static RecommendData? recommendData;
+  static String? currentUid = Auth().currentUser()?.uid;
+
   @override
   Future<int> init() async {
     _dataId = 0;
@@ -596,13 +599,7 @@ class RecommendData extends ExpData {
     return null;
   }
 
-  static Future<RecommendData?> getRecommendDataByCurrentUid(
-      String currentUser) async {
-    final user = await AppUser.getUser(currentUser);
-    if (user == null) {
-      return null;
-    }
-
+  static Future<RecommendData?> _getByUserClass(AppUser user) async {
     final groups = user.groups;
     List<String> userIDs = [];
     for (var groupID in groups) {
@@ -616,6 +613,25 @@ class RecommendData extends ExpData {
     final randomIndex = random.nextInt(userIDs.length);
     final randomUserID = userIDs[randomIndex];
     final recommendData = await getRecommendData(randomUserID);
+    return recommendData;
+  }
+
+  static Future<RecommendData?> getRecommendDataByCurrentUid(
+      String? currentUser) async {
+    currentUid = currentUser;
+    if (currentUid == null) {
+      return null;
+    }
+    final user = await AppUser.getUser(currentUid!);
+    if (user == null) {
+      return null;
+    }
+
+    recommendData ??= await _getByUserClass(user);
+    _getByUserClass(user).then((value) async {
+      await Future.delayed(const Duration(microseconds: 10));
+      recommendData = value;
+    });
     return recommendData;
   }
 
