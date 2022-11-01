@@ -46,7 +46,6 @@ final _dataProvider =
 
   return expData;
 });
-final _exampleDataProvider = FutureProvider((ref) => ExpData.getExpData(6));
 
 class PostScreen extends ConsumerWidget {
   const PostScreen({Key? key, this.dataId}) : super(key: key);
@@ -68,7 +67,6 @@ class PostScreen extends ConsumerWidget {
         .contains(true);
     final imageUrl = ref.watch(_imageUrlProvider);
     final expData = ref.watch(_dataProvider(dataId));
-    final exampleData = ref.watch(_exampleDataProvider);
     final user = ref.watch(userProvider.future);
     final isRecommendData = ref.watch(_isRecommendDataProvider);
     final steps = [
@@ -80,7 +78,8 @@ class PostScreen extends ConsumerWidget {
               child: Column(children: [
                 RadioListTile<bool>(
                   title: const Text('オススメする'),
-                  subtitle: const Text('撮影後の待ち時間にCMのように表示されます'),
+                  subtitle: const Text(
+                      '撮影後の待ち時間に広告のように表示され、子どもたちにあなたの伝えたい知識を伝えることができます'),
                   value: true,
                   onChanged: expData.value is! RecommendData
                       ? (value) {
@@ -93,7 +92,8 @@ class PostScreen extends ConsumerWidget {
                 ),
                 RadioListTile<bool>(
                   title: const Text('オススメしない'),
-                  subtitle: const Text('画像で検索したときに表示されます'),
+                  subtitle:
+                      const Text('画像で検索したときに表示され、子どもたちにあなたの経験を伝えることができます'),
                   value: false,
                   onChanged: expData.value is! RecommendData
                       ? (value) {
@@ -168,77 +168,62 @@ class PostScreen extends ConsumerWidget {
           subtitle: const Text('少なくとも1つ以上入力してください'),
           content: Padding(
               padding: const EdgeInsets.all(10.0),
-              child: exampleData.maybeWhen(
-                  data: (data) => Wrap(spacing: 10.0, children: [
-                        Padding(
-                            padding: const EdgeInsets.only(top: 10.0),
-                            child: TextFormField(
-                                initialValue: why,
-                                decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'なぜ'),
-                                onChanged: (value) => ref
-                                    .read(_whyProvider.notifier)
-                                    .state = value)),
-                        ExampleText(data?.why),
-                        Padding(
-                            padding: const EdgeInsets.only(top: 10.0),
-                            child: TextFormField(
-                                initialValue: what,
-                                decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'なに'),
-                                onChanged: (value) => ref
-                                    .read(_whatProvider.notifier)
-                                    .state = value)),
-                        ExampleText(data?.what),
-                        Padding(
-                            padding: const EdgeInsets.only(top: 10.0),
-                            child: TextFormField(
-                                initialValue: where,
-                                decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'どこ'),
-                                onChanged: (value) => ref
-                                    .read(_whereProvider.notifier)
-                                    .state = value)),
-                        ExampleText(data?.where),
-                        Padding(
-                            padding: const EdgeInsets.only(top: 10.0),
-                            child: TextFormField(
-                                initialValue: when,
-                                decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'いつ'),
-                                onChanged: (value) => ref
-                                    .read(_whenProvider.notifier)
-                                    .state = value)),
-                        ExampleText(data?.when),
-                        Padding(
-                            padding: const EdgeInsets.only(top: 10.0),
-                            child: TextFormField(
-                                initialValue: who,
-                                decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'だれ'),
-                                onChanged: (value) => ref
-                                    .read(_whoProvider.notifier)
-                                    .state = value)),
-                        ExampleText(data?.who),
-                        Padding(
-                            padding: const EdgeInsets.only(top: 10.0),
-                            child: TextFormField(
-                                initialValue: how,
-                                decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'どうやって'),
-                                onChanged: (value) => ref
-                                    .read(_howProvider.notifier)
-                                    .state = value)),
-                        ExampleText(data?.how)
-                      ]),
-                  orElse: () =>
-                      const Center(child: CircularProgressIndicator()))),
+              child: Wrap(spacing: 10.0, children: [
+                Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: TextFormField(
+                        initialValue: why,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(), labelText: 'なぜ'),
+                        onChanged: (value) =>
+                            ref.read(_whyProvider.notifier).state = value)),
+                const ExampleText('それが発生する原因など'),
+                Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: TextFormField(
+                        initialValue: what,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(), labelText: 'なに'),
+                        onChanged: (value) =>
+                            ref.read(_whatProvider.notifier).state = value)),
+                const ExampleText('その物の説明など'),
+                Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: TextFormField(
+                        initialValue: where,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(), labelText: 'どこ'),
+                        onChanged: (value) =>
+                            ref.read(_whereProvider.notifier).state = value)),
+                const ExampleText('それが見られる場所など'),
+                Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: TextFormField(
+                        initialValue: when,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(), labelText: 'いつ'),
+                        onChanged: (value) =>
+                            ref.read(_whenProvider.notifier).state = value)),
+                const ExampleText('それが発生する時間, その寿命など'),
+                Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: TextFormField(
+                        initialValue: who,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(), labelText: 'だれ'),
+                        onChanged: (value) =>
+                            ref.read(_whoProvider.notifier).state = value)),
+                const ExampleText('それを発明した人, 関係する生き物など'),
+                Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: TextFormField(
+                        initialValue: how,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(), labelText: 'どうやって'),
+                        onChanged: (value) =>
+                            ref.read(_howProvider.notifier).state = value)),
+                const ExampleText('それの作り方・育て方など')
+              ])),
           state:
               step != 3 && is5W1HValid ? StepState.complete : StepState.indexed)
     ];

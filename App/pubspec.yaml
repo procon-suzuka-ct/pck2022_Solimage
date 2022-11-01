@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.2.0+1
+version: 1.3.0+1
 
 environment:
   sdk: ">=2.18.0 <3.0.0"
@@ -34,25 +34,25 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   camera: ^0.10.0+4
-  cloud_firestore: ^4.0.2
-  firebase_auth: ^4.0.2
-  firebase_core: ^2.1.0
-  firebase_crashlytics: ^3.0.2
-  firebase_ml_model_downloader: ^0.2.0+2
-  firebase_storage: ^11.0.2
+  cloud_firestore: ^4.0.3
+  firebase_auth: ^4.1.0
+  firebase_core: ^2.1.1
+  firebase_crashlytics: ^3.0.3
+  firebase_ml_model_downloader: ^0.2.0+3
+  firebase_storage: ^11.0.3
   flutter_launcher_icons: ^0.10.0
-  flutter_native_splash: ^2.2.12
+  flutter_native_splash: ^2.2.13
   go_router: ^5.1.1
   permission_handler: ^10.2.0
   tflite_flutter: ^0.9.0
   google_sign_in: ^5.4.2
   tflite_flutter_helper: ^0.2.1
   image: ^3.2.2
-  flutter_riverpod: ^2.0.2
+  flutter_riverpod: ^2.1.0
   shared_preferences: ^2.0.15
   flutter_simple_treeview: ^3.0.1
   animations: ^2.0.7
-  firebase_performance: ^0.9.0+2
+  firebase_performance: ^0.9.0+3
   cached_network_image: ^3.2.2
   image_picker: ^0.8.6
   http: ^0.13.5
@@ -61,6 +61,7 @@ dependencies:
   package_info_plus: ^1.4.2
   fluttertoast: ^8.1.1
   introduction_screen: ^3.0.2
+  connectivity_plus: ^3.0.2
 
 dev_dependencies:
   flutter_test:

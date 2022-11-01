@@ -39,6 +39,9 @@ class HistoryScreen extends ConsumerWidget {
         body: Padding(
             padding: const EdgeInsets.all(10.0),
             child: Column(children: [
+              const Text('しゃしんにふれると、きろくをみられます',
+                  style: TextStyle(fontSize: 20.0),
+                  textAlign: TextAlign.center),
               Expanded(
                   child: histories.maybeWhen(
                       data: (histories) => histories.isNotEmpty
@@ -64,19 +67,31 @@ class HistoryScreen extends ConsumerWidget {
                                                 context.push(
                                                     '/child/result?word=${history.key}');
                                               },
-                                              child: ClipRRect(
-                                                  borderRadius: BorderRadius.circular(
-                                                      10.0),
-                                                  child: history.value!.imageUrl!
-                                                          .startsWith('data')
-                                                      ? Image.memory(
-                                                          UriData.parse(history.value!.imageUrl!)
-                                                              .contentAsBytes(),
-                                                          fit: BoxFit.cover)
-                                                      : CachedNetworkImage(
-                                                          imageUrl: history
-                                                              .value!.imageUrl!,
-                                                          fit: BoxFit.cover)))))
+                                              child: Column(children: [
+                                                Expanded(
+                                                    child: ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                                10.0),
+                                                        child: history.value!
+                                                                .imageUrl!
+                                                                .startsWith(
+                                                                    'data')
+                                                            ? Image.memory(
+                                                                UriData.parse(history.value!.imageUrl!)
+                                                                    .contentAsBytes(),
+                                                                fit: BoxFit
+                                                                    .cover)
+                                                            : CachedNetworkImage(
+                                                                imageUrl: history
+                                                                    .value!
+                                                                    .imageUrl!,
+                                                                fit: BoxFit
+                                                                    .cover))),
+                                                Text(history.value!.word,
+                                                    style: const TextStyle(
+                                                        fontSize: 24.0))
+                                              ]))))
                                       .toList()))
                           : Padding(
                               padding: const EdgeInsets.all(30.0),
@@ -86,12 +101,14 @@ class HistoryScreen extends ConsumerWidget {
                                       padding: const EdgeInsets.all(20.0),
                                       icon: const Icon(Icons.camera_alt),
                                       label: const Text('さつえいしてみよう!',
-                                          style: TextStyle(fontWeight: FontWeight.bold)),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold)),
                                       onTap: () {
                                         HapticFeedback.heavyImpact();
                                         context.go('/child/camera');
                                       }))),
-                      orElse: () => const Center(child: CircularProgressIndicator()))),
+                      orElse: () =>
+                          const Center(child: CircularProgressIndicator()))),
               ChildActions(actions: [
                 ChildActionButton(
                     onPressed: () => context.pop(), child: const Text('もどる'))
