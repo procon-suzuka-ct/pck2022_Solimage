@@ -402,7 +402,7 @@ class ExpData {
     };
   }
 
-  ExpData? mapToExpData(Map<String, ExpData?> map) {
+  static ExpData? mapToExpData(Map<String, ExpData?> map) {
     final entries = map.entries.toList();
 
     final expData = ExpData(
