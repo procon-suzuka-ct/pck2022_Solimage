@@ -51,7 +51,7 @@ final _totalViewsProvider = FutureProvider((ref) async {
   if (recommendData != null) totalViews += recommendData.views;
 
   return totalViews;
-});
+}, dependencies: [_expDatasProvider, _recommendDataProvider]);
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({Key? key}) : super(key: key);
