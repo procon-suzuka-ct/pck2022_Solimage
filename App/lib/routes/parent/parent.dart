@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:solimage/components/connectivity.dart';
 import 'package:solimage/routes/parent/history.dart';
 import 'package:solimage/routes/parent/profile.dart';
 
@@ -58,7 +59,8 @@ class ParentScreen extends ConsumerWidget {
                         label: const Text('カメラ'),
                         heroTag: 'camera'),
                     FloatingActionButton.extended(
-                        onPressed: () => context.push('/parent/post'),
+                        onPressed: () => checkConnectivity(context)
+                            .then((_) => context.push('/parent/post')),
                         icon: const Icon(Icons.add),
                         label: const Text('投稿'),
                         heroTag: 'post')
