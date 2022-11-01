@@ -54,7 +54,7 @@ class ExpData {
     _word = word;
     _meaning = meaning;
     rootWord ??= "0";
-    _dataId = 0;
+    _dataId = -1;
     _userId = userID ?? "None";
   }
 
