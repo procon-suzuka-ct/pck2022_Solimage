@@ -26,21 +26,17 @@ final _nameProvider = FutureProvider(
 final _groupsProvider = FutureProvider((ref) async => await Future.wait(
     (await ref.watch(userProvider.selectAsync((data) => data?.groups ?? [])))
         .map((groupID) => Group.getGroup(groupID))));
-final _expDatasProvider = FutureProvider((ref) async {
-  final expDataIds =
-      await ref.watch(userProvider.selectAsync((data) => data?.expDatas));
-  final List<ExpData?> expDatas = expDataIds != null && expDataIds.isNotEmpty
-      ? await Future.wait(
-          expDataIds.map((expDataId) => ExpData.getExpData(expDataId)))
-      : [];
-  expDatas.removeWhere((element) => element == null);
+final _expDatasProvider = FutureProvider.autoDispose((ref) async {
+  final expDatas = await Future.wait((await ref
+          .watch(userProvider.selectAsync((data) => data?.expDatas ?? [])))
+      .map((expDataID) => ExpData.getExpData(expDataID)));
   return expDatas;
 });
 final _recommendDataProvider = FutureProvider((ref) async {
   final uid = await ref.watch(userProvider.selectAsync((data) => data?.uid));
   return uid != null ? await RecommendData.getRecommendData(uid) : null;
 });
-final _totalViewsProvider = FutureProvider((ref) async {
+final _totalViewsProvider = FutureProvider.autoDispose((ref) async {
   int totalViews = 0;
   final expDatas = await ref.watch(_expDatasProvider.future);
   final recommendData = await ref.watch(_recommendDataProvider.future);
