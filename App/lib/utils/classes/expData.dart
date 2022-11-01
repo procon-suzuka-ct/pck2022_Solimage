@@ -172,7 +172,7 @@ class ExpData {
         value.addExpData(_dataId);
         await value.save();
         for (var groupId in value.groups) {
-          Group.getGroup(groupId).then((group) async {
+          await Group.getGroup(groupId).then((group) async {
             if (group != null) {
               group.addExpData(_dataId);
               await group.save();
@@ -188,10 +188,10 @@ class ExpData {
     final docRef =
         FirebaseFirestore.instance.collection("expDataIndex").doc(_word);
 
-    docRef.get().then((value) {
+    await docRef.get().then((value) {
       if (value.exists) {
         final data = value.data()!;
-        final list = (data['dataIds'] as List<dynamic>).cast<int>();
+        final list = ((data['dataIds'] ?? []) as List<dynamic>).cast<int>();
         list.contains(_dataId)
             ? null
             : docRef.update({
@@ -207,10 +207,11 @@ class ExpData {
     // rootWord
     final rootRef =
         FirebaseFirestore.instance.collection("expDataIndex").doc(rootWord);
-    rootRef.get().then((value) {
+    await rootRef.get().then((value) {
       if (value.exists) {
         final data = value.data()!;
-        final list = (data["childWord"] as List<dynamic>).cast<String>();
+        final list =
+            ((data["childWord"] ?? []) as List<dynamic>).cast<String>();
         list.contains(_word)
             ? null
             : rootRef.update({
@@ -237,7 +238,8 @@ class ExpData {
         .get();
     if (doc.exists) {
       final data = doc.data();
-      final childWords = (data!['childWord'] as List<dynamic>).cast<String>();
+      final childWords =
+          ((data!['childWord'] ?? []) as List<dynamic>).cast<String>();
       List<Map<String, ExpData?>> childs = [];
       for (final childWord in childWords) {
         final child =
@@ -282,7 +284,7 @@ class ExpData {
       return {};
     }
     final indexData = doc.data()!;
-    final indexList = (indexData["index"] as List<dynamic>).cast<int>();
+    final indexList = ((indexData["index"] ?? []) as List<dynamic>).cast<int>();
     List<ExpData> expDataList = [];
     for (final data in await _getExpDatas()) {
       indexList.contains(data._dataId) ? expDataList.add(data) : null;

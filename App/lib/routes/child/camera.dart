@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:solimage/components/child/child_actions.dart';
 import 'package:solimage/components/child/standby_dialog.dart';
-import 'package:solimage/components/child_actions.dart';
+import 'package:solimage/components/connectivity.dart';
 import 'package:solimage/components/loading_overlay.dart';
 import 'package:solimage/states/camera.dart';
 
@@ -31,7 +32,7 @@ class CameraScreen extends ConsumerWidget {
 
                   return Scaffold(
                       body: Stack(fit: StackFit.expand, children: <Widget>[
-                    if (controller != null)
+                    if (controller != null && controller.value.isInitialized)
                       Transform.scale(
                           scale: 1 /
                               (size.aspectRatio * controller.value.aspectRatio),
@@ -42,7 +43,7 @@ class CameraScreen extends ConsumerWidget {
                         child: Container(
                             margin: const EdgeInsets.all(10.0),
                             child: ElevatedButton.icon(
-                                icon: const Icon(Icons.supervisor_account),
+                                icon: const Icon(Icons.history_edu),
                                 onPressed: () => ScaffoldMessenger.of(context)
                                         .showMaterialBanner(MaterialBanner(
                                             actions: [
@@ -62,48 +63,51 @@ class CameraScreen extends ConsumerWidget {
                                               child: const Text('いいえ')),
                                         ],
                                             content: const Text(
-                                                '大人用メニューに切り替えてもよろしいでしょうか?'))),
+                                                '投稿モードに移動してもよろしいでしょうか?'))),
                                 label: const FittedBox(
-                                  child: Text('大人用メニュー'),
+                                  child: Text('投稿モードに移動する'),
                                 ),
                                 style: ElevatedButton.styleFrom(
                                     padding: const EdgeInsets.all(15.0))))),
                     ChildActions(actions: [
                       ChildActionButton(
                           onPressed: !isTakingPicture
-                              ? () async {
-                                  ScaffoldMessenger.of(context)
-                                      .clearMaterialBanners();
-                                  ref
-                                      .read(_isTakingPictureProvider.notifier)
-                                      .state = true;
-                                  if (controller != null) {
-                                    ref.read(imagePathProvider.notifier).state =
-                                        '';
-                                    showDialog(
-                                        context: context,
-                                        barrierDismissible: false,
-                                        barrierColor:
-                                            Colors.black.withOpacity(0.8),
-                                        builder: (context) =>
-                                            const StandbyDialog());
-                                    final path =
-                                        (await controller.takePicture()).path;
-                                    ref.read(imagePathProvider.notifier).state =
-                                        path;
-                                  }
-                                  ref
-                                      .read(_isTakingPictureProvider.notifier)
-                                      .state = false;
-                                }
+                              ? () =>
+                                  checkConnectivity(context).then((_) async {
+                                    ScaffoldMessenger.of(context)
+                                        .clearMaterialBanners();
+                                    ref
+                                        .read(_isTakingPictureProvider.notifier)
+                                        .state = true;
+                                    if (controller != null) {
+                                      ref
+                                          .read(imagePathProvider.notifier)
+                                          .state = '';
+                                      showDialog(
+                                          context: context,
+                                          barrierDismissible: false,
+                                          barrierColor:
+                                              Colors.black.withOpacity(0.8),
+                                          builder: (context) =>
+                                              const StandbyDialog());
+                                      final path =
+                                          (await controller.takePicture()).path;
+                                      ref
+                                          .read(imagePathProvider.notifier)
+                                          .state = path;
+                                    }
+                                    ref
+                                        .read(_isTakingPictureProvider.notifier)
+                                        .state = false;
+                                  })
                               : null,
                           child: const Text('さつえい')),
                       ChildActionButton(
-                          onPressed: () {
-                            ScaffoldMessenger.of(context)
-                                .clearMaterialBanners();
-                            context.push('/child/history');
-                          },
+                          onPressed: () => checkConnectivity(context).then((_) {
+                                ScaffoldMessenger.of(context)
+                                    .clearMaterialBanners();
+                                context.push('/child/history');
+                              }),
                           child: const Text('きろく'))
                     ]),
                     LoadingOverlay(visible: ref.watch(_isTakingPictureProvider))

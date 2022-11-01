@@ -22,7 +22,7 @@ class ModeSelectDialog extends StatelessWidget {
             onPressed: () async {
               if (!isWelcomeScreen) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('大人用モードに変更しました')));
+                    const SnackBar(content: Text('今後の起動時は投稿モードで起動されます')));
               }
               Navigator.of(context).pop();
               SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -31,13 +31,13 @@ class ModeSelectDialog extends StatelessWidget {
             child: const ListTile(
               leading: Icon(Icons.face),
               title: Text('大人'),
-              subtitle: Text('アプリを開いた時に大人用メニューが開かれます'),
+              subtitle: Text('アプリを開いた時に投稿モードで開かれます'),
             )),
         SimpleDialogOption(
             onPressed: () async {
               if (!isWelcomeScreen) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('子ども向けモードに変更しました')));
+                    const SnackBar(content: Text('今後の起動時はカメラモードで起動されます')));
               }
               Navigator.of(context).pop();
               SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -46,7 +46,7 @@ class ModeSelectDialog extends StatelessWidget {
             child: const ListTile(
               leading: Icon(Icons.child_care),
               title: Text('子ども'),
-              subtitle: Text('アプリを開いた時にカメラが開かれます'),
+              subtitle: Text('アプリを開いた時にカメラモードで開かれます'),
             )),
       ]),
       contentPadding: const EdgeInsets.symmetric(vertical: 10.0),
