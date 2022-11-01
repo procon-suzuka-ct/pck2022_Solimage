@@ -54,7 +54,7 @@ class ExpData {
     _word = word;
     _meaning = meaning;
     rootWord ??= "0";
-    _dataId = 0;
+    _dataId = -1;
     _userId = userID ?? "None";
   }
 
@@ -402,7 +402,7 @@ class ExpData {
     };
   }
 
-  ExpData? mapToExpData(Map<String, ExpData?> map) {
+  static ExpData? mapToExpData(Map<String, ExpData?> map) {
     final entries = map.entries.toList();
 
     final expData = ExpData(
