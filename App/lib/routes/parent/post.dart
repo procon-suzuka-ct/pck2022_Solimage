@@ -78,7 +78,8 @@ class PostScreen extends ConsumerWidget {
               child: Column(children: [
                 RadioListTile<bool>(
                   title: const Text('オススメする'),
-                  subtitle: const Text('撮影後の待ち時間にCMのように表示されます'),
+                  subtitle: const Text(
+                      '撮影後の待ち時間に広告のように表示され、子どもたちにあなたの伝えたい知識を伝えることができます'),
                   value: true,
                   onChanged: expData.value is! RecommendData
                       ? (value) {
@@ -91,7 +92,8 @@ class PostScreen extends ConsumerWidget {
                 ),
                 RadioListTile<bool>(
                   title: const Text('オススメしない'),
-                  subtitle: const Text('画像で検索したときに表示されます'),
+                  subtitle:
+                      const Text('画像で検索したときに表示され、子どもたちにあなたの経験を伝えることができます'),
                   value: false,
                   onChanged: expData.value is! RecommendData
                       ? (value) {

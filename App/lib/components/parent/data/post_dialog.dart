@@ -27,7 +27,7 @@ class DataPostDialog extends ConsumerWidget {
               heightFactor: 1.0,
               child: CircularProgressIndicator())
           : Text(
-              '投稿してもよろしいでしょうか?${expData is RecommendData ? '\n既に投稿済みのオススメ情報がある場合、上書きされます' : ''}'),
+              '投稿してもよろしいでしょうか?${expData is RecommendData ? '\n既にオススメ中の知識がある場合、上書きされます' : ''}'),
       actions: [
         TextButton(
             onPressed: !posting
