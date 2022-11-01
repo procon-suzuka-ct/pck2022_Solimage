@@ -39,7 +39,7 @@ class HistoryScreen extends ConsumerWidget {
         body: Padding(
             padding: const EdgeInsets.all(10.0),
             child: Column(children: [
-              const Text('しゃしんをさわると、きろくがみれます',
+              const Text('しゃしんにふれると、きろくをみられます',
                   style: TextStyle(fontSize: 20.0),
                   textAlign: TextAlign.center),
               Expanded(

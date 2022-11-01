@@ -83,7 +83,7 @@ class ResultScreen extends ConsumerWidget {
                                 duration: const Duration(milliseconds: 200),
                                 curve: Curves.easeInOut)
                             : context.go('/child/camera'),
-                        child: Text(currentPage != 1 ? 'くわしく' : 'カメラをひらく'))
+                        child: Text(currentPage != 1 ? 'みてみる' : 'カメラをひらく'))
                   ])
                 ])),
             orElse: () => const Scaffold(

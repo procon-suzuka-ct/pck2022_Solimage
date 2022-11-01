@@ -98,48 +98,60 @@ class StandbyDialog extends ConsumerWidget {
                       context.push(
                           '/child/result?userId=${recommendData.value!.userId}');
                     },
-                    child: const Text('くわしく'))
+                    child: const Text('みてみる'))
               ]))
           : const SizedBox.shrink(),
       AlertDialog(
           title: const Center(
               child: Text('どれだろう?',
                   style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold))),
-          content: labels.maybeWhen(
-              data: (labels) => SizedBox(
-                  width: 300.0,
-                  child: GridView.count(
-                      shrinkWrap: true,
-                      crossAxisCount: 2,
-                      children: labels.entries
-                          .map((label) => Card(
-                              child: InkWell(
-                                  customBorder: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  onTap: () {
-                                    HapticFeedback.heavyImpact();
-                                    ref.read(imagePathProvider.notifier).state =
-                                        '';
-                                    Navigator.of(context).pop();
-                                    context.push(
-                                        '/child/result?word=${label.key}');
-                                  },
-                                  child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                      child: label.value.imageUrl!
-                                              .startsWith('data')
-                                          ? Image.memory(
-                                              UriData.parse(
-                                                      label.value.imageUrl!)
-                                                  .contentAsBytes(),
-                                              fit: BoxFit.cover)
-                                          : CachedNetworkImage(
-                                              imageUrl: label.value.imageUrl!,
-                                              fit: BoxFit.cover)))))
-                          .toList())),
-              orElse: () => const Center(
-                  heightFactor: 1.0, child: CircularProgressIndicator())))
+          content: Wrap(
+              runSpacing: 10.0,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                const Text('しゃしんにふれると、けっかをみられます',
+                    style: TextStyle(fontSize: 20.0),
+                    textAlign: TextAlign.center),
+                labels.maybeWhen(
+                    data: (labels) => SizedBox(
+                        width: 300.0,
+                        child: GridView.count(
+                            shrinkWrap: true,
+                            crossAxisCount: 2,
+                            children: labels.entries
+                                .map((label) => Card(
+                                    child: InkWell(
+                                        customBorder: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                        ),
+                                        onTap: () {
+                                          HapticFeedback.heavyImpact();
+                                          ref
+                                              .read(imagePathProvider.notifier)
+                                              .state = '';
+                                          Navigator.of(context).pop();
+                                          context.push(
+                                              '/child/result?word=${label.key}');
+                                        },
+                                        child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                            child: label.value.imageUrl!
+                                                    .startsWith('data')
+                                                ? Image.memory(
+                                                    UriData.parse(label
+                                                            .value.imageUrl!)
+                                                        .contentAsBytes(),
+                                                    fit: BoxFit.cover)
+                                                : CachedNetworkImage(
+                                                    imageUrl:
+                                                        label.value.imageUrl!,
+                                                    fit: BoxFit.cover)))))
+                                .toList())),
+                    orElse: () => const Center(
+                        heightFactor: 1.0, child: CircularProgressIndicator()))
+              ]))
     ];
     pages.removeWhere((element) => element is SizedBox);
 
@@ -175,7 +187,7 @@ class StandbyDialog extends ConsumerWidget {
                           duration: const Duration(milliseconds: 200),
                           curve: Curves.easeInOut);
                     },
-                    child: const Text('つぎへ', textAlign: TextAlign.center))
+                    child: const Text('けっかをみる', textAlign: TextAlign.center))
                 : ChildActionButton(
                     onPressed: () => Navigator.of(context).pop(),
                     child:
