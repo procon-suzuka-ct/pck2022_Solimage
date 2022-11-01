@@ -63,9 +63,9 @@ class CameraScreen extends ConsumerWidget {
                                               child: const Text('いいえ')),
                                         ],
                                             content: const Text(
-                                                '投稿モードに切り替えてもよろしいでしょうか?'))),
+                                                '投稿モードに移動してもよろしいでしょうか?'))),
                                 label: const FittedBox(
-                                  child: Text('投稿モード'),
+                                  child: Text('投稿モードに移動する'),
                                 ),
                                 style: ElevatedButton.styleFrom(
                                     padding: const EdgeInsets.all(15.0))))),
