@@ -30,5 +30,7 @@ linter:
 # https://dart.dev/guides/language/analysis-options
 
 analyzer:
+  errors:
+    unused_result: ignore
   exclude:
     - test/*.dart
