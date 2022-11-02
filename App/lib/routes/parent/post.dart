@@ -73,38 +73,53 @@ class PostScreen extends ConsumerWidget {
       Step(
           title: const Text('オススメ'),
           subtitle: Text(isRecommendData ? 'オススメする' : 'オススメしない'),
-          content: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(children: [
-                RadioListTile<bool>(
-                  title: const Text('オススメする'),
-                  subtitle: const Text(
-                      '撮影後の待ち時間に広告のように表示され、子どもたちにあなたの伝えたい知識を伝えることができます'),
-                  value: true,
-                  onChanged: expData.value is! RecommendData
-                      ? (value) {
-                          ref.read(wordProvider.notifier).state = '';
-                          ref.read(_isRecommendDataProvider.notifier).state =
-                              value!;
-                        }
-                      : null,
-                  groupValue: isRecommendData,
-                ),
-                RadioListTile<bool>(
-                  title: const Text('オススメしない'),
-                  subtitle:
-                      const Text('画像で検索したときに表示され、子どもたちにあなたの経験を伝えることができます'),
-                  value: false,
-                  onChanged: expData.value is! RecommendData
-                      ? (value) {
-                          ref.read(wordProvider.notifier).state = '';
-                          ref.read(_isRecommendDataProvider.notifier).state =
-                              value!;
-                        }
-                      : null,
-                  groupValue: isRecommendData,
-                )
-              ])),
+          content: Column(children: [
+            RadioListTile<bool>(
+              title: const Text('オススメする'),
+              subtitle:
+              const Text('撮影後の待ち時間に広告のように表示され、子どもたちにあなたの伝えたい知識を伝えることができます'),
+              value: true,
+              onChanged: expData.value is! RecommendData
+                  ? (value) {
+                ref
+                    .read(wordProvider.notifier)
+                    .state = '';
+                ref
+                    .read(_isRecommendDataProvider.notifier)
+                    .state =
+                value!;
+              }
+                  : null,
+              groupValue: isRecommendData,
+            ),
+            RadioListTile<bool>(
+              title: const Text('オススメしない'),
+              subtitle: const Text('画像で検索したときに表示され、子どもたちにあなたの経験を伝えることができます'),
+              value: false,
+              onChanged: expData.value is! RecommendData
+                  ? (value) {
+                ref
+                    .read(wordProvider.notifier)
+                    .state = '';
+                ref
+                    .read(_isRecommendDataProvider.notifier)
+                    .state =
+                value!;
+              }
+                  : null,
+              groupValue: isRecommendData,
+            ),
+            Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: Image.asset(
+                        isRecommendData
+                            ? 'assets/recommend_data.gif'
+                            : 'assets/exp_data.gif',
+                        gaplessPlayback: true,
+                        height: 300.0))),
+          ]),
           state: step != 0 ? StepState.complete : StepState.indexed),
       Step(
           title: const Text('画像'),
@@ -117,13 +132,22 @@ class PostScreen extends ConsumerWidget {
                       padding: const EdgeInsets.all(10.0),
                       child: ClipRRect(
                           borderRadius: BorderRadius.circular(10.0),
-                          child: imageUrl.startsWith('http')
-                              ? CachedNetworkImage(
-                                  height: 500.0,
-                                  imageUrl: imageUrl,
-                                  placeholder: (context, url) => const Center(
-                                      child: CircularProgressIndicator()))
-                              : Image.file(File(imageUrl)))),
+                          child: ConstrainedBox(
+                              constraints:
+                                  const BoxConstraints(maxHeight: 300.0),
+                              child: imageUrl.startsWith('http')
+                                  ? CachedNetworkImage(
+                                      imageUrl: imageUrl,
+                                      placeholder: (context, url) =>
+                                          const Center(
+                                              child:
+                                                  CircularProgressIndicator()),
+                                      errorWidget: (context, url, error) =>
+                                          const Icon(
+                                              Icons
+                                                  .signal_wifi_statusbar_connected_no_internet_4,
+                                              size: 60.0))
+                                  : Image.file(File(imageUrl))))),
                 ElevatedButton.icon(
                     onPressed: () async {
                       final path = (await ImagePicker()
@@ -134,8 +158,8 @@ class PostScreen extends ConsumerWidget {
                         ref.read(_imageUrlProvider.notifier).state = path;
                       }
                     },
-                    icon: const Icon(Icons.camera_alt),
-                    label: Text('画像を${imageUrl.isEmpty ? '撮影' : '変更'}')),
+                    icon: const Icon(Icons.add_a_photo),
+                    label: Text('画像を撮影${imageUrl.isEmpty ? 'する' : 'し直す'}')),
                 ElevatedButton.icon(
                     onPressed: () async {
                       final path = (await ImagePicker()
@@ -146,8 +170,8 @@ class PostScreen extends ConsumerWidget {
                         ref.read(_imageUrlProvider.notifier).state = path;
                       }
                     },
-                    icon: const Icon(Icons.cloud_upload),
-                    label: Text('画像を${imageUrl.isEmpty ? 'アップロード' : '変更'}'))
+                    icon: const Icon(Icons.add_photo_alternate),
+                    label: Text('画像を選択${imageUrl.isEmpty ? 'する' : 'し直す'}'))
               ])),
           state: step != 1 && (isRecommendData ? imageUrl.isNotEmpty : true)
               ? StepState.complete
