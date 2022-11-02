@@ -340,7 +340,7 @@ class ExpData {
       (whoList.isEmpty && expData.who != null) ? whoList.add(expData) : null;
       (howList.isEmpty && expData.how != null) ? howList.add(expData) : null;
       (imageUrls.isEmpty && expData.imageUrl != null)
-          ? howList.add(expData)
+          ? imageUrls.add(expData)
           : null;
     }
 
@@ -373,7 +373,7 @@ class ExpData {
     imageUrl?.addViews();
 
     final value = ExpData(
-      word: word,
+      word: meaning.word,
       meaning: meaning.meaning,
     );
     value.setData(
@@ -385,25 +385,6 @@ class ExpData {
         how: how?.how,
         imageUrl: imageUrl?.imageUrl);
     return value;
-  }
-
-  static ExpData? mapToExpData(Map<String, ExpData?> map) {
-    final entries = map.entries.toList();
-
-    final expData = ExpData(
-      word: entries[0].value!.word,
-      meaning: map["meaning"]!.meaning,
-    );
-    expData.setData(
-      why: map["why"]?.why,
-      what: map["what"]?.what,
-      where: map["where"]?.where,
-      when: map["when"]?.when,
-      who: map["who"]?.who,
-      how: map["how"]?.how,
-      imageUrl: map["imageUrl"]?.imageUrl,
-    );
-    return expData;
   }
 
   Future<void> addViews() async {
