@@ -41,28 +41,29 @@ json.dump(lebels_reverse, json_file)
 json_file.close()
 
 # 正則化のパラメータ設定
-regulizerRate = 0.04
-units = 1024
+regulizerRate = 0.02
+units = 512
 labelNum = len(labels)
 OP3_regulizer = regulizerRate * units / (units + labelNum)
 OP4_regulizer = regulizerRate * labelNum / (units + labelNum)
 
 # sigmoidを使って多ラベル分類
-baseModel = MobileNetV3Large(weights="imagenet",
+baseModel = MobileNetV2(weights="imagenet",
                   include_top=False,
-                  input_tensor=Input(shape=(384, 216, 3)),)
+                  input_tensor=Input(shape=(384, 216, 3)),
+                  classifier_activation="sigmoid",
+                  classes=units)
 
 # 15層目まで重みを固定
-for layer in baseModel.layers[:-1]:
+for layer in baseModel.layers[:-3]:
     layer.trainable = False
 
 # 出力層
 x = baseModel.output
-x = Conv1D(1280, 1, activation="relu", name = "output2")(x)
-x = Flatten(name = "output3")(x)
-x = Dropout(0.5, name = "output1")(x)
-x = Dense(units, activation=tfa.activations.rrelu, kernel_regularizer=l2(regulizerRate), name = "output4")(x)
-pridection = Dense(labelNum, activation="sigmoid", name = "output5")(x)
+x = Flatten(name = "output1")(x)
+x = Dropout(0.5, name = "output2")(x)
+x = Dense(units, activation=tfa.activations.rrelu, kernel_regularizer=l2(regulizerRate), name = "output3")(x)
+pridection = Dense(labelNum, activation="sigmoid", name = "output4")(x)
 
 model = Model(inputs=baseModel.input, outputs=pridection)
 
@@ -71,7 +72,7 @@ model.compile(optimizer=adam_v2.Adam(learning_rate=0.0001), loss="binary_crossen
               metrics=["accuracy"])
 model.summary()
 
-early_stopping = EarlyStopping(monitor="val_loss", patience=4, min_delta=0)
+early_stopping = EarlyStopping(monitor="val_loss", patience=10, min_delta=0)
 check_point = ModelCheckpoint(
     "./tmp/model/model.h5", save_best_only=True, mode="min", monitor='val_loss')
 
