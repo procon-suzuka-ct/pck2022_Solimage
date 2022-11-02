@@ -230,8 +230,7 @@ class ExpData {
     return doc.data();
   }
 
-  static Future<List<Map<String, ExpData?>>> getChilds(
-      {required String word, bool onlyGroup = false}) async {
+  static Future<List<ExpData?>> getChilds({required String word}) async {
     final doc = await FirebaseFirestore.instance
         .collection("expDataIndex")
         .doc(word)
@@ -240,10 +239,9 @@ class ExpData {
       final data = doc.data();
       final childWords =
           ((data!['childWord'] ?? []) as List<dynamic>).cast<String>();
-      List<Map<String, ExpData?>> childs = [];
+      List<ExpData?> childs = [];
       for (final childWord in childWords) {
-        final child =
-            await getExpDataByWord(word: childWord, onlyGroup: onlyGroup);
+        final child = await getExpDataByWord(word: childWord);
         childs.add(child);
       }
       return childs;
@@ -272,16 +270,13 @@ class ExpData {
   /// keywordからデータを取得する関数です
   ///
   /// 返ってくる[ExpData]オブジェクトは複数あるデータからランダムで抽出され構成されます
-  ///
-  /// [onlyGroup]をtrueにすると、所属しているグループのみを対象にします
-  static Future<Map<String, ExpData?>> getExpDataByWord(
-      {required String word, bool onlyGroup = true}) async {
+  static Future<ExpData?> getExpDataByWord({required String word}) async {
     final doc = await FirebaseFirestore.instance
         .collection('expDataIndex')
         .doc(word)
         .get();
     if (!doc.exists) {
-      return {};
+      return null;
     }
     final indexData = doc.data()!;
     final indexList = ((indexData["index"] ?? []) as List<dynamic>).cast<int>();
@@ -301,38 +296,25 @@ class ExpData {
 
     List<Group> groups = [];
     List<int> expDataIDs = [];
-    if (onlyGroup) {
-      final user = await AppUser.getUser(Auth().currentUser()!.uid);
-      if (user == null) {
-        return {};
+    final user = await AppUser.getUser(Auth().currentUser()!.uid);
+    if (user == null) {
+      return null;
+    }
+    final groupIDs = user.groups;
+    for (final groupId in groupIDs) {
+      final group = await Group.getGroup(groupId);
+      if (group != null) {
+        groups.add(group);
       }
-      final groupIDs = user.groups;
-      for (final groupId in groupIDs) {
-        final group = await Group.getGroup(groupId);
-        if (group != null) {
-          groups.add(group);
-        }
-      }
-      for (final group in groups) {
-        for (final wordId in group.expDatas) {
-          expDataIDs.add(wordId);
-        }
+    }
+    for (final group in groups) {
+      for (final wordId in group.expDatas) {
+        expDataIDs.add(wordId);
       }
     }
 
     for (final expData in expDataList) {
-      if (onlyGroup &&
-          expDataIDs.contains(expData.dataId) &&
-          (expData.dataId >= 100000000 && expData.dataId < 999999999)) {
-        meanings.add(expData);
-        if (expData.why != null) whyList.add(expData);
-        if (expData.what != null) whatList.add(expData);
-        if (expData.where != null) whereList.add(expData);
-        if (expData.when != null) whenList.add(expData);
-        if (expData.who != null) whoList.add(expData);
-        if (expData.how != null) howList.add(expData);
-        if (expData.imageUrl != null) imageUrls.add(expData);
-      } else {
+      if (expDataIDs.contains(expData.dataId) && expData.dataId >= 100000000) {
         meanings.add(expData);
         if (expData.why != null) whyList.add(expData);
         if (expData.what != null) whatList.add(expData);
@@ -390,16 +372,19 @@ class ExpData {
     how?.addViews();
     imageUrl?.addViews();
 
-    return {
-      "meaning": meaning,
-      "why": why,
-      "what": what,
-      "where": where,
-      "when": when,
-      "who": who,
-      "how": how,
-      "imageUrl": imageUrl,
-    };
+    final value = ExpData(
+      word: word,
+      meaning: meaning.meaning,
+    );
+    value.setData(
+        why: why?.why,
+        what: what?.what,
+        when: when?.when,
+        where: where?.where,
+        who: who?.who,
+        how: how?.how,
+        imageUrl: imageUrl?.imageUrl);
+    return value;
   }
 
   static ExpData? mapToExpData(Map<String, ExpData?> map) {
