@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solimage/components/child/child_actions.dart';
+import 'package:solimage/routes/child/children.dart';
 import 'package:solimage/routes/child/fwoh.dart';
 import 'package:solimage/routes/child/summary.dart';
 import 'package:solimage/states/user.dart';
@@ -12,21 +13,18 @@ final _expDataProviderFamily =
     FutureProvider.autoDispose.family<ExpData?, String>((ref, value) async {
   final user = await ref.read(userProvider.future);
   ExpData? expData = await ExpData.getExpDataByWord(word: value);
-  expData ??= await RecommendData.getRecommendData(value);
-  expData ??= await ExpData.getExpData(0);
 
-  if (expData != null) {
-    await expData.addViews();
-    if (user != null && !(user.histories.contains(value))) {
-      user.histories.add(value);
-      await user.save();
-    }
+  if (expData != null && user != null && !(user.histories.contains(value))) {
+    user.histories.add(value);
+    await user.save();
   }
+
+  expData ??= await RecommendData.getExpDataByWord(userId: value);
+  expData ??= await ExpData.getExpData(0);
 
   return expData;
 });
 
-// TODO: 実際のデータに差し替える（ほぼ実装済み、動作未確認）
 class ResultScreen extends ConsumerWidget {
   const ResultScreen({Key? key, this.word, this.userId}) : super(key: key);
 
@@ -67,7 +65,8 @@ class ResultScreen extends ConsumerWidget {
                               .state = page,
                           children: [
                         SummaryScreen(data: data!),
-                        FWOHScreen(data: data)
+                        FWOHScreen(data: data),
+                        ChildrenScreen(word: data.word)
                       ])),
                   ChildActions(actions: [
                     ChildActionButton(
@@ -78,12 +77,12 @@ class ResultScreen extends ConsumerWidget {
                             : () => context.pop(),
                         child: const Text('もどる')),
                     ChildActionButton(
-                        onPressed: () => currentPage != 1
+                        onPressed: () => currentPage != 2
                             ? controller.nextPage(
                                 duration: const Duration(milliseconds: 200),
                                 curve: Curves.easeInOut)
                             : context.go('/child/camera'),
-                        child: Text(currentPage != 1 ? 'みてみる' : 'カメラをひらく'))
+                        child: Text(currentPage != 2 ? 'みてみる' : 'カメラをひらく'))
                   ])
                 ])),
             orElse: () => const Scaffold(

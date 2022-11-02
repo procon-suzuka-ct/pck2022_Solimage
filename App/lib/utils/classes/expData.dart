@@ -54,7 +54,7 @@ class ExpData {
     _word = word;
     _meaning = meaning;
     rootWord ??= "0";
-    _dataId = 0;
+    _dataId = -1;
     _userId = userID ?? "None";
   }
 
@@ -230,8 +230,7 @@ class ExpData {
     return doc.data();
   }
 
-  static Future<List<ExpData>> getChilds(
-      {required String word, bool onlyGroup = false}) async {
+  static Future<List<ExpData?>> getChilds({required String word}) async {
     final doc = await FirebaseFirestore.instance
         .collection("expDataIndex")
         .doc(word)
@@ -240,13 +239,10 @@ class ExpData {
       final data = doc.data();
       final childWords =
           ((data!['childWord'] ?? []) as List<dynamic>).cast<String>();
-      List<ExpData> childs = [];
+      List<ExpData?> childs = [];
       for (final childWord in childWords) {
-        final child =
-            await getExpDataByWord(word: childWord, onlyGroup: onlyGroup);
-        if (child != null) {
-          childs.add(child);
-        }
+        final child = await getExpDataByWord(word: childWord);
+        childs.add(child);
       }
       return childs;
     } else {
@@ -274,158 +270,121 @@ class ExpData {
   /// keywordからデータを取得する関数です
   ///
   /// 返ってくる[ExpData]オブジェクトは複数あるデータからランダムで抽出され構成されます
-  ///
-  /// [onlyGroup]をtrueにすると、所属しているグループのみを対象にします
-  static Future<ExpData?> getExpDataByWord(
-      {required String word, bool onlyGroup = false}) async {
+  static Future<ExpData?> getExpDataByWord({required String word}) async {
     final doc = await FirebaseFirestore.instance
         .collection('expDataIndex')
         .doc(word)
         .get();
-
     if (!doc.exists) {
       return null;
     }
     final indexData = doc.data()!;
     final indexList = ((indexData["index"] ?? []) as List<dynamic>).cast<int>();
-
-    if (doc.exists) {
-      List<ExpData> expDataList = [];
-      for (final data in await _getExpDatas()) {
-        indexList.contains(data._dataId) ? expDataList.add(data) : null;
-      }
-      Map<int, String> meanings = {};
-      Map<int, String> whyList = {};
-      Map<int, String> whatList = {};
-      Map<int, String> whereList = {};
-      Map<int, String> whenList = {};
-      Map<int, String> whoList = {};
-      Map<int, String> howList = {};
-      Map<int, String> imageUrls = {};
-
-      List<Group> groups = [];
-      List<int> expDataIDs = [];
-      if (onlyGroup) {
-        final user = await AppUser.getUser(Auth().currentUser()!.uid);
-        if (user == null) {
-          return null;
-        }
-        final groupIDs = user.groups;
-        for (final groupId in groupIDs) {
-          final group = await Group.getGroup(groupId);
-          if (group != null) {
-            groups.add(group);
-          }
-        }
-        for (final group in groups) {
-          for (final wordId in group.expDatas) {
-            expDataIDs.add(wordId);
-          }
-        }
-      }
-
-      for (final expData in expDataList) {
-        if (!onlyGroup ||
-            expDataIDs.contains(expData.dataId) ||
-            (expData.dataId >= 100000000 && expData.dataId < 999999999)) {
-          meanings[expData.dataId] = expData.meaning;
-          if (expData.why != null) whyList[expData.dataId] = expData.why!;
-          if (expData.what != null) whatList[expData.dataId] = expData.what!;
-          if (expData.where != null) whereList[expData.dataId] = expData.where!;
-          if (expData.when != null) whenList[expData.dataId] = expData.when!;
-          if (expData.who != null) whoList[expData.dataId] = expData.who!;
-          if (expData.how != null) howList[expData.dataId] = expData.how!;
-          if (expData.imageUrl != null) {
-            imageUrls[expData.dataId] = expData.imageUrl!;
-          }
-        }
-      }
-
-      for (final expData in expDataList) {
-        if (expData.dataId >= 100000000) {
-          continue;
-        }
-        if (meanings.isNotEmpty &&
-            whyList.isNotEmpty &&
-            whatList.isNotEmpty &&
-            whereList.isNotEmpty &&
-            whenList.isNotEmpty &&
-            whoList.isNotEmpty &&
-            howList.isNotEmpty &&
-            imageUrls.isNotEmpty) {
-          break;
-        }
-        meanings[expData.dataId] = expData.meaning;
-        if (whyList.isEmpty && expData.why != null) {
-          whyList[expData.dataId] = expData.why!;
-        }
-        if (whatList.isEmpty && expData.what != null) {
-          whatList[expData.dataId] = expData.what!;
-        }
-        if (whereList.isEmpty && expData.where != null) {
-          whereList[expData.dataId] = expData.where!;
-        }
-        if (whenList.isEmpty && expData.when != null) {
-          whenList[expData.dataId] = expData.when!;
-        }
-        if (whoList.isEmpty && expData.who != null) {
-          whoList[expData.dataId] = expData.who!;
-        }
-        if (howList.isEmpty && expData.how != null) {
-          howList[expData.dataId] = expData.how!;
-        }
-        if (imageUrls.isEmpty && expData.imageUrl != null) {
-          imageUrls[expData.dataId] = expData.imageUrl!;
-        }
-      }
-
-      final random = Random();
-      final meaning = random.nextInt(meanings.length);
-      final why = whyList.isNotEmpty ? random.nextInt(whyList.length) : null;
-      final what = whatList.isNotEmpty ? random.nextInt(whatList.length) : null;
-      final where =
-          whereList.isNotEmpty ? random.nextInt(whereList.length) : null;
-      final when = whenList.isNotEmpty ? random.nextInt(whenList.length) : null;
-      final who = whoList.isNotEmpty ? random.nextInt(whoList.length) : null;
-      final how = howList.isNotEmpty ? random.nextInt(howList.length) : null;
-      final imageUrl =
-          imageUrls.isNotEmpty ? random.nextInt(imageUrls.length) : null;
-
-      ExpData data = ExpData(
-        word: expDataList[0].word,
-        meaning: meanings.entries.toList()[meaning].value,
-      );
-      data.setData(
-        why: why != null ? whyList.entries.toList()[why].value : null,
-        what: what != null ? whatList.entries.toList()[what].value : null,
-        where: where != null ? whereList.entries.toList()[where].value : null,
-        when: when != null ? whenList.entries.toList()[when].value : null,
-        who: who != null ? whoList.entries.toList()[who].value : null,
-        how: how != null ? howList.entries.toList()[how].value : null,
-        imageUrl: imageUrl != null
-            ? imageUrls.entries.toList()[imageUrl].value
-            : null,
-      );
-
-      void viewed(int? id) {
-        if (id == null) return;
-        getExpData(id).then((value) {
-          if (value != null) {
-            value.addViews();
-          }
-        });
-      }
-
-      viewed(why);
-      viewed(what);
-      viewed(where);
-      viewed(when);
-      viewed(who);
-      viewed(how);
-      viewed(imageUrl);
-      return data;
+    List<ExpData> expDataList = [];
+    for (final data in await _getExpDatas()) {
+      indexList.contains(data._dataId) ? expDataList.add(data) : null;
     }
-    return null;
+
+    List<ExpData> meanings = [];
+    List<ExpData> whyList = [];
+    List<ExpData> whatList = [];
+    List<ExpData> whereList = [];
+    List<ExpData> whenList = [];
+    List<ExpData> whoList = [];
+    List<ExpData> howList = [];
+    List<ExpData> imageUrls = [];
+
+    List<Group> groups = [];
+    List<int> expDataIDs = [];
+    final user = await AppUser.getUser(Auth().currentUser()!.uid);
+    if (user == null) {
+      return null;
+    }
+    final groupIDs = user.groups;
+    for (final groupId in groupIDs) {
+      final group = await Group.getGroup(groupId);
+      if (group != null) {
+        groups.add(group);
+      }
+    }
+    for (final group in groups) {
+      for (final wordId in group.expDatas) {
+        expDataIDs.add(wordId);
+      }
+    }
+
+    for (final expData in expDataList) {
+      if (expDataIDs.contains(expData.dataId) && expData.dataId >= 100000000) {
+        meanings.add(expData);
+        if (expData.why != null) whyList.add(expData);
+        if (expData.what != null) whatList.add(expData);
+        if (expData.where != null) whereList.add(expData);
+        if (expData.when != null) whenList.add(expData);
+        if (expData.who != null) whoList.add(expData);
+        if (expData.how != null) howList.add(expData);
+        if (expData.imageUrl != null) imageUrls.add(expData);
+      }
+    }
+
+    for (final expData in expDataList) {
+      if (expData.dataId >= 100000000) {
+        continue;
+      }
+      meanings.isEmpty ? meanings.add(expData) : null;
+      (whyList.isEmpty && expData.why != null) ? whyList.add(expData) : null;
+      (whatList.isEmpty && expData.what != null) ? whatList.add(expData) : null;
+      (whereList.isEmpty && expData.where != null)
+          ? whereList.add(expData)
+          : null;
+      (whenList.isEmpty && expData.when != null) ? whenList.add(expData) : null;
+      (whoList.isEmpty && expData.who != null) ? whoList.add(expData) : null;
+      (howList.isEmpty && expData.how != null) ? howList.add(expData) : null;
+      (imageUrls.isEmpty && expData.imageUrl != null)
+          ? imageUrls.add(expData)
+          : null;
+    }
+
+    final random = Random();
+    final meaning = meanings[random.nextInt(meanings.length)];
+    final why =
+        whyList.isNotEmpty ? whyList[random.nextInt(whyList.length)] : null;
+    final what =
+        whatList.isNotEmpty ? whatList[random.nextInt(whatList.length)] : null;
+    final where = whereList.isNotEmpty
+        ? whereList[random.nextInt(whereList.length)]
+        : null;
+    final when =
+        whenList.isNotEmpty ? whenList[random.nextInt(whenList.length)] : null;
+    final who =
+        whoList.isNotEmpty ? whoList[random.nextInt(whoList.length)] : null;
+    final how =
+        howList.isNotEmpty ? howList[random.nextInt(howList.length)] : null;
+    final imageUrl = imageUrls.isNotEmpty
+        ? imageUrls[random.nextInt(imageUrls.length)]
+        : null;
+
+    meaning.addViews();
+    why?.addViews();
+    what?.addViews();
+    where?.addViews();
+    when?.addViews();
+    who?.addViews();
+    how?.addViews();
+    imageUrl?.addViews();
+
+    final value = ExpData(
+      word: meaning.word,
+      meaning: meaning.meaning,
+    );
+    value.setData(
+        why: why?.why,
+        what: what?.what,
+        when: when?.when,
+        where: where?.where,
+        who: who?.who,
+        how: how?.how,
+        imageUrl: imageUrl?.imageUrl);
+    return value;
   }
 
   Future<void> addViews() async {
@@ -535,6 +494,9 @@ class RecommendData extends ExpData {
           userID: userID,
         );
 
+  static RecommendData? recommendData;
+  static String? currentUid = Auth().currentUser()?.uid;
+
   @override
   Future<int> init() async {
     _dataId = 0;
@@ -598,13 +560,7 @@ class RecommendData extends ExpData {
     return null;
   }
 
-  static Future<RecommendData?> getRecommendDataByCurrentUid(
-      String currentUser) async {
-    final user = await AppUser.getUser(currentUser);
-    if (user == null) {
-      return null;
-    }
-
+  static Future<RecommendData?> _getByUserClass(AppUser user) async {
     final groups = user.groups;
     List<String> userIDs = [];
     for (var groupID in groups) {
@@ -618,6 +574,25 @@ class RecommendData extends ExpData {
     final randomIndex = random.nextInt(userIDs.length);
     final randomUserID = userIDs[randomIndex];
     final recommendData = await getRecommendData(randomUserID);
+    return recommendData;
+  }
+
+  static Future<RecommendData?> getRecommendDataByCurrentUid(
+      String? currentUser) async {
+    currentUid = currentUser;
+    if (currentUid == null) {
+      return null;
+    }
+    final user = await AppUser.getUser(currentUid!);
+    if (user == null) {
+      return null;
+    }
+
+    recommendData ??= await _getByUserClass(user);
+    _getByUserClass(user).then((value) async {
+      await Future.delayed(const Duration(microseconds: 10));
+      recommendData = value;
+    });
     return recommendData;
   }
 
