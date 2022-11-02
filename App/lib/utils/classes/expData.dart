@@ -340,7 +340,7 @@ class ExpData {
       (whoList.isEmpty && expData.who != null) ? whoList.add(expData) : null;
       (howList.isEmpty && expData.how != null) ? howList.add(expData) : null;
       (imageUrls.isEmpty && expData.imageUrl != null)
-          ? howList.add(expData)
+          ? imageUrls.add(expData)
           : null;
     }
 
