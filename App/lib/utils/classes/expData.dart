@@ -344,6 +344,10 @@ class ExpData {
           : null;
     }
 
+    if (meanings.isEmpty) {
+      return null;
+    }
+
     final random = Random();
     final meaning = meanings[random.nextInt(meanings.length)];
     final why =
