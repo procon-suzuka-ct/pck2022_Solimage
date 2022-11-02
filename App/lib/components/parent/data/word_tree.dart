@@ -3,7 +3,6 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_simple_treeview/flutter_simple_treeview.dart';
-import 'package:solimage/components/parent/data/word_button.dart';
 import 'package:solimage/states/words.dart';
 import 'package:solimage/utils/classes/word.dart';
 import 'package:solimage/utils/word_nodes.dart';
@@ -32,7 +31,6 @@ class WordTree extends ConsumerWidget {
                   .map((rootWord) => generateNode(rootWord, wordMap))
                   .toList()
               : [];
-          nodes.add(TreeNode(content: const AddWordButton(root: '0')));
 
           return TreeView(
               treeController: controller, indent: 20.0, nodes: nodes);
