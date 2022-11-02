@@ -116,69 +116,74 @@ class StandbyDialog extends ConsumerWidget {
           title: const Center(
               child: Text('どれだろう?',
                   style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold))),
-          content: SingleChildScrollView(child: Wrap(
-              runSpacing: 10.0,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                const Text('しゃしんにふれると、けっかをみられます',
-                    style: TextStyle(fontSize: 20.0),
-                    textAlign: TextAlign.center),
-                labels.maybeWhen(
-                    data: (labels) =>
-                        SizedBox(
-                            width: 300.0,
-                            child: GridView.count(
-                                physics: const NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                crossAxisCount: 2,
-                                children: labels.entries
-                                    .map((label) =>
-                                    Card(
-                                        child: InkWell(
-                                            customBorder: RoundedRectangleBorder(
-                                              borderRadius:
-                                              BorderRadius.circular(10.0),
-                                            ),
-                                            onTap: () {
-                                              HapticFeedback.heavyImpact();
-                                              context.push(
-                                                  '/child/result?word=${label
-                                                      .key}');
-                                            },
-                                            child: label.value.imageUrl != null
-                                                ? ClipRRect(
-                                                borderRadius:
-                                                BorderRadius.circular(10.0),
-                                                child: label.value.imageUrl!
-                                                    .startsWith('data')
-                                                    ? Image.memory(
-                                                    UriData.parse(
-                                                        label.value.imageUrl!)
-                                                        .contentAsBytes(),
-                                                    fit: BoxFit.cover)
-                                                    : CachedNetworkImage(
-                                                    imageUrl: label
-                                                        .value.imageUrl!,
-                                                    fit: BoxFit.cover,
-                                                    placeholder: (context,
-                                                        url) =>
-                                                    const Center(
-                                                        child: CircularProgressIndicator()),
-                                                    errorWidget: (context,
-                                                        url,
-                                                        error) =>
-                                                    const Icon(Icons
-                                                        .signal_wifi_statusbar_connected_no_internet_4,
-                                                        size: 60.0)
-                                                ))
-                                                : const Icon(
-                                                Icons.no_photography,
-                                                size: 60.0))))
-                                    .toList())),
-                    orElse: () =>
-                    const Center(
-                        heightFactor: 1.0, child: CircularProgressIndicator()))
-              ])))
+          content: SingleChildScrollView(scrollDirection: Axis.vertical,
+              child: Wrap(
+                  alignment: WrapAlignment.center,
+                  runSpacing: 10.0,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    const Text('しゃしんにふれると、けっかをみられます',
+                        style: TextStyle(fontSize: 20.0),
+                        textAlign: TextAlign.center),
+                    labels.maybeWhen(
+                        data: (labels) =>
+                            SizedBox(
+                                width: 300.0,
+                                child: GridView.count(
+                                    physics: const NeverScrollableScrollPhysics(),
+                                    shrinkWrap: true,
+                                    crossAxisCount: 2,
+                                    children: labels.entries
+                                        .map((label) =>
+                                        Card(
+                                            child: InkWell(
+                                                customBorder: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                                ),
+                                                onTap: () {
+                                                  HapticFeedback.heavyImpact();
+                                                  context.push(
+                                                      '/child/result?word=${label
+                                                          .key}');
+                                                },
+                                                child: label.value.imageUrl !=
+                                                    null
+                                                    ? ClipRRect(
+                                                    borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                                    child: label.value.imageUrl!
+                                                        .startsWith('data')
+                                                        ? Image.memory(
+                                                        UriData.parse(
+                                                            label.value
+                                                                .imageUrl!)
+                                                            .contentAsBytes(),
+                                                        fit: BoxFit.cover)
+                                                        : CachedNetworkImage(
+                                                        imageUrl: label
+                                                            .value.imageUrl!,
+                                                        fit: BoxFit.cover,
+                                                        placeholder: (context,
+                                                            url) =>
+                                                        const Center(
+                                                            child: CircularProgressIndicator()),
+                                                        errorWidget: (context,
+                                                            url,
+                                                            error) =>
+                                                        const Icon(Icons
+                                                            .signal_wifi_statusbar_connected_no_internet_4,
+                                                            size: 60.0)
+                                                    ))
+                                                    : const Icon(
+                                                    Icons.no_photography,
+                                                    size: 60.0))))
+                                        .toList())),
+                        orElse: () =>
+                        const Center(
+                            heightFactor: 1.0,
+                            child: CircularProgressIndicator()))
+                  ])))
     ];
     pages.removeWhere((element) => element is SizedBox);
 
