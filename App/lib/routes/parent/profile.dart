@@ -20,15 +20,16 @@ import 'package:solimage/utils/classes/expData.dart';
 import 'package:solimage/utils/classes/group.dart';
 
 final _photoURLProvider = FutureProvider(
-    (ref) => ref.watch(authProvider.selectAsync((data) => data?.photoURL)));
+        (ref) => ref.watch(authProvider.selectAsync((data) => data?.photoURL)));
 final _nameProvider = FutureProvider(
-    (ref) => ref.watch(userProvider.selectAsync((data) => data?.name)));
-final _groupsProvider = FutureProvider((ref) async => await Future.wait(
+        (ref) => ref.watch(userProvider.selectAsync((data) => data?.name)));
+final _groupsProvider = FutureProvider((ref) async =>
+await Future.wait(
     (await ref.watch(userProvider.selectAsync((data) => data?.groups ?? [])))
         .map((groupID) => Group.getGroup(groupID))));
 final _expDatasProvider = FutureProvider.autoDispose((ref) async {
   final expDatas = await Future.wait((await ref
-          .watch(userProvider.selectAsync((data) => data?.expDatas ?? [])))
+      .watch(userProvider.selectAsync((data) => data?.expDatas ?? [])))
       .map((expDataID) => ExpData.getExpData(expDataID)));
   return expDatas;
 });
@@ -70,145 +71,179 @@ class ProfileScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 photoURL.maybeWhen(
-                    data: (data) => data != null
+                    data: (data) =>
+                    data != null
                         ? Card(
-                            elevation: 8.0,
-                            shape: const CircleBorder(),
-                            clipBehavior: Clip.antiAlias,
-                            child: CachedNetworkImage(
-                                imageUrl: data,
-                                width: 160.0,
-                                height: 160.0,
-                                fit: BoxFit.contain))
+                        elevation: 8.0,
+                        shape: const CircleBorder(),
+                        clipBehavior: Clip.antiAlias,
+                        child: CachedNetworkImage(
+                            imageUrl: data,
+                            width: 160.0,
+                            height: 160.0,
+                            fit: BoxFit.contain,
+                            placeholder: (context, url) =>
+                            const Center(
+                                child: CircularProgressIndicator()),
+                            errorWidget: (context, url, error) =>
+                            const Icon(Icons
+                                .signal_wifi_statusbar_connected_no_internet_4,
+                                size: 60.0)))
                         : const SizedBox.shrink(),
                     orElse: () => const CircularProgressIndicator()),
                 name.maybeWhen(
                     data: (data) =>
                         Row(mainAxisSize: MainAxisSize.min, children: [
                           Text('$dataさん',
-                              style: Theme.of(context).textTheme.titleLarge),
+                              style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .titleLarge),
                           IconButton(
                               icon: const Icon(Icons.edit),
-                              onPressed: () => checkConnectivity(context).then(
-                                  (_) => showDialog(
-                                      context: context,
-                                      barrierDismissible: false,
-                                      builder: (context) => UserNameDialog(
-                                          user: user.value,
-                                          nameProvider: _nameProvider))))
+                              onPressed: () =>
+                                  checkConnectivity(context).then(
+                                          (_) =>
+                                          showDialog(
+                                              context: context,
+                                              barrierDismissible: false,
+                                              builder: (context) =>
+                                                  UserNameDialog(
+                                                      user: user.value,
+                                                      nameProvider: _nameProvider))))
                         ]),
                     orElse: () => const CircularProgressIndicator())
               ])),
       HeadingTile('グループ',
           trailing: Wrap(spacing: 10.0, children: [
             ElevatedButton(
-                onPressed: () => checkConnectivity(context).then((_) =>
-                    showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (context) =>
-                            GroupCreateDialog(user: user.value))),
+                onPressed: () =>
+                    checkConnectivity(context).then((_) =>
+                        showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) =>
+                                GroupCreateDialog(user: user.value))),
                 child: const Text('作成')),
             ElevatedButton(
-                onPressed: () => checkConnectivity(context).then((_) =>
-                    showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (context) =>
-                            GroupParticipateDialog(user: user.value))),
+                onPressed: () =>
+                    checkConnectivity(context).then((_) =>
+                        showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) =>
+                                GroupParticipateDialog(user: user.value))),
                 child: const Text('参加'))
           ])),
       ...groups.maybeWhen(
-          data: (data) => data.isNotEmpty
+          data: (data) =>
+          data.isNotEmpty
               ? data
-                  .map((group) => group != null
-                      ? CardTile(
-                          child: ListTile(
-                              leading: const Icon(Icons.group),
-                              title: Text(group.groupName),
-                              trailing: const Icon(Icons.info)),
-                          onTap: () => checkConnectivity(context).then((_) =>
-                              showDialog(
-                                  context: context,
-                                  barrierDismissible: false,
-                                  builder: (context) =>
-                                      GroupDetailDialog(group: group))))
-                      : const SizedBox.shrink())
-                  .toList()
-              : [
-                  TentativeCard(
-                      icon: const Icon(Icons.group, size: 30.0),
-                      label: const Text('グループに参加しましょう!'),
-                      onTap: () => showDialog(
+              .map((group) =>
+          group != null
+              ? CardTile(
+              child: ListTile(
+                  leading: const Icon(Icons.group),
+                  title: Text(group.groupName),
+                  trailing: const Icon(Icons.info)),
+              onTap: () =>
+                  checkConnectivity(context).then((_) =>
+                      showDialog(
                           context: context,
                           barrierDismissible: false,
                           builder: (context) =>
-                              GroupParticipateDialog(user: user.value)))
-                ],
+                              GroupDetailDialog(group: group))))
+              : const SizedBox.shrink())
+              .toList()
+              : [
+            TentativeCard(
+                icon: const Icon(Icons.group, size: 30.0),
+                label: const Text('グループに参加しましょう!'),
+                onTap: () =>
+                    showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) =>
+                            GroupParticipateDialog(user: user.value)))
+          ],
           orElse: () => const [Center(child: CircularProgressIndicator())]),
-      HeadingTile('興味',
+      HeadingTile('人気の投稿',
           trailing: totalViews.maybeWhen(
               data: (data) => Text('閲覧数の合計: $data回'),
               orElse: () => const CircularProgressIndicator())),
       ...expDatas.maybeWhen(
-          data: (expDatas) => expDatas.isNotEmpty
+          data: (expDatas) =>
+          expDatas.isNotEmpty
               ? [
-                  HeadingTile(
-                      '閲覧数上位${expDatas.length > 3 ? 3 : expDatas.length}投稿を表示しています',
-                      style: Theme.of(context).textTheme.bodyLarge),
-                  ...expDatas
-                      .asMap()
-                      .entries
-                      .sortedByCompare((element) => element.value!.views,
-                          (a, b) => a.compareTo(b))
-                      .getRange(0, 3)
-                      .map((entry) => CardTile(
-                          child: ListTile(
-                              leading: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                        decoration: const BoxDecoration(
-                                            color: Colors.blueGrey,
-                                            shape: BoxShape.circle),
-                                        child: Padding(
-                                            padding: const EdgeInsets.all(10.0),
-                                            child: Text('${entry.key + 1}',
-                                                style: const TextStyle(
-                                                    color: Colors.white)))),
-                                    entry.value?.imageUrl != null
-                                        ? Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 8.0,
-                                                horizontal: 10.0),
-                                            child: AspectRatio(
-                                                aspectRatio: 1.0,
-                                                child: ClipRRect(
-                                                    borderRadius:
-                                                        const BorderRadius.all(
-                                                            Radius.circular(
-                                                                10.0)),
-                                                    child: CachedNetworkImage(
-                                                        fit: BoxFit.cover,
-                                                        imageUrl: entry.value!
-                                                            .imageUrl!))))
-                                        : const SizedBox.shrink()
-                                  ]),
-                              title: Text('${entry.value?.word}'),
-                              trailing: const Icon(Icons.edit)),
-                          onTap: () => checkConnectivity(context).then((_) =>
-                              context.push(
-                                  '/parent/post?dataId=${entry.value?.dataId}'))))
-                      .toList()
-                ]
+            HeadingTile(
+                '閲覧数上位${expDatas.length > 3 ? 3 : expDatas.length}投稿を表示しています',
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .bodyLarge),
+            ...expDatas
+                .asMap()
+                .entries
+                .sortedByCompare((element) => element.value!.views,
+                    (a, b) => a.compareTo(b))
+                .getRange(0, 3)
+                .map((entry) =>
+                CardTile(
+                    child: ListTile(
+                        leading: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                  decoration: const BoxDecoration(
+                                      color: Colors.blueGrey,
+                                      shape: BoxShape.circle),
+                                  child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Text('${entry.key + 1}',
+                                          style: const TextStyle(
+                                              color: Colors.white)))),
+                              entry.value?.imageUrl != null
+                                  ? Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 8.0,
+                                      horizontal: 10.0),
+                                  child: AspectRatio(
+                                      aspectRatio: 1.0,
+                                      child: ClipRRect(
+                                          borderRadius: const BorderRadius
+                                              .all(
+                                              Radius.circular(10.0)),
+                                          child: CachedNetworkImage(
+                                              fit: BoxFit.cover,
+                                              imageUrl: entry
+                                                  .value!.imageUrl!,
+                                              placeholder: (context, url) =>
+                                              const Center(
+                                                  child: CircularProgressIndicator()),
+                                              errorWidget: (context,
+                                                  url, error) =>
+                                              const Icon(Icons
+                                                  .signal_wifi_statusbar_connected_no_internet_4,
+                                                  size: 60.0)))))
+                                  : const SizedBox.shrink()
+                            ]),
+                        title: Text('${entry.value?.word}'),
+                        trailing: const Icon(Icons.edit)),
+                    onTap: () =>
+                        checkConnectivity(context).then((_) =>
+                            context.push(
+                                '/parent/post?dataId=${entry.value?.dataId}'))))
+                .toList()
+          ]
               : [
-                  TentativeCard(
-                      icon: const Icon(Icons.edit, size: 30.0),
-                      label: const Text('知識を投稿しましょう!'),
-                      onTap: () => checkConnectivity(context)
-                          .then((_) => context.push('/parent/post')))
-                ],
+            TentativeCard(
+                icon: const Icon(Icons.edit, size: 30.0),
+                label: const Text('知識を投稿しましょう!'),
+                onTap: () =>
+                    checkConnectivity(context)
+                        .then((_) => context.push('/parent/post')))
+          ],
           orElse: () => [const Center(child: CircularProgressIndicator())]),
       const HeadingTile('設定'),
       CardTile(
@@ -216,17 +251,19 @@ class ProfileScreen extends ConsumerWidget {
               leading: Icon(Icons.change_circle),
               title: Text('モード切り替え'),
               subtitle: Text('アプリを開いた時の動作を切り替える')),
-          onTap: () => showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => const ModeSelectDialog())),
+          onTap: () =>
+              showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) => const ModeSelectDialog())),
       CardTile(
           child:
-              const ListTile(leading: Icon(Icons.logout), title: Text('ログアウト')),
-          onTap: () => showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => UserLogoutDialog(prefs: prefs.value))),
+          const ListTile(leading: Icon(Icons.logout), title: Text('ログアウト')),
+          onTap: () =>
+              showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) => UserLogoutDialog(prefs: prefs.value))),
       /*
         CardTile(
             child:

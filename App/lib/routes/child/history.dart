@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solimage/components/child/child_actions.dart';
 import 'package:solimage/components/tentative_card.dart';
-import 'package:solimage/states/camera.dart';
 import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/expData.dart';
 
@@ -17,7 +16,7 @@ final historiesProvider = FutureProvider((ref) async {
   final map = <String, ExpData?>{};
   for (final history in histories) {
     final expData = expDatas[histories.indexOf(history)];
-    if (expData != null && expData.imageUrl != null) map[history] = expData;
+    if (expData != null) map[history] = expData;
   }
   return map;
 });
@@ -59,35 +58,33 @@ class HistoryScreen extends ConsumerWidget {
                                               ),
                                               onTap: () {
                                                 HapticFeedback.heavyImpact();
-                                                ref
-                                                    .read(imagePathProvider
-                                                        .notifier)
-                                                    .state = '';
-                                                Navigator.of(context).pop();
                                                 context.push(
                                                     '/child/result?word=${history.key}');
                                               },
                                               child: Column(children: [
                                                 Expanded(
-                                                    child: ClipRRect(
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                                10.0),
-                                                        child: history.value!
-                                                                .imageUrl!
-                                                                .startsWith(
-                                                                    'data')
-                                                            ? Image.memory(
-                                                                UriData.parse(history.value!.imageUrl!)
-                                                                    .contentAsBytes(),
-                                                                fit: BoxFit
-                                                                    .cover)
-                                                            : CachedNetworkImage(
-                                                                imageUrl: history
+                                                    child: history.value!.imageUrl != null
+                                                        ? ClipRRect(
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                    10.0),
+                                                            child: history
                                                                     .value!
-                                                                    .imageUrl!,
-                                                                fit: BoxFit
-                                                                    .cover))),
+                                                                    .imageUrl!
+                                                                    .startsWith(
+                                                                        'data')
+                                                                ? Image.memory(UriData.parse(history.value!.imageUrl!).contentAsBytes(),
+                                                                    fit: BoxFit
+                                                                        .cover)
+                                                                : CachedNetworkImage(
+                                                                    imageUrl: history
+                                                                        .value!
+                                                                        .imageUrl!,
+                                                                    fit: BoxFit
+                                                                        .cover,
+                                                                    placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+                                                                    errorWidget: (context, url, error) => const Icon(Icons.signal_wifi_statusbar_connected_no_internet_4, size: 60.0)))
+                                                        : const Icon(Icons.no_photography, size: 60.0)),
                                                 Text(history.value!.word,
                                                     style: const TextStyle(
                                                         fontSize: 24.0))

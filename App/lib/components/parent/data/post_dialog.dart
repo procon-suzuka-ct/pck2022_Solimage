@@ -31,7 +31,7 @@ class DataPostDialog extends ConsumerWidget {
       actions: [
         TextButton(
             onPressed: !posting
-                ? () => checkConnectivity(context).then((_) => () async {
+                ? () => checkConnectivity(context).then((_) async {
                       ref.read(_postingProvider.notifier).state = true;
 
                       if (imagePath.isNotEmpty) {
