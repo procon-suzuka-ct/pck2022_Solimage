@@ -231,23 +231,19 @@ class ExpData {
   }
 
   static Future<List<ExpData?>> getChilds({required String word}) async {
-    final doc = await FirebaseFirestore.instance
-        .collection("expDataIndex")
-        .doc(word)
-        .get();
-    if (doc.exists) {
-      final data = doc.data();
-      final childWords =
-          ((data!['childWord'] ?? []) as List<dynamic>).cast<String>();
-      List<ExpData?> childs = [];
-      for (final childWord in childWords) {
-        final child = await getExpDataByWord(word: childWord);
-        childs.add(child);
-      }
-      return childs;
-    } else {
-      return [];
+    final childs = (await FirebaseFirestore.instance
+            .collection("words")
+            .where("root", isEqualTo: word)
+            .get())
+        .docs;
+    List<ExpData?> list = [];
+    for (final child in childs) {
+      final data = child.data();
+      final word = data["word"];
+      final expData = await getExpDataByWord(word: word);
+      list.add(expData);
     }
+    return list;
   }
 
   static Future<List<ExpData>> _getExpDatas() async {
