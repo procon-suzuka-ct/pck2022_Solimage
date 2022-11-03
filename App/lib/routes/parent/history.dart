@@ -6,20 +6,15 @@ import 'package:solimage/components/card_tile.dart';
 import 'package:solimage/components/connectivity.dart';
 import 'package:solimage/components/parent/heading_tile.dart';
 import 'package:solimage/components/tentative_card.dart';
+import 'package:solimage/states/expDatas.dart';
 import 'package:solimage/states/history.dart';
-import 'package:solimage/states/user.dart';
-import 'package:solimage/utils/classes/expData.dart';
-
-final _expDatasProvider = FutureProvider((ref) async => await Future.wait(
-    (await ref.watch(userProvider.selectAsync((data) => data?.expDatas ?? [])))
-        .map((expData) => ExpData.getExpData(expData))));
 
 class HistoryScreen extends ConsumerWidget {
   const HistoryScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final expDatas = ref.watch(_expDatasProvider);
+    final expDatas = ref.watch(expDatasProvider);
     final recommendData = ref.watch(recommendDataProvider);
 
     return ListView(children: [
