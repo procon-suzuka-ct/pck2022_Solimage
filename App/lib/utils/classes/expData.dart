@@ -231,23 +231,19 @@ class ExpData {
   }
 
   static Future<List<ExpData?>> getChilds({required String word}) async {
-    final doc = await FirebaseFirestore.instance
-        .collection("expDataIndex")
-        .doc(word)
-        .get();
-    if (doc.exists) {
-      final data = doc.data();
-      final childWords =
-          ((data!['childWord'] ?? []) as List<dynamic>).cast<String>();
-      List<ExpData?> childs = [];
-      for (final childWord in childWords) {
-        final child = await getExpDataByWord(word: childWord);
-        childs.add(child);
-      }
-      return childs;
-    } else {
-      return [];
+    final childs = (await FirebaseFirestore.instance
+            .collection("words")
+            .where("root", isEqualTo: word)
+            .get())
+        .docs;
+    List<ExpData?> list = [];
+    for (final child in childs) {
+      final data = child.data();
+      final word = data["word"];
+      final expData = await getExpDataByWord(word: word);
+      list.add(expData);
     }
+    return list;
   }
 
   static Future<List<ExpData>> _getExpDatas() async {
@@ -342,6 +338,10 @@ class ExpData {
       (imageUrls.isEmpty && expData.imageUrl != null)
           ? imageUrls.add(expData)
           : null;
+    }
+
+    if (meanings.isEmpty) {
+      return null;
     }
 
     final random = Random();
@@ -481,6 +481,23 @@ class ExpData {
     }
     return url;
   }
+
+  ExpData copy() {
+    final value = ExpData(
+      word: _word,
+      meaning: _meaning,
+    );
+    value.setData(
+        why: _why,
+        what: _what,
+        when: _when,
+        where: _where,
+        who: _who,
+        how: _how,
+        imageUrl: _imageUrl);
+    value._dataId = _dataId;
+    return value;
+  }
 }
 
 class RecommendData extends ExpData {
@@ -496,6 +513,25 @@ class RecommendData extends ExpData {
 
   static RecommendData? recommendData;
   static String? currentUid = Auth().currentUser()?.uid;
+
+  @override
+  RecommendData copy() {
+    final value = RecommendData(
+      word: _word,
+      meaning: _meaning,
+      userID: _userId,
+    );
+    value.setData(
+        why: _why,
+        what: _what,
+        when: _when,
+        where: _where,
+        who: _who,
+        how: _how,
+        imageUrl: _imageUrl);
+    value._dataId = _dataId;
+    return value;
+  }
 
   @override
   Future<int> init() async {
@@ -589,11 +625,11 @@ class RecommendData extends ExpData {
     }
 
     recommendData ??= await _getByUserClass(user);
+    final returnObj = recommendData?.copy();
     _getByUserClass(user).then((value) async {
-      await Future.delayed(const Duration(microseconds: 10));
       recommendData = value;
     });
-    return recommendData;
+    return returnObj;
   }
 
   static Future<RecommendData?> getExpDataByWord({required String userId}) {
