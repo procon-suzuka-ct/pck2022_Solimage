@@ -60,8 +60,7 @@ class ResultScreen extends ConsumerWidget {
                       child: PageView(
                           controller: controller,
                           physics: const NeverScrollableScrollPhysics(),
-                          onPageChanged: (page) =>
-                          ref
+                          onPageChanged: (page) => ref
                               .read(resultIndexProvider.notifier)
                               .state = page,
                           children: [
