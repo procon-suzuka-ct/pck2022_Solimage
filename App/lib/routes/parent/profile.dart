@@ -14,6 +14,7 @@ import 'package:solimage/components/parent/user/logout_dialog.dart';
 import 'package:solimage/components/parent/user/name_dialog.dart';
 import 'package:solimage/components/tentative_card.dart';
 import 'package:solimage/states/auth.dart';
+import 'package:solimage/states/expDatas.dart';
 import 'package:solimage/states/preferences.dart';
 import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/expData.dart';
@@ -26,19 +27,13 @@ final _nameProvider = FutureProvider(
 final _groupsProvider = FutureProvider((ref) async => await Future.wait(
     (await ref.watch(userProvider.selectAsync((data) => data?.groups ?? [])))
         .map((groupID) => Group.getGroup(groupID))));
-final _expDatasProvider = FutureProvider.autoDispose((ref) async {
-  final expDatas = await Future.wait((await ref
-          .watch(userProvider.selectAsync((data) => data?.expDatas ?? [])))
-      .map((expDataID) => ExpData.getExpData(expDataID)));
-  return expDatas;
-});
 final _recommendDataProvider = FutureProvider((ref) async {
   final uid = await ref.watch(userProvider.selectAsync((data) => data?.uid));
   return uid != null ? await RecommendData.getRecommendData(uid) : null;
 });
 final _totalViewsProvider = FutureProvider.autoDispose((ref) async {
   int totalViews = 0;
-  final expDatas = await ref.watch(_expDatasProvider.future);
+  final expDatas = await ref.watch(expDatasProvider.future);
   final recommendData = await ref.watch(_recommendDataProvider.future);
 
   for (final expData in expDatas) {
@@ -47,7 +42,7 @@ final _totalViewsProvider = FutureProvider.autoDispose((ref) async {
   if (recommendData != null) totalViews += recommendData.views;
 
   return totalViews;
-}, dependencies: [_expDatasProvider, _recommendDataProvider]);
+});
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -60,7 +55,7 @@ class ProfileScreen extends ConsumerWidget {
     final prefs = ref.watch(prefsProvider);
     final user = ref.watch(userProvider);
     final totalViews = ref.watch(_totalViewsProvider);
-    final expDatas = ref.watch(_expDatasProvider);
+    final expDatas = ref.watch(expDatasProvider);
 
     return ListView(children: [
       Container(
