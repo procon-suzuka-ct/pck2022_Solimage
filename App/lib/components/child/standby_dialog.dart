@@ -52,7 +52,8 @@ final _labelsProvider = FutureProvider<Map<String, ExpData>>((ref) async {
             word: (await Word.getWord(label.label))!.word)));
     final map = <String, ExpData>{};
     for (final label in labels) {
-      map[label.label] = expDatas[labels.indexOf(label)]!;
+      final expData = expDatas[labels.indexOf(label)];
+      if (expData != null) map[label.label] = expData;
     }
     return map;
   }
