@@ -4,10 +4,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solimage/components/tentative_card.dart';
+import 'package:solimage/routes/child/result.dart';
 import 'package:solimage/utils/classes/expData.dart';
 
-final _childrenProvider = FutureProvider.family<List<ExpData?>, String>(
-    (ref, word) => ExpData.getChilds(word: word));
+final _childrenProvider = FutureProvider.autoDispose
+    .family<List<ExpData?>, String>((ref, word) async {
+  final children = await ExpData.getChilds(word: word);
+  children.removeWhere((child) => child == null);
+  return children;
+});
 
 class ChildrenScreen extends ConsumerWidget {
   const ChildrenScreen({Key? key, required this.word}) : super(key: key);
@@ -39,6 +44,10 @@ class ChildrenScreen extends ConsumerWidget {
                                           ),
                                           onTap: () {
                                             HapticFeedback.heavyImpact();
+                                            ref
+                                                .read(resultIndexProvider
+                                                    .notifier)
+                                                .state = 0;
                                             context.push(
                                                 '/child/result?word=${child.word}');
                                           },
