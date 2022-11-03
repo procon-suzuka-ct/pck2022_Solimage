@@ -23,10 +23,6 @@ final _recommendDataProvider = FutureProvider.autoDispose((ref) async {
       ? await RecommendData.getRecommendDataByCurrentUid(uid)
       : null;
 
-  if (recommendData != null) {
-    await recommendData.addViews();
-  }
-
   return recommendData;
 });
 
