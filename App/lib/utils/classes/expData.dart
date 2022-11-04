@@ -633,11 +633,6 @@ class RecommendData extends ExpData {
   }
 
   @override
-  Future<void> bad(String uid) async {
-    return;
-  }
-
-  @override
   Future<void> good(String uid) async {
     return;
   }
