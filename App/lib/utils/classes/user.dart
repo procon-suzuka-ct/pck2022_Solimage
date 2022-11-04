@@ -7,12 +7,10 @@ class AppUser {
   List<String> histories = []; //検索履歴
   List<int> favorites = []; //お気に入り
   List<int> _expDatas = []; //作成したデータ
-  List<int> _goodDatas = []; //高評価したデータ
-  List<int> _badDatas = []; //低評価したデータ
+  List<String> _goodDatas = []; //高評価したデータ
 
   List<int> get expDatas => _expDatas;
-  List<int> get goodDatas => _goodDatas;
-  List<int> get badDatas => _badDatas;
+  List<String> get goodDatas => _goodDatas;
 
   AppUser({required this.uid, required this.name});
 
@@ -23,8 +21,7 @@ class AppUser {
         histories = (json['histories'] as List<dynamic>).cast<String>(),
         favorites = (json['favorites'] as List<dynamic>).cast<int>(),
         _expDatas = (json['expDatas'] as List<dynamic>).cast<int>(),
-        _goodDatas = (json['goodDatas'] as List<dynamic>).cast<int>(),
-        _badDatas = (json['badDatas'] as List<dynamic>).cast<int>();
+        _goodDatas = (json['goodDatas'] as List<dynamic>).cast<String>();
 
   Map<String, Object?> toJson() {
     return {
@@ -35,7 +32,6 @@ class AppUser {
       'favorites': favorites,
       'expDatas': _expDatas,
       'goodDatas': _goodDatas,
-      'badDatas': _badDatas,
     };
   }
 
@@ -86,7 +82,7 @@ class AppUser {
     return doc.data();
   }
 
-  Future<void> addGoodData(int expDataID) async {
+  Future<void> addGoodData(String expDataID) async {
     if (_goodDatas.contains(expDataID)) {
       return;
     } else {
@@ -96,27 +92,9 @@ class AppUser {
     return;
   }
 
-  Future<void> addBadData(int expDataID) async {
-    if (_badDatas.contains(expDataID)) {
-      return;
-    } else {
-      _badDatas.add(expDataID);
-    }
-    save();
-    return;
-  }
-
-  Future<void> removeGoodData(int expDataID) async {
+  Future<void> removeGoodData(String expDataID) async {
     if (_goodDatas.contains(expDataID)) {
       _goodDatas.remove(expDataID);
-    }
-    save();
-    return;
-  }
-
-  Future<void> removeBadData(int expDataID) async {
-    if (_badDatas.contains(expDataID)) {
-      _badDatas.remove(expDataID);
     }
     save();
     return;
