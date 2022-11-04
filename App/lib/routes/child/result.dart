@@ -12,7 +12,7 @@ import 'package:solimage/utils/classes/word.dart';
 final resultIndexProvider = StateProvider.autoDispose((ref) => 0);
 final _expDataProviderFamily =
     FutureProvider.autoDispose.family<ExpData?, String>((ref, value) async {
-      final user = await ref.read(userProvider.future);
+  final user = await ref.read(userProvider.future);
   ExpData? expData = await ExpData.getExpDataByWord(word: value);
   final word = (await Word.getWord(value))!.key;
 
