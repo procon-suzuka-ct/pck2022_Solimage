@@ -16,12 +16,25 @@ class DataAddWordDialog extends ConsumerWidget {
 
     return AlertDialog(
         title: const Text('ワードの追加'),
-        content: TextField(
-            controller: controller,
-            decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'ワード',
-                hintText: 'ワードを入力してください')),
+        content: Wrap(
+            direction: Axis.horizontal,
+            alignment: WrapAlignment.center,
+            runSpacing: 10.0,
+            children: [
+              const Text.rich(TextSpan(children: [
+                TextSpan(text: '例えば、猫の肉球に関する投稿であれば「'),
+                TextSpan(
+                    text: 'にくきゅう',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                TextSpan(text: '」を追加してください')
+              ])),
+              TextField(
+                  controller: controller,
+                  decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'ワード',
+                      hintText: 'ワードを入力してください'))
+            ]),
         actions: [
           user.maybeWhen(
               data: (user) => TextButton(
