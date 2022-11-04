@@ -140,8 +140,6 @@ class HistoryScreen extends ConsumerWidget {
                             child: Column(children: [
                               Expanded(
                                   child: GridView.count(
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
                                       crossAxisCount: 2,
                                       children: histories.value!
                                           .map((history) => Card(
@@ -286,8 +284,6 @@ class HistoryScreen extends ConsumerWidget {
                             child: Column(children: [
                               Expanded(
                                   child: GridView.count(
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
                                       crossAxisCount: 2,
                                       children: goodDatas.value!
                                           .map((goodData) => Card(
