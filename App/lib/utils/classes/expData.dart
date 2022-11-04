@@ -432,32 +432,18 @@ class ExpData {
   ///
   /// Userのデータもこの関数で更新されます
   Future<void> good(String uid) async {
+    if (_dataId < 0) {
+      return;
+    }
     final user = await AppUser.getUser(uid);
     if (user == null) {
       return;
     }
-    final isGood = user.goodDatas.contains(_dataId);
+    final isGood = user.goodDatas.contains(_word);
     if (isGood == true) {
-      await user.removeGoodData(_dataId);
+      await user.removeGoodData(_word);
     } else if (isGood == false) {
-      await user.addGoodData(_dataId);
-    }
-  }
-
-  /// 低評価ボタン押下時の処理
-  /// uidを引数に入れてください
-  ///
-  /// Userのデータもこの関数で更新されます
-  Future<void> bad(String uid) async {
-    final user = await AppUser.getUser(uid);
-    if (user == null) {
-      return;
-    }
-    final isBad = user.badDatas.contains(_dataId);
-    if (isBad == true) {
-      await user.removeBadData(_dataId);
-    } else if (isBad == false) {
-      await user.addBadData(_dataId);
+      await user.addGoodData(_word);
     }
   }
 
@@ -644,11 +630,6 @@ class RecommendData extends ExpData {
   @override
   Future<void> delete() async {
     await _getRef(_userId).delete();
-  }
-
-  @override
-  Future<void> bad(String uid) async {
-    return;
   }
 
   @override

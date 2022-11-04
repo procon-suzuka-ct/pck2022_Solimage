@@ -120,3 +120,12 @@ ax.set_xlabel('Epoch')
 
 plt.show()
 plt.savefig("./tmp/model/learning_result.png")
+
+# convert tf model to tflite model
+converter = tf.lite.TFLiteConverter.from_keras_model(model)
+
+converter.optimizations = [tf.lite.Optimize.DEFAULT]
+converter.target_spec.supported_types = [tf.float16]
+
+tflite_model = converter.convert()
+open("./tmp/model/model.tflite", "wb").write(tflite_model)
