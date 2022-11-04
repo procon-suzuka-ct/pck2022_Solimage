@@ -1,19 +1,20 @@
 import matplotlib.pyplot as plt
 import os
 import json
-import numpy as np
 
 # 機械学習
 from keras.models import Model
 from keras.layers import Dense, Dropout, Flatten, Input, Conv1D
 import tensorflow_addons as tfa
 from keras.applications.vgg16 import VGG16
+from keras.applications.mobilenet import MobileNet
 from keras.applications.mobilenet_v2 import MobileNetV2
 from keras.applications.mobilenet_v3 import MobileNetV3Large
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.optimizers import adam_v2
 from keras.regularizers import l2
+import tensorflow as tf
 
 dataPath = "image"
 
@@ -41,21 +42,19 @@ json.dump(lebels_reverse, json_file)
 json_file.close()
 
 # 正則化のパラメータ設定
-regulizerRate = 0.02
+regulizerRate = 0.001
 units = 512
 labelNum = len(labels)
 OP3_regulizer = regulizerRate * units / (units + labelNum)
 OP4_regulizer = regulizerRate * labelNum / (units + labelNum)
 
 # sigmoidを使って多ラベル分類
-baseModel = MobileNetV2(weights="imagenet",
+baseModel = VGG16(weights="imagenet",
                   include_top=False,
-                  input_tensor=Input(shape=(384, 216, 3)),
-                  classifier_activation="sigmoid",
-                  classes=units)
+                  input_tensor=Input(shape=(384, 216, 3)),)
 
 # 15層目まで重みを固定
-for layer in baseModel.layers[:-3]:
+for layer in baseModel.layers[:-1]:
     layer.trainable = False
 
 # 出力層
@@ -80,8 +79,6 @@ check_point = ModelCheckpoint(
 history = model.fit(trainGenerator, validation_data=valGenerator, epochs=100, callbacks=[
                     early_stopping, check_point])
 
-del model
-
 print("Learning Finished!")
 
 # 学習結果表示
@@ -97,3 +94,12 @@ ax.set_xlabel('Epoch')
 
 plt.show()
 plt.savefig("./tmp/model/learning_result.png")
+
+# convert tf model to tflite model
+converter = tf.lite.TFLiteConverter.from_keras_model(model)
+
+converter.optimizations = [tf.lite.Optimize.DEFAULT]
+converter.target_spec.supported_types = [tf.float16]
+
+tflite_model = converter.convert()
+open("./tmp/model/model.tflite", "wb").write(tflite_model)

@@ -119,7 +119,7 @@ class StandbyDialog extends ConsumerWidget {
                   runSpacing: 10.0,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    const Text('しゃしんにふれると、けっかをみられます',
+                    const Text('しゃしんにふれると、こたえをみられます',
                         style: TextStyle(fontSize: 20.0),
                         textAlign: TextAlign.center),
                     labels.maybeWhen(
@@ -201,11 +201,11 @@ class StandbyDialog extends ConsumerWidget {
                           duration: const Duration(milliseconds: 200),
                           curve: Curves.easeInOut);
                     },
-                    child: const Text('けっかをみる', textAlign: TextAlign.center))
+                    child: const Text('こたえをみる', textAlign: TextAlign.center))
                 : ChildActionButton(
                     onPressed: () => Navigator.of(context).pop(),
                     child:
-                        const Text('もういちど\nさつえい', textAlign: TextAlign.center)),
+                        const Text('もういちど\nしらべる', textAlign: TextAlign.center)),
             orElse: () => const Center(child: CircularProgressIndicator()))
       ])
     ]);

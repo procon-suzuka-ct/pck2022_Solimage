@@ -41,8 +41,17 @@ class Word {
 
   //WordをFirestoreから取得する
   static Future<Word?> getWord(String word) async {
-    final doc =
+    DocumentSnapshot<dynamic> doc =
         await FirebaseFirestore.instance.collection('words').doc(word).get();
+    if (!doc.exists) {
+      doc = (await FirebaseFirestore.instance
+              .collection('words')
+              .where('word', isEqualTo: word)
+              .limit(1)
+              .get())
+          .docs
+          .first;
+    }
     if (doc.exists) {
       final word = Word(word: doc['word'], root: doc['root'], key: doc.id);
       return word;

@@ -7,15 +7,17 @@ import 'package:solimage/routes/child/fwoh.dart';
 import 'package:solimage/routes/child/summary.dart';
 import 'package:solimage/states/user.dart';
 import 'package:solimage/utils/classes/expData.dart';
+import 'package:solimage/utils/classes/word.dart';
 
 final resultIndexProvider = StateProvider.autoDispose((ref) => 0);
 final _expDataProviderFamily =
     FutureProvider.autoDispose.family<ExpData?, String>((ref, value) async {
   final user = await ref.read(userProvider.future);
   ExpData? expData = await ExpData.getExpDataByWord(word: value);
+  final word = (await Word.getWord(value))!.key;
 
-  if (expData != null && user != null && !(user.histories.contains(value))) {
-    user.histories.add(value);
+  if (expData != null && user != null && !(user.histories.contains(word))) {
+    user.histories.add(word);
     await user.save();
   }
 
@@ -66,7 +68,7 @@ class ResultScreen extends ConsumerWidget {
                           children: [
                         SummaryScreen(data: data!),
                         FWOHScreen(data: data),
-                        ChildrenScreen(word: data.word)
+                        ChildrenScreen(label: word!)
                       ])),
                   ChildActions(actions: [
                     ChildActionButton(
