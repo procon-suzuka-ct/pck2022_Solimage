@@ -77,18 +77,14 @@ class PostScreen extends ConsumerWidget {
             RadioListTile<bool>(
               title: const Text('オススメする'),
               subtitle:
-              const Text('撮影後の待ち時間に広告のように表示され、子どもたちにあなたの伝えたい知識を伝えることができます'),
+                  const Text('撮影後の待ち時間に広告のように表示され、子どもたちにあなたの伝えたい知識を伝えることができます'),
               value: true,
               onChanged: expData.value is! RecommendData
                   ? (value) {
-                ref
-                    .read(wordProvider.notifier)
-                    .state = '';
-                ref
-                    .read(_isRecommendDataProvider.notifier)
-                    .state =
-                value!;
-              }
+                      ref.read(wordProvider.notifier).state = '';
+                      ref.read(_isRecommendDataProvider.notifier).state =
+                          value!;
+                    }
                   : null,
               groupValue: isRecommendData,
             ),
@@ -98,14 +94,10 @@ class PostScreen extends ConsumerWidget {
               value: false,
               onChanged: expData.value is! RecommendData
                   ? (value) {
-                ref
-                    .read(wordProvider.notifier)
-                    .state = '';
-                ref
-                    .read(_isRecommendDataProvider.notifier)
-                    .state =
-                value!;
-              }
+                      ref.read(wordProvider.notifier).state = '';
+                      ref.read(_isRecommendDataProvider.notifier).state =
+                          value!;
+                    }
                   : null,
               groupValue: isRecommendData,
             ),
@@ -179,11 +171,21 @@ class PostScreen extends ConsumerWidget {
       Step(
           title: const Text('ワード'),
           subtitle: Text(word.isNotEmpty ? word : '未入力'),
-          content: const Align(
-              alignment: Alignment.centerLeft,
+          content: SingleChildScrollView(
               child: SingleChildScrollView(
-                  child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal, child: WordTree()))),
+                  scrollDirection: Axis.horizontal,
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        Text.rich(TextSpan(children: [
+                          TextSpan(text: '関連するワードを選択・追加してください\n'),
+                          WidgetSpan(
+                              child: Icon(Icons.chevron_right),
+                              alignment: PlaceholderAlignment.middle),
+                          TextSpan(text: 'を押すと関連するワードが表示されます\n')
+                        ])),
+                        WordTree()
+                      ]))),
           state: step != 2 && word.isNotEmpty
               ? StepState.complete
               : StepState.indexed),
