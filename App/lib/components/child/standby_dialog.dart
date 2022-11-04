@@ -119,7 +119,7 @@ class StandbyDialog extends ConsumerWidget {
                   runSpacing: 10.0,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    const Text('しゃしんにふれると、けっかをみられます',
+                    const Text('しゃしんにふれると、こたえをみられます',
                         style: TextStyle(fontSize: 20.0),
                         textAlign: TextAlign.center),
                     labels.maybeWhen(
@@ -196,12 +196,12 @@ class StandbyDialog extends ConsumerWidget {
                     recommendData.value != null &&
                     recommendUser.value != null
                 ? ChildActionButton(
-                    onPressed: () {
-                      controller.nextPage(
-                          duration: const Duration(milliseconds: 200),
-                          curve: Curves.easeInOut);
-                    },
-                    child: const Text('けっかをみる', textAlign: TextAlign.center))
+                onPressed: () {
+                  controller.nextPage(
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeInOut);
+                },
+                child: const Text('こたえをみる', textAlign: TextAlign.center))
                 : ChildActionButton(
                     onPressed: () => Navigator.of(context).pop(),
                     child:
