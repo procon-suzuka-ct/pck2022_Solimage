@@ -101,7 +101,7 @@ class CameraScreen extends ConsumerWidget {
                                         .state = false;
                                   })
                               : null,
-                          child: const Text('さつえい')),
+                          child: const Text('しらべる')),
                       ChildActionButton(
                           onPressed: () => checkConnectivity(context).then((_) {
                                 ScaffoldMessenger.of(context)

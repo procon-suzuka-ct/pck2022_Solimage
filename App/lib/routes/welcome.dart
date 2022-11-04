@@ -65,7 +65,7 @@ class WelcomeScreen extends ConsumerWidget {
             showBackButton: introIndex != 0 ? true : false,
             back: const Text("戻る"),
             next: const Text("次へ"),
-            done: const Text("始める"),
+            done: const Text("ログイン"),
             onChange: (index) =>
                 ref.read(_introIndexProvider.notifier).state = index,
             onDone: () => checkConnectivity(context)

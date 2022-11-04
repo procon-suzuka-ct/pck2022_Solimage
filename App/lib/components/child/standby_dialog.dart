@@ -196,16 +196,16 @@ class StandbyDialog extends ConsumerWidget {
                     recommendData.value != null &&
                     recommendUser.value != null
                 ? ChildActionButton(
-                onPressed: () {
-                  controller.nextPage(
-                      duration: const Duration(milliseconds: 200),
-                      curve: Curves.easeInOut);
-                },
-                child: const Text('こたえをみる', textAlign: TextAlign.center))
+                    onPressed: () {
+                      controller.nextPage(
+                          duration: const Duration(milliseconds: 200),
+                          curve: Curves.easeInOut);
+                    },
+                    child: const Text('こたえをみる', textAlign: TextAlign.center))
                 : ChildActionButton(
                     onPressed: () => Navigator.of(context).pop(),
                     child:
-                        const Text('もういちど\nさつえい', textAlign: TextAlign.center)),
+                        const Text('もういちど\nしらべる', textAlign: TextAlign.center)),
             orElse: () => const Center(child: CircularProgressIndicator()))
       ])
     ]);
