@@ -77,12 +77,16 @@ class ResultScreen extends ConsumerWidget {
                             : () => context.pop(),
                         child: const Text('もどる')),
                     ChildActionButton(
-                        onPressed: () => currentPage != 2
-                            ? controller.nextPage(
+                        onPressed: currentPage != 2
+                            ? () => controller.nextPage(
                                 duration: const Duration(milliseconds: 200),
                                 curve: Curves.easeInOut)
-                            : context.go('/child/camera'),
-                        child: Text(currentPage != 2 ? 'みてみる' : 'カメラをひらく'))
+                            : () {
+                                Navigator.of(context).popUntil((route) =>
+                                    route.settings.name == '/child/camera');
+                                context.go('/child/camera');
+                              },
+                        child: Text(currentPage != 2 ? 'くわしく' : 'カメラをひらく'))
                   ])
                 ])),
             orElse: () => const Scaffold(
