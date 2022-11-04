@@ -108,7 +108,7 @@ class CameraScreen extends ConsumerWidget {
                                     .clearMaterialBanners();
                                 context.push('/child/history');
                               }),
-                          child: const Text('きろく'))
+                          child: const Text('きろくをみる'))
                     ]),
                     LoadingOverlay(visible: ref.watch(_isTakingPictureProvider))
                   ]));
