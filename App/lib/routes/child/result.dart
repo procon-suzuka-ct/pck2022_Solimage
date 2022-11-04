@@ -66,7 +66,7 @@ class ResultScreen extends ConsumerWidget {
                           children: [
                         SummaryScreen(data: data!),
                         FWOHScreen(data: data),
-                        ChildrenScreen(word: data.word)
+                        ChildrenScreen(label: word!)
                       ])),
                   ChildActions(actions: [
                     ChildActionButton(
