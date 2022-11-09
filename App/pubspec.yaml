@@ -41,7 +41,7 @@ dependencies:
   firebase_ml_model_downloader: ^0.2.0+3
   firebase_storage: ^11.0.3
   flutter_launcher_icons: ^0.10.0
-  flutter_native_splash: ^2.2.13
+  flutter_native_splash: ^2.2.14
   go_router: ^5.1.2
   permission_handler: ^10.2.0
   tflite_flutter: ^0.9.0
