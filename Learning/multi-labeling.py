@@ -4,15 +4,11 @@ import json
 
 # 機械学習
 from keras.models import Model
-from keras.layers import Dense, Dropout, Flatten, Input, Conv1D
+from keras.layers import Dense, Dropout, Input, GlobalAveragePooling2D
 import tensorflow_addons as tfa
-from keras.applications.vgg16 import VGG16
-from keras.applications.mobilenet import MobileNet
-from keras.applications.mobilenet_v2 import MobileNetV2
-from keras.applications.mobilenet_v3 import MobileNetV3Large
+from keras.applications.vgg19 import VGG19
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import EarlyStopping, ModelCheckpoint
-from keras.optimizers import adam_v2
 from keras.regularizers import l2
 import tensorflow as tf
 
@@ -42,38 +38,38 @@ json.dump(lebels_reverse, json_file)
 json_file.close()
 
 # 正則化のパラメータ設定
-regulizerRate = 0.001
+regulizerRate = 0.008
 units = 512
 labelNum = len(labels)
-OP3_regulizer = regulizerRate * units / (units + labelNum)
-OP4_regulizer = regulizerRate * labelNum / (units + labelNum)
+#OP3_regulizer = regulizerRate * units / (units + labelNum)
+#OP4_regulizer = regulizerRate * labelNum / (units + labelNum)
 
-# sigmoidを使って多ラベル分類
-baseModel = VGG16(weights="imagenet",
+# 学習済みモデルをインポート
+baseModel = VGG19(weights="imagenet",
                   include_top=False,
                   input_tensor=Input(shape=(384, 216, 3)),)
 
-# 15層目まで重みを固定
-for layer in baseModel.layers[:-1]:
+for layer in baseModel.layers[:-2]:
     layer.trainable = False
 
 # 出力層
 x = baseModel.output
-x = Flatten(name = "output1")(x)
-x = Dropout(0.5, name = "output2")(x)
-x = Dense(units, activation=tfa.activations.rrelu, kernel_regularizer=l2(regulizerRate), name = "output3")(x)
-pridection = Dense(labelNum, activation="sigmoid", name = "output4")(x)
+x = GlobalAveragePooling2D(name="output1")(x)
+x = Dropout(0.5, name="output3")(x)
+x = Dense(units, activation=tfa.activations.rrelu,
+          kernel_regularizer=l2(regulizerRate), name="output2")(x)
+pridection = Dense(labelNum, activation="sigmoid", name="output4")(x)
 
 model = Model(inputs=baseModel.input, outputs=pridection)
 
 # 多ラベル分類で設定
-model.compile(optimizer=adam_v2.Adam(learning_rate=0.0001), loss="binary_crossentropy",
+model.compile(optimizer='rmsprop', loss="binary_crossentropy",
               metrics=["accuracy"])
 model.summary()
 
 early_stopping = EarlyStopping(monitor="val_loss", patience=10, min_delta=0)
 check_point = ModelCheckpoint(
-    "./tmp/model/model.h5", save_best_only=True, mode="min", monitor='val_loss')
+    "./tmp/model/model.h5", save_best_only=True, mode="max", monitor='val_accuracy')
 
 # 学習
 history = model.fit(trainGenerator, validation_data=valGenerator, epochs=100, callbacks=[
@@ -95,6 +91,8 @@ ax.set_xlabel('Epoch')
 plt.show()
 plt.savefig("./tmp/model/learning_result.png")
 
+print("convert start")
+
 # convert tf model to tflite model
 converter = tf.lite.TFLiteConverter.from_keras_model(model)
 
@@ -103,3 +101,5 @@ converter.target_spec.supported_types = [tf.float16]
 
 tflite_model = converter.convert()
 open("./tmp/model/model.tflite", "wb").write(tflite_model)
+
+print("convert finished!")
