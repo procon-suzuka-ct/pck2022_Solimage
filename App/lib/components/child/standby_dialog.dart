@@ -23,10 +23,6 @@ final _recommendDataProvider = FutureProvider.autoDispose((ref) async {
       ? await RecommendData.getRecommendDataByCurrentUid(uid)
       : null;
 
-  if (recommendData != null) {
-    await recommendData.addViews();
-  }
-
   return recommendData;
 });
 
@@ -52,7 +48,8 @@ final _labelsProvider = FutureProvider<Map<String, ExpData>>((ref) async {
             word: (await Word.getWord(label.label))!.word)));
     final map = <String, ExpData>{};
     for (final label in labels) {
-      map[label.label] = expDatas[labels.indexOf(label)]!;
+      final expData = expDatas[labels.indexOf(label)];
+      if (expData != null) map[label.label] = expData;
     }
     return map;
   }
@@ -122,7 +119,7 @@ class StandbyDialog extends ConsumerWidget {
                   runSpacing: 10.0,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    const Text('しゃしんにふれると、けっかをみられます',
+                    const Text('しゃしんにふれると、こたえをみられます',
                         style: TextStyle(fontSize: 20.0),
                         textAlign: TextAlign.center),
                     labels.maybeWhen(
@@ -204,11 +201,11 @@ class StandbyDialog extends ConsumerWidget {
                           duration: const Duration(milliseconds: 200),
                           curve: Curves.easeInOut);
                     },
-                    child: const Text('けっかをみる', textAlign: TextAlign.center))
+                    child: const Text('こたえをみる', textAlign: TextAlign.center))
                 : ChildActionButton(
                     onPressed: () => Navigator.of(context).pop(),
                     child:
-                        const Text('もういちど\nさつえい', textAlign: TextAlign.center)),
+                        const Text('もういちど\nしらべる', textAlign: TextAlign.center)),
             orElse: () => const Center(child: CircularProgressIndicator()))
       ])
     ]);

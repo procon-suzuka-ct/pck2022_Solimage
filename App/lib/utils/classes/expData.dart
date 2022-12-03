@@ -432,9 +432,6 @@ class ExpData {
   ///
   /// Userのデータもこの関数で更新されます
   Future<void> good(String uid) async {
-    if (_dataId < 0) {
-      return;
-    }
     final user = await AppUser.getUser(uid);
     if (user == null) {
       return;

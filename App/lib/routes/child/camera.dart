@@ -101,21 +101,31 @@ class CameraScreen extends ConsumerWidget {
                                         .state = false;
                                   })
                               : null,
-                          child: const Text('さつえい')),
+                          child: const Text('しらべる')),
                       ChildActionButton(
                           onPressed: () => checkConnectivity(context).then((_) {
                                 ScaffoldMessenger.of(context)
                                     .clearMaterialBanners();
                                 context.push('/child/history');
                               }),
-                          child: const Text('きろく'))
+                          child: const Text('きろくをみる'))
                     ]),
                     LoadingOverlay(visible: ref.watch(_isTakingPictureProvider))
                   ]));
                 },
                 error: (error, _) => Text('Error: $error'),
-                loading: () => const Scaffold(
-                    body: Center(child: CircularProgressIndicator())));
+                loading: () => Scaffold(
+                        body: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: const [
+                          Center(
+                              child: Padding(
+                                  padding: EdgeInsets.all(30.0),
+                                  child: CircularProgressIndicator())),
+                          Text('カメラが表示されない場合は、\nアプリを再起動してください',
+                              textAlign: TextAlign.center)
+                        ])));
           } else {
             return Scaffold(
                 body: Center(

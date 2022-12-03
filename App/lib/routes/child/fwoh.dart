@@ -13,9 +13,9 @@ final List<String> _cardLabels = [
   'だれ',
   'どうやって',
 ];
-final _goodProvider = FutureProvider.family<bool, int>((ref, dataId) async {
+final _goodProvider = FutureProvider.family<bool, String>((ref, word) async {
   final user = await ref.watch(userProvider.future);
-  return user!.goodDatas.contains(dataId);
+  return user!.goodDatas.contains(word);
 });
 
 class FWOHScreen extends ConsumerWidget {
@@ -25,7 +25,7 @@ class FWOHScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final good = ref.watch(_goodProvider(data.dataId));
+    final good = ref.watch(_goodProvider(data.word));
     final cardDescriptions = [
       data.why,
       data.what,
@@ -63,7 +63,7 @@ class FWOHScreen extends ConsumerWidget {
                         onPressed: () async {
                           HapticFeedback.positiveImpact();
                           final user = await ref.read(userProvider.future);
-                          data.good(user!.uid);
+                          await data.good(user!.uid);
                         }),
                     orElse: () =>
                         const Center(child: CircularProgressIndicator())))

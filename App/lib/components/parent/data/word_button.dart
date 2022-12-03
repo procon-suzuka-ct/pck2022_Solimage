@@ -27,7 +27,7 @@ class SelectWordButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final step = ref.watch(stepProvider);
 
-    return TextButton(
+    return ElevatedButton(
         onPressed: () {
           ref.read(wordProvider.notifier).state = word;
           ref.read(stepProvider.notifier).state = step + 1;
